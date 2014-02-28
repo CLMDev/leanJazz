@@ -1,0 +1,217 @@
+#!/bin/bash
+
+#********************************************************************************
+# Copyright 2014 IBM
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#********************************************************************************
+
+# Sets up SSH logins without a password for a list of machines.
+# If user specifies "-p password", we use expect to set up keys without
+# any prompts.
+
+
+# StrictHostKeyChecking=no automatically accepts the host's public key into .ssh/known_hosts
+SSHARGS="-o ConnectTimeout=30 -o PreferredAuthentications=publickey -o StrictHostKeyChecking=no"
+
+usage()
+{
+    echo "Usage: `basename $0` [-p password] [-d] [user@]host ..."
+    echo ""
+    echo "Authorizes your ssh publickey for specified remote user accounts. This"
+    echo "authorization allows ssh connections from your currect account to the"
+    echo "remote user accounts without requiring a password."
+    echo ""
+    echo "-p        Provided password to be used"
+    echo "-d        Enable debugging output"
+    echo "-h        Displays this usage information"
+    echo ""
+}
+
+fixselinux () 
+{
+#   ssh $SSHARGS $1@$2 "if [ -e /sbin/restorecon ]; then if [ -x /sbin/restorecon -a -z \"\`ls \$HOME/.ssh)\`" ]; then restorecon -v \$HOME/.ssh; fi; fi"
+    ssh $SSHARGS $1@$2 "if [ -x /sbin/restorecon ]; then if [ -z \"\`ls \\\$HOME/.ssh\`\" ]; then restorecon -v \$HOME/.ssh; fi; fi"
+}
+
+PASSWORD=
+DEBUG=
+while getopts "p:dh" OPTION
+do
+    case $OPTION in
+        p) PASSWORD=$OPTARG;;
+        d) DEBUG=true;;
+        h) usage; exit 1;;
+        ?) 
+        usage;
+        echo "ERROR: Unrecognized option specified.";
+        exit 1
+    esac
+done
+shift `expr $OPTIND - 1`
+
+# Make sure the user didn't mix the -p option in with the hosts
+for arg in $@; do
+    if [ "$arg" == "-p" ]; then
+        usage
+        echo "ERROR: All arguments should precede the host list."
+        exit 1
+    fi
+done
+
+# Passing in password requires expect
+EXPECT=`which expect 2>/dev/null`
+if [ -n "$PASSWORD" ] && [ -z "$EXPECT" ]; then
+    echo "ERROR: expect must be installed on your system to use the \"-p password\" option"
+    exit 1
+fi
+  
+if [ -z "$PASSWORD" ] && [ "$DEBUG" ]; then
+    echo "NOTE: To automate setupSSH, see the \"-p password\" option."
+fi
+
+hosts=$@
+[ -z "$hosts" ] && { usage; echo "ERROR: No hosts specified."; exit 1; }
+
+
+echo "== Setup SSH keys ===================================================="
+echo "This script is used to authorize your publickey ($USER@`hostname`)"
+echo "for passwordless access to specified hosts. This assumes that you have"
+echo "access either to the root account of the remote host or an account"
+echo "which is sudo enabled on the remote host."
+echo ""
+echo "NOTE: If you have any trouble with this script, try using the -d debug"
+echo "      flag to generate more verbose output information."
+echo ""
+if [ -f "$HOME/.ssh/id_rsa" ] ; then
+    [ "$DEBUG" ] && echo "INFO: Local ssh key already present, skipping generate."
+else
+    mkdir -p "$HOME/.ssh"
+    if [ "$DEBUG" ]; then
+        echo "INFO: Locally generating your ssh keys."
+        ssh-keygen -t rsa -N "" -f "$HOME/.ssh/id_rsa"
+    else
+        ssh-keygen -t rsa -N "" -f "$HOME/.ssh/id_rsa" >/dev/null
+    fi
+fi
+
+sshkey=`cat "$HOME/.ssh/id_rsa.pub"`
+sshkeyKey=`echo $sshkey |cut -d' ' -f 2`
+
+for host in $hosts ; do
+    #== Cut up the user@host strings
+    usr=`echo $host | cut -d@ -f1`
+    hst=`echo $host | cut -d@ -f2`
+    if [ "$usr" == "$hst" ] || [ "$usr" == "" ] ; then
+        if [ -z "$defaultSSHUser" ] ; then
+            [ "$DEBUG" ] && echo "INFO: No username for host $hst specified. Assuming root." 
+            usr=root
+        else
+            usr="$defaultSSHUser"
+        fi
+    fi
+
+    [ "$DEBUG" ] && echo "INFO: Connecting to $hst as $usr."
+    access=`ssh $SSHARGS ${usr}@${hst} "echo granted" 2>/dev/null`
+    if [ "$access" = "granted" ] ; then
+        echo "INFO: Publickey access already setup for ${usr}@${hst}."
+    else
+        if [ -n "$PASSWORD" ] ; then
+            [ "$DEBUG" ] && echo "INFO: Using expect to authorized your publickey for ${usr}@${hst}."
+            expect -c "set timeout 60"\
+                   -c "spawn ssh -o StrictHostKeyChecking=false $usr@$hst \"mkdir -p \\\$HOME/.ssh ; touch \\\$HOME/.ssh/authorized_keys ; echo $sshkey >> \\\$HOME/.ssh/authorized_keys; chmod -R go-rwx \\\$HOME/.ssh\" " \
+                   -c "expect \"*?assword:*\" " \
+                   -c "send -- \"$PASSWORD\r\" " \
+                   -c "send -- \"\r\" " \
+                   -c "expect EOF" >/dev/null
+            fixselinux $usr $hst
+        else
+            if [ "$usr" == "root" ] ; then
+                echo "--- Authorizing your publickey for root@${hst} ----------"
+                printf "  >> Do you know the root password for ${hst}? [n] "
+                read knowroot
+                if  [ ! "$knowroot" = "y" ] && 
+                    [ ! "$knowroot" = "Y" ] && 
+                    [ ! "$knowroot" = "yes" ] ; then
+                    usr=
+                    while [ -z "$usr" ]; do
+                        printf "  >> Provide username for which you know the password: "
+                        read usr
+                    done
+                    [ "$DEBUG" ] && echo "INFO: Will setup SSH for $usr and root."
+                fi
+            fi
+            [ "$DEBUG" ] && echo "INFO: Authorizing your publickey for ${usr}@${hst}."
+            RESULT=$(ssh -q -o StrictHostKeyChecking=false $usr@$hst "mkdir -p \$HOME/.ssh ; touch \$HOME/.ssh/authorized_keys ; echo $sshkey >> \$HOME/.ssh/authorized_keys; chmod -R go-rwx \$HOME/.ssh; echo \"SUCCESS: Authorized your publickey for ${usr}@${hst}\";")
+            if echo $RESULT | grep SUCCESS >/dev/null 2>&1; then
+                echo $RESULT
+            else
+                echo "WARNING: No access for ${usr}@${hst}. Skipping this host."
+                continue
+            fi
+            fixselinux $usr $hst
+        fi
+    fi
+   
+    [ "$DEBUG" ] && echo "INFO: Remotely generating publickey for ${usr}@${hst}."
+    ssh -q -o StrictHostKeyChecking=false ${usr}@${hst} "if [ ! -f \"\$HOME/.ssh/id_rsa\" ]; then ssh-keygen -t rsa -N \"\" -f \"\$HOME/.ssh/id_rsa\"; fi >/dev/null" >/dev/null 2>&1
+
+    RESULT=$(ssh $SSHARGS ${usr}@${hst} id root 2>/dev/null)
+    [ -z "$RESULT" ] && { [ "$DEBUG" ] && echo "INFO: User root does not exist on remote host."; continue; }
+
+    if [ "$RESULT" ] && [ ! "$usr" = "root" ] ; then
+        RESULT=`ssh -q -o PreferredAuthentications=hostbased,publickey root@${hst} "echo granted" 2>/dev/null`
+        if [ "$RESULT" = "granted" ] ; then
+            [ "$DEBUG" ] && echo "INFO: Your publickey is authorized for root@${hst}."
+            # Something to keep the script from exiting with rc=1 if debug is not enabled.
+            (exit 0)
+        else
+            if [ -n "$PASSWORD" ] ; then
+                setuproot="y"
+            else
+                printf "  >> Use the known remote account to authorize your publickey for root? [y] "
+                read setuproot
+            fi
+
+            if [ "$setuproot" == "n" ] || [ "$setuproot" == "N" ] || [ "$setuproot" == "no" ] ; then
+                continue;
+            fi
+
+            #== Verify that sudo is working correctly
+            [ "$DEBUG" ] && echo "INFO: Verifying that ${usr}@${hst} has sudo privileges on remote host."
+            SUDOTEST=`ssh -t $SSHARGS ${usr}@${hst} "sudo echo \"granted\"" 2>&1`
+            if echo "$SUDOTEST" | grep "granted" >/dev/null; then
+                [ "$DEBUG" ] && echo "INFO: Authorizing your publickey for root@${hst}."
+                RESULT=$(ssh -t $SSHARGS ${usr}@${hst} "sudo su - root -c \"mkdir -p \\\$HOME/.ssh ; touch \\\$HOME/.ssh/authorized_keys ; echo $sshkey >> \\\$HOME/.ssh/authorized_keys; chmod -R go-rwx \\\$HOME/.ssh;\" 2>/dev/null; sudo echo \"SUCCESS: Authorized your publickey for root@${hst}\";" 2>/dev/null)
+                if echo $RESULT | grep SUCCESS >/dev/null 2>&1; then
+                    echo $RESULT
+                else
+                    echo "ERROR: Unable to authorize your publickey for root@${hst}. Skipping this host."
+                    continue
+                fi
+           
+                [ "$DEBUG" ] && echo "INFO: Remotely generating publickey for root@${hst} if necessary. This may take a few minutes."
+                RESULT=$(ssh -t $SSHARGS root@$hst "if [ ! -f \"\$HOME/.ssh/id_rsa\" ]; then ssh-keygen -t rsa -N \"\" -f \"\$HOME/.ssh/id_rsa\" >/dev/null 2>&1; echo \"SUCCESS: Generated remote keys for root@${hst}\"; else echo \"SUCCESS: Generation of remote keys for root@${hst} not necessary, keys exist.\"; fi;" 2>/dev/null)
+                if echo $RESULT | grep SUCCESS >/dev/null 2>&1; then
+                    echo $RESULT
+                else
+                    echo "WARNING: Unable to remotely generate keys for root@${hst}. This does not impact your authorization."
+                fi
+                fixselinux root $hst
+            else
+                echo "ERROR: sudo not functional for ${usr}@${hst}. Please contact the system administrator."
+                echo "ERROR RESULT: $SUDOTEST"
+            fi
+        fi
+    fi
+done
+

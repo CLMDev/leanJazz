@@ -1,62 +1,16 @@
-README(leanJazz) 
-================
-
-Overview 
-========
-Set of light weight services used to develop a continuous, test and delivery pipeline. 
-
-Status 
+CLMAutoDev
 ======
-   * [2014-02-27] Initial implementation is in progress for a REST API 
-   * [2014-02-27] Initial test cases written for REST API 
 
-Usage 
-=====
-Local Test 
-----------
-mongod 
-node app.js 
-mocha --reporter list
+Overview
+--------
+This project is a set of automation scripts and recipes for the install, configuraiton and migration of IBM Collaborative Lifecycle Management. These scripts provide automation for the deployment and configuration of best practice topologies.  The automation of these deployments are a piece of our Continuous Test and Deployment processes.  
+
+Dependencies
+------------
 
 
-Dependencies 
-============
-Node.js  
--------
-These services are written in Node.js and are dependent upon the following packages:  
-   * "express": "3.4.8",
-   * "jade": "*",
-   * "mongoose": ">=2.3.1",
-   * "mocha": "*",
-   * "should": "*",
-   * "nconf":  "*",
-   * "validator": "*",
-   * "jquery":"*",
-   * "request-json":"*"
-More information on these packages can be found at https://www.npmjs.org/
-
-API v0.1
-======== 
-SimpleTopologyService Restricted 
---------------------------------
-   * put /topology/topologies 
-   * post /topology/topologies/:id 
-
-   * put /topology/providers
-   * post /topology/providers/:id 
-
-   * put /topology/pool
-   * post /topology/pool
-
-SimpleTopologyService Public 
-----------------------------
-   * get /topology/topologies
-   * get /topology/topologies/:id 
-
-   * get /topology/provider
-   * get /topology/provider/:id 
-
-   * get /topology/instance  
-   * get /topology/instance/:id 
-
-   * get /topology/pool
+Other sources of information
+-----------------------------
+* The project is managed at https://github.com/rjminsha/CLMAutoDev 
+* Documentation and best practices for deployment and automation is avaiable on https://jazz.net/wiki/bin/view/Deployment/WebHome 
+* Blogs on the adoption path of DevOps by the Rational Collaborative Lifecycle Management Team, of which these scripts are a part of, can be found at https://jazz.net/blog/?tag=DevOps 
