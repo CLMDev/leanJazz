@@ -3,7 +3,9 @@ README(leanJazz)
 
 Overview 
 ========
-Set of light weight services used to develop a continuous, test and delivery pipeline. 
+SimpleTopologyService provides a pool of pre-deployed instances of topologies.  This pool of predeployed instances triggers off of build notifications, and is intended for use by developers, testers and automated systems.  The basic idea is to reduce the time and frustration needed for people to get access to an enterprise-like topology of the latest build.  
+
+The appliation is built on Node using express and mongdb. Tests are written using mocha.  A rest (like) API is provide as well as a basic webui built using jade.  
 
 Status 
 ======
@@ -14,49 +16,15 @@ Usage
 =====
 Local Test 
 ----------
-mongod 
-node app.js 
-mocha --reporter list
+   1. Start Mongo Database: *mongod* 
+   2. Install node modules: *npm install* 
+   3. Start Node Application (express): *node app.js* 
+   4. Run tests: *mocha --reporter list*
 
-
-Dependencies 
+Dependencies  
 ============
-Node.js  
--------
-These services are written in Node.js and are dependent upon the following packages:  
-   * "express": "3.4.8",
-   * "jade": "*",
-   * "mongoose": ">=2.3.1",
-   * "mocha": "*",
-   * "should": "*",
-   * "nconf":  "*",
-   * "validator": "*",
-   * "jquery":"*",
-   * "request-json":"*"
-More information on these packages can be found at https://www.npmjs.org/
+Listed in top level READMD.md 
 
 API v0.1
 ======== 
-SimpleTopologyService Restricted 
---------------------------------
-   * put /topology/topologies 
-   * post /topology/topologies/:id 
-
-   * put /topology/providers
-   * post /topology/providers/:id 
-
-   * put /topology/pool
-   * post /topology/pool
-
-SimpleTopologyService Public 
-----------------------------
-   * get /topology/topologies
-   * get /topology/topologies/:id 
-
-   * get /topology/provider
-   * get /topology/provider/:id 
-
-   * get /topology/instance  
-   * get /topology/instance/:id 
-
-   * get /topology/pool
+Coming Soon 
