@@ -1,5 +1,5 @@
-CLMAutoDev
-======
+leanJazz
+========
 
 Overview
 --------
@@ -24,7 +24,7 @@ Utilities
 /utilities: 		helper shell scripts and other useful utilities 
 /utilities/setupSSH:	exchanges SSH certificates between sets of machines.  
 
-*Dependencies* 
+**Dependencies** 
    * expect 
 
 SimpleTopologyService
@@ -33,7 +33,7 @@ SimpleTopologyService
 
 Application to provide basic pool of pre-deployed topologies provided by IBM Urbancode Deploy, IBM Workload Deployer or IBM Pure Application System. 
 
-*Dependencies* 
+**Dependencies** 
    * Node.js 
    * Mongodb 
 
