@@ -21,121 +21,122 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var Topology = new Schema({
 	_id: String,
-        name: {type:String,unique:true},
-        solution: String,
-        description: String,
+	name: {type: String, unique: true},
+	solution: String,
+	description: String,
 	referenceURL: String,
-	pools:[],
+	pools: [],
 	providers: []
-},{strict: "throw"});
+	},{strict: 'throw'}
+);
 
-Topology.path('name').set(function (v) {
+Topology.path('name').set(function(v) {
 	console.log('setting name');
 	this._id = v;
-	if (! this.pools){
-		this.pools=[];
+	if (! this.pools) {
+		this.pools = [];
 	}
-	if ( ! this.providers ){
-		this.providers=[];
+	if (! this.providers) {
+		this.providers = [];
 	}
 	return v;
 });
 
-var Topology = mongoose.model('Topology',Topology);
+var Topology = mongoose.model('Topology', Topology);
 
 var validator = require('validator');
-var validateTopology = function(doc,next){
-        if (validator.isNull(doc.name)){
-                next(new Error("Name of the topology can not be null"));
-        }else if (!validator.isURL(doc.referenceURL)){
-		next(new Error("referenceURL must be a URL"));
-        }else{
-		console.log("validated json");
+var validateTopology = function(doc, next) {
+    if (validator.isNull(doc.name)) {
+		next(new Error('Name of the topology can not be null'));
+    }else if (!validator.isURL(doc.referenceURL)) {
+		next(new Error('referenceURL must be a URL'));
+    }else {
+		console.log('validated json');
 		next(null);
 	}
-} 
+};
 
-// setup routes for topologies and apis 
-exports.findAllView = function(req,res){
-  Topology.find({},function(err,docs){
-    if(!docs){
+// setup routes for topologies and apis
+exports.findAllView = function(req, res) {
+  Topology.find({},function(err, docs) {
+    if (!docs) {
       console.log('no topologies found');
       docs = [];
     }
-    res.render('topology/topologies/index',{
-      title:'Available Topologies',
-      docs:docs
+    res.render('topology/topologies/index', {
+      title: 'Available Topologies',
+      docs: docs
     });
   });
 };
-exports.findAll = function(req,res){
-	Topology.find({},function(err,docs){
-		if (!docs){
+exports.findAll = function(req, res) {
+	Topology.find({},function(err, docs) {
+		if (!docs) {
 			res.send(404);
-		}else{
+		}else {
 			res.json(docs);
 		}
 	});
 };
-exports.addViewSetup = function(req, res){
+exports.addViewSetup = function(req, res) {
         res.render('topology/topologies/new.jade', {
                 title: 'Create new topology'   
         });
 };
-exports.addViewExecute = function(req,res){
-	validateTopology(req.body.topology, function(err){
-		if(! err){
-        		var topology=new Topology(req.body.topology);
-			topology.save(function (err){
-                		if (! err){
-                	        	res.redirect('/topology/topologies');
-                		}else{
+exports.addViewExecute = function(req, res) {
+	validateTopology(req.body.topology, function(err) {
+		if (! err) {
+			var topology = new Topology(req.body.topology);
+			topology.save(function(err) {
+				if (! err) {
+					res.redirect('/topology/topologies');
+				}else {
 					console.log('error saving topology');
 					console.log(err);
-                	        	res.redirect('/topology/topologies/new');
-                		}
-        		});    
-		}else{
+					res.redirect('/topology/topologies/new');
+				}
+			});
+		}else {
 			console.log('error in addViewExecute validating topology');
 			console.log(err);
-	                res.redirect('/topology/topologies');
+			res.redirect('/topology/topologies');
 		}
 	});
 };
-exports.add = function(req,res){
-	validateTopology(req.body, function(err){
-		if (! err){
-			try{
+exports.add = function(req, res) {
+	validateTopology(req.body, function(err) {
+		if (! err) {
+			try {
 			var newTopology = new Topology(req.body);
-			newTopology.save( function(err){
-				if (!err){
+			newTopology.save(function(err) {
+				if (!err) {
 					res.send(newTopology);
-				}else{
-					res.send(err,400);
+				}else {
+					res.send(err, 400);
 				}
 			});
-			}catch(err){
+			}catch (myerror) {
 				console.log('could not save topology, most likely due to invalid data');
-				console.log(err);
-				res.send(err,400);
+				console.log(myerror);
+				res.send(myerror, 400);
 			}
-		}else{
+		}else {
 			console.log('invalid input: ' + err);
 			console.log(req.body);
-                        res.send(err,400);
+			res.send(err, 400);
 		}
 	});
-}
-exports.editViewSetup = function(req, res){
-  Topology.findById(req.params.id, function (err, doc){
+};
+exports.editViewSetup = function(req, res) {
+  Topology.findById(req.params.id, function(err, doc) {
     res.render('topology/topologies/edit', {
       title: 'Edit Topology',
       topology: doc
     });
   });
 };
-exports.editViewExecute = function(req, res){
-  Topology.findById(req.params.id, function (err, doc){
+exports.editViewExecute = function(req, res) {
+  Topology.findById(req.params.id, function(err, doc) {
     doc.updated_at = new Date();
     doc.name = req.body.topology.name;
     doc.solution = req.body.topology.solution;
@@ -143,96 +144,96 @@ exports.editViewExecute = function(req, res){
     doc.description = req.body.topology.description;
     console.log('attempting to update document');
     console.log(doc);
-    validateTopology(doc, function(err){
-     	if (!err){ 
-		doc.save(function(err) {
-        		if (!err){
-          			res.redirect('/topology/topologies');
-        		}
-        		else {
-				console.log('error saving to database');
-          			res.redirect('/topology/topologies');
-        		}
-      		});
-	}else{
-		console.log('invalid data:' + err);
-		res.redirect('/topology/topologies');
-	}
+    validateTopology(doc, function(err) {
+		if (!err) {
+			doc.save(function(err) {
+				if (!err) {
+					res.redirect('/topology/topologies');
+				}
+				else {
+					console.log('error saving to database');
+					res.redirect('/topology/topologies');
+				}
+			});
+		}else {
+			console.log('invalid data:' + err);
+			res.redirect('/topology/topologies');
+		}
     });
   });
 };
-exports.update = function(req, res){
-  Topology.findById(req.params.id, function (err, doc){
-    	console.log('Updating document '+ req.params.id);
+exports.update = function(req, res) {
+  Topology.findById(req.params.id, function(err, doc) {
+	console.log('Updating document ' + req.params.id);
 	updateDoc = req.body;
 	console.log(updateDoc);
-        if(err){
+        if (err) {
 		console.log('error finding topology');
-		res.send(err,400);
-	}else if (! doc){
+		res.send(err, 400);
+	}else if (! doc) {
 		console.log('could not find document');
 		res.send(400);
-	}else{
-		try{
+	}else {
+		try {
 			console.log('found document, attempting to update');
-			for(param in updateDoc){
-				console.log('updating ' + param + ' with ' + updateDoc[param]);	
+			for (var param in updateDoc) {
+				console.log('updating ' + param + ' with ' + updateDoc[param]);
 				doc[param] = updateDoc[param];
 			}
-			validateTopology(doc,function(err){
-				if(!err){
+			validateTopology(doc, function(err) {
+				if (!err) {
 					doc.save();
 					res.json(doc);
 					console.log('saved doc');
 					console.log(doc);
-				}else{
+				}else {
 					console.log('error caught validating topology ' + err);
-					res.send(err,400);
+					res.send(err, 400);
 				}
 			});
-		}catch(err){
-			console.log('error caught ' + err);
-			res.send(err,400);
+		}catch (myerror) {
+			console.log('error caught ' + myerror);
+			res.send(myerror, 400);
 		}
 	}
     });
 };
 
 
-exports.find = function(req,res){
+exports.find = function(req, res) {
 	console.log('finding ' + req.params.id);
-	Topology.findById(req.params.id, function (err, doc){
+	Topology.findById(req.params.id, function(err, doc) {
 		console.log('printing doc');
 		console.log(doc);
 		console.log('printing error');
 		console.log(err);
-		if(! doc){
+		if (! doc) {
 			res.send(404);
-		}else{
+		}else {
 			res.send(doc);
 		}
 	});
 };
-exports.deleteView = function(req,res){
-        Topology.findById(req.params.id, function(err,doc){
-                if (!doc){
+exports.deleteView = function(req, res) {
+	Topology.findById(req.params.id, function(err, doc) {
+		if (!doc) {
 			console.log('could not remove document using ID ' + req.params.id);
 			res.redirect('/topology/topologies');
-		}else{ 
-                	doc.remove(function(){
-                        	res.redirect('/topology/topologies/');
-                	});
+		}else {
+			doc.remove(function() {
+				res.redirect('/topology/topologies/');
+			});
 		}
-        });
+	});
 };
-exports.delete = function(req,res){
-        Topology.findById(req.params.id, function(err,doc){
-		if (!doc){
+exports.delete = function(req, res) {
+	Topology.findById(req.params.id, function(err, doc) {
+		if (!doc) {
 			res.send(404);
-		}else{
-			doc.remove(function(){
-                        	res.send(200);
-                	});	
+		}else {
+			doc.remove(function() {
+			res.send(200);
+			});
 		}
-        });
+	});
 };

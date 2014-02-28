@@ -14,21 +14,19 @@
 *   limitations under the License.
 */
 
-
-/**
- * Module dependencies.
- */
+/* jslint node: true */
+'use strict';
 
 var express = require('express');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/leanJazz',
-        function(err){
-                if (!err){
-                        console.log('connected');
-                }else{
-                        throw err;
-                }
-        });
+  function(err) {
+    if (!err) {
+      console.log('connected');
+    }else {
+      throw err;
+    }
+});
 var routes = require('./routes');
 var topology = require('./routes/topology');
 var topologyPool = require('./routes/pool');
@@ -40,9 +38,7 @@ var app = express();
 //setup properties file
 var fs = require('fs');
 var nconf = require('nconf');
-nconf.argv()
-	.env()
-       	.file({ file: './config.json'});
+nconf.argv().env().file({ file: './config.json'});
 
 console.log('printing out port ' + nconf.get('PORT'));
 // all environments
@@ -66,25 +62,25 @@ app.get('/', routes.index);
 
 // setup routes for topologies web interface
 app.get('/', routes.index);
-app.get('/topology/topologies',topology.findAllView);
+app.get('/topology/topologies', topology.findAllView);
 app.get('/topology/topologies/new', topology.addViewSetup);
 app.post('/topology/topologies', topology.addViewExecute);
 app.get('/topology/topologies/:id/edit', topology.editViewSetup);
 app.put('/topology/topologies/:id', topology.editViewExecute);
 app.del('/topology/topologies/:id', topology.deleteView);
 
-//setup routes for the topologies API 
-app.get('/api/v1/topology/topologies',topology.findAll);
-app.post('/api/v1/topology/topologies',topology.add);
-app.get('/api/v1/topology/topologies/:id',topology.find);
-app.del('/api/v1/topology/topologies/:id',topology.delete);
+//setup routes for the topologies API
+app.get('/api/v1/topology/topologies', topology.findAll);
+app.post('/api/v1/topology/topologies', topology.add);
+app.get('/api/v1/topology/topologies/:id', topology.find);
+app.del('/api/v1/topology/topologies/:id', topology.delete);
 app.put('/api/v1/topology/topologies/:id', topology.update);
 
-app.get('/api/v1/topology/pools',topologyPool.findAll);
-app.get('/api/v1/topology/pools/:id',topologyPool.find);
-app.post('/api/v1/topology/pools',topologyPool.create);
-app.del('/api/v1/topology/pools/:id',topologyPool.delete);
+app.get('/api/v1/topology/pools', topologyPool.findAll);
+app.get('/api/v1/topology/pools/:id', topologyPool.find);
+app.post('/api/v1/topology/pools', topologyPool.create);
+app.del('/api/v1/topology/pools/:id', topologyPool.delete);
 
-http.createServer(app).listen(app.get('port'), function(){
+http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
