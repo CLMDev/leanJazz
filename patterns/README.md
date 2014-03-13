@@ -19,3 +19,4 @@ TBD
 
 Dependencies
 ============
+   * Patterns are dependent upon an IBM Cloud Provider to be run
