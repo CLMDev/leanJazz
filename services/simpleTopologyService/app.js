@@ -27,6 +27,7 @@ mongoose.connect('mongodb://localhost/leanJazz',
       throw err;
     }
 });
+
 var routes = require('./routes');
 var topology = require('./routes/topology');
 var topologyPool = require('./routes/pool');
@@ -35,6 +36,7 @@ var http = require('http');
 var path = require('path');
 var app = express();
 
+var pool = require('./models/pool');
 //setup properties file
 var fs = require('fs');
 var nconf = require('nconf');
@@ -59,6 +61,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
+
 
 // setup routes for topologies web interface
 app.get('/', routes.index);

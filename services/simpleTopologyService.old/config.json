@@ -1,0 +1,5 @@
+{
+	"PORT" : 3001,
+	"HOSTNAME" : "localhost",
+	"REMOVE-TEST-DATA" : "true"
+}
