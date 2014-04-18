@@ -16,7 +16,6 @@
 
 /* jslint node: true */
 'use strict';
-
 var express = require('express');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/leanJazz',
@@ -35,6 +34,7 @@ var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
 var app = express();
+http.globalAgent.maxSockets = 100;
 
 var pool = require('./models/pool');
 //setup properties file
