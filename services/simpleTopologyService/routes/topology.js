@@ -201,7 +201,7 @@ exports.update = function(req, res) {
 
 
 exports.find = function(req, res) {
-	console.log('finding ' + req.params.id);
+	console.log('topology.find: finding ' + req.params.id);
 	Topology.findById(req.params.id, function(err, doc) {
 		console.log('printing doc');
 		console.log(doc);
