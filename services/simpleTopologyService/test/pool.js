@@ -27,7 +27,7 @@ function tryParseJSON (jsonString){
         return false;
     }
 }
-var Pool = require('../models/pool');  
+var Topology = require('../models/pool');  
 
 
 describe('Topology Pool should initialize initialization', function() {
@@ -194,8 +194,6 @@ var newdata2 = {
 
     it('can get a property from a pool call alias which returns the name of the pool and the max pool size', function(){
         assert.equal(testPool.alias, testPool.name + testPool.maxPool,"alias should be awesome");
-
-
     });
 
 });
