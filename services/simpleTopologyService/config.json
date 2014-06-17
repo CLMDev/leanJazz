@@ -1,5 +1,8 @@
 {
 	"PORT" : 3001,
 	"HOSTNAME" : "localhost",
-	"REMOVE-TEST-DATA" : "true"
+	"REMOVE-TEST-DATA" : "true", 
+	"DEFAULT_PROVIDER_URL": "udeploy04.rtp.raleigh.ibm.com", 
+	"DEFAULT_PROVIDER_USERNAME" : "rjminsha", 
+	"DEFAULT_PROVIDER_PASSWORD" : "9d!rrooy"
 }

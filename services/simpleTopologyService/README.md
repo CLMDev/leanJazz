@@ -3,7 +3,7 @@ README(leanJazz)
 
 Overview 
 ========
-SimpleTopologyService provides a pool of pre-deployed instances of topologies.  This pool of predeployed instances triggers off of build notifications, and is intended for use by developers, testers and automated systems.  The basic idea is to reduce the time and frustration needed for people to get access to an enterprise-like topology of the latest build.  
+SimpleTopologyService provides a pool of pre-deployed instances of topologies.  This pool of predeployed instances triggers off of build notifications, and is intended for use by developers, testers and automated systems.  The basic idea is to reduce the time and frustration needed for people to get access to an enterprise-like topology of the latest build for some application. 
 
 The appliation is built on Node using express and mongdb. Tests are written using mocha.  A rest (like) API is provide as well as a basic webui built using jade.  
 

@@ -54,16 +54,16 @@ describe('SimpleTopologyService Pool API v1', function() {
             }
         });
     });
-        after(function(done) {
-                remove = nconf.get('REMOVE-TEST-DATA');
-                if (remove == 'false') {
-                        done();
-                }else {
-                        client.del('/api/v1/topology/pools/' + newdata.name, function(err, res, body) {
-                                done();
-                        });
-                }
-        });
+    after(function(done) {
+        remove = nconf.get('REMOVE-TEST-DATA');
+        if (remove == 'false') {
+            done();
+        }else {
+            client.del('/api/v1/topology/pools/' + newdata.name, function(err, res, body) {
+                done();
+            });
+        }
+    });
     describe('GET /api/v1/topology/pools/:id', function() {
         it('should be able get created test data and a 200 response code and json', function(done) {
             client.get('/api/v1/topology/pools/' + newdata.name, function(err, res, body) {

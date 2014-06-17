@@ -34,15 +34,19 @@ var data = {
   name: 'test-topology-' + today,
   description: 'testing topology creation update and deletion on ' + today,
   referenceURL: 'http://jazz.net/testtopology',
+  providers: [{type: "UCD", url:"customUCD.rtp.raleigh.ibm.com", usernameProperty: "DEFAULT_PROVIDER_USERNAME",passwordProperty:"DEFAULT_PROVIDER_PASSWORD"}], 
+//  deployParams: '{"blueprint": "tneal Rational Base OS","baseResource": "/Testing","nodeProperties": {"/tneal Rational Base OS-RHEL/os_part": {"cloud_group": "shared cloud group 1","password": "aut0mat10n","password_0": "aut0mat10n"}}}',
+  deployParameters: '',
+  validationParam: [],
   solution: 'CLM'
 };
 var invaliddataset = [{
   name: 'test-invalid-topology-invalidURL' + today,
   description: 'testing invalid topology creation update and deletion on ' + today,
+  providers: ['{"typexxx": "UCD", "password-property":"ucd04-username",username-password:"ucd04-password"}'], 
   referenceURL: 'not a URL',
   solution: 'CLM'
 }];
-
 describe('SimpleTopologyService Webui Tests', function() {
   describe('GET /topology/topologies', function() {
     it('should return a 200 response code', function(done) {
@@ -82,6 +86,7 @@ describe('SimpleTopologyService Topology API v1', function() {
       client.del('/api/v1/topology/topologies/' + data.name, function(err, res, body) {
         done();
       });
+      //TBD: find all topologies that look like test topologies and delete them 
     }
   });
 
@@ -194,8 +199,16 @@ TBD: not sure why this is not working
     it('topology should list of URIs for pools of this topology', function() {
       assert.notEqual(body.pools, undefined, 'Expected list of URIs for pools but got ' + data.pools);
     });
-    it('topology should list of providers for this topology', function() {
+    it('topology should list of providers for this topology which include type, username, password', function() {
       assert.notEqual(body.providers, undefined, 'Expected list of providers ' + data.providers);
+//        providers: ['{"type": "UCD", "password-property":"ucd04-username",username-password:"ucd04-password"}'], 
+      provider = body.providers[0];
+      console.log("printing out provider ");
+      console.log(provider);
+      assert.equal(provider.type, "UCD", "expected the provider type to be set to UCD but it was " + provider.type);
+      assert.notEqual(provider.url, undefined, "expected url to be set");
+      assert.notEqual(provider.passwordProperty, undefined, "expected password property to be set");
+      assert.notEqual(provider.usernameProperty, undefined, "expected username property to be set"); 
     });
   });
 

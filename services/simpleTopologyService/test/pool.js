@@ -27,7 +27,7 @@ function tryParseJSON (jsonString){
         return false;
     }
 }
-var Topology = require('../models/pool');  
+var Pool = require('../models/pool');  
 
 
 describe('Topology Pool should initialize initialization', function() {
@@ -52,40 +52,40 @@ var newdata2 = {
         poolMax:11
 };
 
-    before(function(done){
-        Pool.create(newdata1, function(err, pool){ 
-            testPool = pool;
-            Pool.create(newdata2, function(err, pool){ 
-                if (! err){
-                    testPool2 = pool;
-                    /*
-                    testPool2.waitFor(function(){
-                        console.log("waiting on pool to become stable");
-                        done();
-                    });
-                    */
-        
-                    done();
-                } else{
-                    assert.fail(err, undefined, "Expected to save new pool but got error:" + err);
-                }
-            });
-        });            
-    });
-    after(function(done){
-        /*
-            test that I can delete instances by deleting test data
-        */
-        Pool.count({name: /test/i}, function(err, count) {
-            assert.equal(err, undefined,"got error calling find with /test/i :" + err);
-            Pool.remove({name: /test/i}, function(err){
-                Pool.count({name: /test/i}, function(err,numberLeft) { 
-                    assert.equal(numberLeft, 0, "Expected for there to be no more instances of test data remaining but got " + numberLeft);
+before(function(done){
+    Pool.create(newdata1, function(err, pool){ 
+        testPool = pool;
+        Pool.create(newdata2, function(err, pool){ 
+            if (! err){
+                testPool2 = pool;
+                /*
+                testPool2.waitFor(function(){
+                    console.log("waiting on pool to become stable");
                     done();
                 });
+                */
+    
+                done();
+            } else{
+                assert.fail(err, undefined, "Expected to save new pool but got error:" + err);
+            }
+        });
+    });            
+});
+after(function(done){
+    /*
+        test that I can delete instances by deleting test data
+    */
+    Pool.count({name: /test/i}, function(err, count) {
+        assert.equal(err, undefined,"got error calling find with /test/i :" + err);
+        Pool.remove({name: /test/i}, function(err){
+            Pool.count({name: /test/i}, function(err,numberLeft) { 
+                assert.equal(numberLeft, 0, "Expected for there to be no more instances of test data remaining but got " + numberLeft);
+                done();
             });
-        }); 
-    });
+        });
+    }); 
+});
     it('testPool should be initialized', function(done){
         assert.notEqual(testPool, undefined, "should have created an object from: " + newdata1);
         done();
