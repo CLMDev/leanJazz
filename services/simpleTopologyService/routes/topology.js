@@ -81,7 +81,7 @@ var validateProviders = function(providers) {
 			console.log("invalid provider password ... the following property is not set " + val.passwordProperty);
 			return false;
 		}else{
-			console.log("checking valie of passwordProperty ");
+			console.log("checking value of passwordProperty ");
 			console.log(nconf.get(val.passwordProperty));
 			return true;
 		}

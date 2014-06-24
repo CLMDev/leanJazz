@@ -14,6 +14,16 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
+echo "Printing out environment information for the application" 
+echo "PORT:$PORT"
+echo "HOSTNAME:$HOSTNAME"
+echo "DB_HOSTNAME:$DB_HOSTNAME"
+echo "DB_PORT:$DB_PORT" 
+echo "REMOVE-TEST-DATA:$REMOVE-TEST-DATA"
+echo "DEFAULT_PROVIDER_URL:$DEFAULT_PROVIDER_URL"
+echo "DEFAULT_PROVIDER_PASSWORD:$DEFAULT_PROVIDER_PASSWORD"
+echo ""
+
 echo "Starting Mongo DB" 
 /usr/bin/mongod --dbpath /data/db &
 

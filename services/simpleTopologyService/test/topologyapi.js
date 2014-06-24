@@ -25,8 +25,8 @@ nconf.argv()
         .env()
         .file({ file: './config.json'});
 
-var topologyPort = nconf.get('PORT');
-var topologyHostname = nconf.get('HOSTNAME');
+var topologyPort = nconf.get('WEB_PORT');
+var topologyHostname = nconf.get('WEB_HOSTNAME');
 
 //20140623 rjm this should not be using localhost 
 //var client = request.newClient('http://localhost:' + topologyPort);

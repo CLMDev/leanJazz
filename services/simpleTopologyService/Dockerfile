@@ -11,7 +11,7 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.FROM leanjazz/base
-
+FROM leanjazz/base
 MAINTAINER Robbie Minshall "rjminsha@us.ibm.com"
 
 # Install MongoDB
@@ -38,6 +38,14 @@ RUN apt-get install -y nodejs
 RUN update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10 
 RUN apt-get install -y npm 
 
+# Set default environment variables 
+ENV WEB_PORT 3001
+ENV DB_HOSTNAME localhost
+ENV DB_PORT 27017 
+ENV DEFAULT_PROVIDER_URL defaultProviderNotSet.mycompany.com
+ENV DEFAULT_PROVIDER_USERNAME userNotSet
+ENV DEFAULT_PROVIDER_PASSWORD passwordNotSet
+	
 # Expose default port for Node 
 EXPOSE  3001
 

@@ -34,7 +34,7 @@ var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
 
 var mongoose = require('mongoose');
-var connectString = 'mongodb://' + nconf.get('DB-HOSTNAME') +':'+ nconf.get('DB-PORT') + '/simpleTopologyService'; 
+var connectString = 'mongodb://' + nconf.get('DB_HOSTNAME') +':'+ nconf.get('DB_PORT') + '/simpleTopologyService'; 
 console.log('Connecting to mongo with:' + connectString);
 mongoose.connect(connectString,
   function(err) {
@@ -48,7 +48,7 @@ mongoose.connect(connectString,
 });
 
 // all environments
-app.set('port', nconf.get('PORT'));
+app.set('port', nconf.get('WEB_PORT'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
