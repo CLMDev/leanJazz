@@ -66,7 +66,6 @@ if ('development' == app.get('env')) {
 
 app.get('/', routes.index);
 
-
 // setup routes for topologies web interface
 app.get('/', routes.index);
 app.get('/topology/topologies', topology.findAllView);

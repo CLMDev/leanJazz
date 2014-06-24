@@ -15,8 +15,8 @@
 #   limitations under the License.
 
 echo "Printing out environment information for the application" 
-echo "PORT:$PORT"
-echo "HOSTNAME:$HOSTNAME"
+echo "WEB_PORT:$WEB_PORT"
+echo "WEB_HOSTNAME:$WEB_HOSTNAME"
 echo "DB_HOSTNAME:$DB_HOSTNAME"
 echo "DB_PORT:$DB_PORT" 
 echo "REMOVE-TEST-DATA:$REMOVE-TEST-DATA"
