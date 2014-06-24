@@ -17,15 +17,6 @@
 /* jslint node: true */
 'use strict';
 var express = require('express');
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/leanJazz',
-  function(err) {
-    if (!err) {
-      console.log('connected');
-    }else {
-      throw err;
-    }
-});
 
 var routes = require('./routes');
 var topology = require('./routes/topology');
@@ -42,7 +33,20 @@ var fs = require('fs');
 var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
 
-console.log('printing out port ' + nconf.get('PORT'));
+var mongoose = require('mongoose');
+var connectString = 'mongodb://' + nconf.get('DB-HOSTNAME') +':'+ nconf.get('DB-PORT') + '/simpleTopologyService'; 
+console.log('Connecting to mongo with:' + connectString);
+mongoose.connect(connectString,
+  function(err) {
+    if (!err) {
+      console.log('mongoose connected');
+    }else {
+      console.log('mongoose already connected, or there was a failure');
+      console.log('DB_HOSTNAME:' + nconf.get('DB_HOSTNAME'));
+      console.log('DB_PORT:' + nconf.get('DB_PORT'));
+    }
+});
+
 // all environments
 app.set('port', nconf.get('PORT'));
 app.set('views', path.join(__dirname, 'views'));

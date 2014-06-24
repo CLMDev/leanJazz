@@ -23,12 +23,23 @@ TODO:
 	how to require that topologyRef is set as a part of the constructor
 */
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/leanJazz',
+//20140623 rjm:  need to connect using environment information and should not assume localhost or no creds
+//mongoose.connect('mongodb://username:password@host:port/database?options...');
+//setup properties file
+var fs = require('fs');
+var nconf = require('nconf');
+nconf.argv().env().file({ file: './config.json'});
+
+var connectString = 'mongodb://' + nconf.get('DB_HOSTNAME') +':'+ nconf.get('DB_PORT') + '/simpleTopologyService'; 
+console.log('Connecting to mongo with:' + connectString);
+mongoose.connect(connectString,
   function(err) {
     if (!err) {
       console.log('mongoose connected');
     }else {
-      console.log('mongoose already connected');
+      console.log('mongoose already connected, or there was a failure');
+      console.log('DB_HOSTNAME:' + nconf.get('DB_HOSTNAME'));
+      console.log('DB_PORT:' + nconf.get('DB_PORT'));
     }
 });
 

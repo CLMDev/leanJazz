@@ -27,7 +27,11 @@ nconf.argv()
 
 var topologyPort = nconf.get('PORT');
 var topologyHostname = nconf.get('HOSTNAME');
-var client = request.newClient('http://localhost:' + topologyPort);
+
+//20140623 rjm this should not be using localhost 
+//var client = request.newClient('http://localhost:' + topologyPort);
+var client = request.newClient("http://" + topologyHostname + ":" + topologyPort);
+
 console.log(client);
 var today = Date.now();
 var data = {
@@ -72,14 +76,19 @@ describe('SimpleTopologyService Webui Tests', function() {
 describe('SimpleTopologyService Topology API v1', function() {
   //create a record first
   before(function(done) {
-               client.post('/api/v1/topology/topologies', data, function(err, res, body) {
-                        done();
-                });
-               console.log("SimpleTopologyService Topology API before created test data");
+    client.post('/api/v1/topology/topologies', data, function(err, res, body) {
+      assert.equal(err, undefined,"unexpected error returned from post from /api/v1/topology/topologies:" + err);
+      console.log('printing out response from post to /api/v1/topology/topologies');
+      console.log(body);
+      assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
+      done();
+    });
+    console.log("SimpleTopologyService Topology API before created test data");
   });
   after(function(done) {
     var remove = nconf.get('REMOVE-TEST-DATA');
     if (remove == 'false') {
+      console.log('keeping test data');
       done();
     }else {
       console.log("SimpleTopologyService Topology API after removed test data");

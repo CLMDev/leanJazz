@@ -25,7 +25,7 @@ nconf.argv().env().file({ file: './config.json'});
 
 var topologyPort = nconf.get('PORT');
 var topologyHostname = nconf.get('HOSTNAME');
-var client = request.newClient('http://localhost:' + topologyPort);
+var client = request.newClient("http://" + topologyHostname + ":" + topologyPort);
 
 describe('SimpleTopologyService Pool API v1', function() {
     var newdata = {
