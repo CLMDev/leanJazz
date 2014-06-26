@@ -51,14 +51,17 @@ ee.on("poolProcessingEvent", function () {
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
 var TopologyPoolSchema = new Schema({
-	_id: String,
+	_id: {type: ObjectId, auto: true},
 	name: {type: String, unique: true},
 	description: String,
-	type: {type: String, default: 'latest'},
-	topologyRef: String,
+	type: {type: String, default: 'noapp'},
+	topologyRef: {type: String, ref: 'Topology'},
 	poolMethod: {type: String, default: 'basic'},
-	poolMin: {type: Number, default: 0},
-	poolMax: {type: Number, default: 10},
+	poolMinAvailable: {type: Number, default: 5},
+	poolMaxTotal: {type: Number, default: 10},
+	available: {type: Number, default: 0},
+	checkedout: {type: Number, default: 0},
+	//total: {type: Number, default: 0},
 	availableInstances: {type: [], default: []},
 	checkedOutInstances: {type: [], default: []}
 	},{strict: 'throw'}
@@ -68,13 +71,10 @@ TopologyPoolSchema.virtual('o.poolingMethod').get(function () {
   return this.oPoolingMethod;
 });
 
-TopologyPoolSchema.virtual('alias').get(function () {
-  return this.name + this.maxPool;
-});
 
 TopologyPoolSchema.path('name').set(function(v) {
 	console.log('setting id to name');
-	this._id = v;
+	//this._id = v;
 	if (this.new) {
 		console.log('this is a new pool initiatizing');
 	}
@@ -84,7 +84,7 @@ TopologyPoolSchema.path('name').set(function(v) {
 var validator = require('validator');
 var validateType = function(val) {
 	console.log(">>>validating type:" +val);
-	return (val == 'latest') || (val == 'last-good');
+	return (val == 'noapp') || (val == 'app');
 };
 var validatePoolMethod = function(val) {
 	console.log(">>>validating poolingMethod:" +val);
@@ -92,19 +92,21 @@ var validatePoolMethod = function(val) {
 	console.log(response);
 	return (val === 'basic') || (val === 'aggressive');
 };
-var validatePoolMin = function(val) {
-	console.log(">>>validating validatePoolMin:" +val);
-	return (val >= 0) && (val <= this.poolMax);
+var validatePoolMinAvailable = function(val) {
+	console.log(">>>validating validatePoolMinAvailable:" +val);
+	return (val >= 0) && (val <= this.poolMaxTotal);
 };
-var validatePoolMax = function(val) {
-	console.log(">>>validating validatePoolMax:" +val);
-	return (val >= this.poolMin);
+var validatePoolMaxTotal = function(val) {
+	console.log(">>>validating validatePoolMaxTotal:" +val);
+	return (val >= this.poolMinAvailable);
 };
 
-TopologyPoolSchema.path('topologyRef').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
-TopologyPoolSchema.path('type').validate(validateType, 'validation of `{PATH}` failed with value `{VALUE}` failed as the value needs to be either latest or last-good');
-TopologyPoolSchema.path('poolMin').validate(validatePoolMin, 'validation of `{PATH}` failed with value `{VALUE}` invalid value set for pool min');
-TopologyPoolSchema.path('poolMax').validate(validatePoolMax, 'validation of `{PATH}` failed with value `{VALUE}` invalud valiue set for pool max');
+
+
+//TopologyPoolSchema.path('topologyRef').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
+TopologyPoolSchema.path('type').validate(validateType, 'validation of `{PATH}` failed with value `{VALUE}` failed as the value needs to be either app or noapp');
+TopologyPoolSchema.path('poolMinAvailable').validate(validatePoolMinAvailable, 'validation of `{PATH}` failed with value `{VALUE}` invalid value set for pool min');
+TopologyPoolSchema.path('poolMaxTotal').validate(validatePoolMaxTotal, 'validation of `{PATH}` failed with value `{VALUE}` invalud valiue set for pool max');
 TopologyPoolSchema.path('poolMethod').validate(validatePoolMethod, 'validation of `{PATH}` failed with value `{VALUE}` invalid value set for pool type');
 
 TopologyPoolSchema.pre('save', function (next) {

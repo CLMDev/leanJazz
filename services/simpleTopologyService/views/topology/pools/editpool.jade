@@ -14,29 +14,44 @@
 
 extends ../../layout
 block content
-  h1 Edit topology view
-  form(method='post', action='/topology/topologies/' + topology.id)
+  h1 Edit pool view
+  form(method='post', action='/topology/pools/' + pool.id)
     input(name='_method', value='PUT', type='hidden')
     fieldset
-      legend Editing topology
+      legend Editing pool
         div.clearfix
           div.input
             div.row
               div.span3 
                 p Name
-              input.span3(name='topology[name]', class='xlarge', value="#{topology.name}")
+              input.span3(name='pool[name]', class='xlarge', value="#{pool.name}")
             div.row
               div.span3 
-                p Solution
-              input.span3(name='topology[solution]', class='xlarge', value="#{topology.solution}")
+                p TopolgoyReference
+              p.span3 #{pool.topologyRef.name}
             div.row
               div.span3 
-                p referenceURL
-              input.span6(name='topology[referenceURL]', class='xlarge', value="#{topology.referenceURL}")
+                p Type
+              p.span3 #{pool.type}
+            div.row
+              div.span3 
+                p PoolMethod
+              input.span6(name='pool[poolMethod]', class='xlarge', value="#{pool.poolMethod}")
+            
+            div.row
+              div.span3 
+                p PoolMinAvailable
+              input.span6(name='pool[poolMinAvailable]', class='xlarge', value="#{pool.poolMinAvailable}")
+            
+            div.row
+              div.span3 
+                p PoolMaxTotal
+              input.span6(name='pool[poolMaxTotal]', class='xlarge', value="#{pool.poolMaxTotal}")
+              
             div.row
               div.span3 
                 p Description
-              input.span6(name='topology[description]', class='xlarge', value="#{topology.description}")
+              input.span6(name='pool[description]', class='xlarge', value="#{pool.description}")
         div.actions
           input.offset3(type='submit', value='Save', class='btn primary')
           button.offset1(type='reset', class='btn') Cancel

@@ -36,7 +36,7 @@ var path = require('path');
 var app = express();
 http.globalAgent.maxSockets = 100;
 
-var pool = require('./models/pool');
+//var pool = require('./models/poolmodel');
 //setup properties file
 var fs = require('fs');
 var nconf = require('nconf');
@@ -60,6 +60,12 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+var pooler = require('child_process').fork('basicpooler.js');//generate requests for adding instances for all noapp pools 
+var monitor = require('child_process').fork('poolmonitor.js');//monitor pools and fork instance creators for pools
+
+
+
+
 app.get('/', routes.index);
 
 
@@ -71,6 +77,14 @@ app.post('/topology/topologies', topology.addViewExecute);
 app.get('/topology/topologies/:id/edit', topology.editViewSetup);
 app.put('/topology/topologies/:id', topology.editViewExecute);
 app.del('/topology/topologies/:id', topology.deleteView);
+
+
+app.get('/topology/pools', topologyPool.findAllView);
+app.get('/topology/pools/new', topologyPool.addViewSetup);
+app.post('/topology/pools', topologyPool.addViewExecute);
+app.get('/topology/pools/:id/edit', topologyPool.editViewSetup);
+app.put('/topology/pools/:id', topologyPool.editViewExecute);
+//app.get('/topology/pools/:id/instances', topologyPool.getInstanceView);
 
 //setup routes for the topologies API
 app.get('/api/v1/topology/topologies', topology.findAll);
@@ -87,3 +101,5 @@ app.del('/api/v1/topology/pools/:id', topologyPool.delete);
 http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
+
+

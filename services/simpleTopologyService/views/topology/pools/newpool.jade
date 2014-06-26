@@ -14,34 +14,51 @@
 
 extends ../../layout
 block content
-  h1 Register a new topology 
-  form.form-horizontal(method='post', action='/topology/topologies')
+  h1 Create a new pool 
+  form.form-horizontal(method='post', action='/topology/pools')
     fieldset
-      legend Register a topology
+      legend Create a pool for topology
       div.clearfix
         div.input 
           div.row 
             div.span3
               p name 
             div
-              input.span6(name='topology[name]')
-          div.row
-            div.span3
-              p solution
-            div
-              input.span6(name='topology[solution]')
-          div.row
-            div.span3
-              p referenceURL
-            div
-              input.span6(name='topology[referenceURL]')
+              input.span6(name='pool[name]')
           div.row
             div.span3
               p description
             div
-              input.span6(name='topology[description]')
+              input.span6(name='pool[description]')               
+          div.row
+            div.span3
+              p Topology
+            div
+              select(name='pool[topologyRef]')
+                each topology in topdocs
+                  option(value='#{topology.id}') #{topology.name}
+                
+              
+          div.row
+            div.span3
+              p Type
+            div
+              select
+                option(value="app") app
+                option(value="noapp") noapp
+                
+          div.row
+            div.span3
+              p poolMinAvailable
+            div
+              input.span6(name='pool[poolMinAvailable]')
+          div.row
+            div.span3
+              p poolMaxTotal
+            div
+              input.span6(name='pool[poolMaxTotal]')
 
-        div.actions       
+        div.actions 
           div.row
             input.offset3(type='submit', value='Save', class='btn primary')
             button.offset1(type='reset', class='btn') Cancel

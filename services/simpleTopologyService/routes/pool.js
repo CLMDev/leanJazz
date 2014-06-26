@@ -14,7 +14,70 @@
 *   limitations under the License.
 */
 
-var topologyPoolModel = require('../models/pool');
+var topologyPoolModel = require('../models/poolmodel');
+var Topology = require('../models/topologymodel');
+
+exports.findAllView = function(req, res) {
+  topologyPoolModel.find({},function(err, docs) {
+    if (!docs) {
+      console.log('no pools found');
+      docs = [];
+    }
+    res.render('topology/pools/poolindex', {
+      title: 'Available Pools',
+      docs: docs
+    });
+  }).populate('topologyRef', 'name');
+};
+
+exports.addViewSetup = function(req, res) {
+  Topology.find({},function(err, topdocs) {
+    if (!topdocs) {
+      console.log('no topology found');
+      topdocs = [];
+    }
+    
+    res.render('topology/pools/newpool.jade', {
+                title: 'Create new pool', 
+                topdocs: topdocs
+    });
+  });
+};
+
+var validator = require('validator');
+var validatePool = function(doc, next) {
+	console.log("validating Pool document");
+	console.log(doc);
+    if (validator.isNull(doc.name)) {
+		next(new Error('Name of the pool can not be null'));
+    }
+    else {
+		console.log('validated json');
+		next(null);
+	}
+};
+
+
+exports.addViewExecute = function(req, res) {
+	validatePool(req.body.pool, function(err) {
+		if (! err) {
+			var pool = new topologyPoolModel(req.body.pool);
+			pool.save(function(err) {
+				if (! err) {
+					res.redirect('/topology/pools');
+				}else {
+					console.log('error saving pool');
+					console.log(err);
+					res.redirect('/topology/pools/new');
+				}
+			});
+		}else {
+			console.log('error in addViewExecute validating pool');
+			console.log(err);
+			res.redirect('/topology/pools');
+		}
+	});
+};
 
 exports.findAll = function(req, res) {
 	topologyPoolModel.find({},function(err, docs) {
@@ -28,6 +91,44 @@ exports.findAll = function(req, res) {
 		}
 	});
 };
+
+exports.editViewSetup = function(req, res) {
+  topologyPoolModel.findById(req.params.id, function(err, doc) {
+    res.render('topology/pools/editpool', {
+      title: 'Edit Pool',
+      pool: doc
+    });
+  }).populate('topologyRef', 'name');;
+};
+exports.editViewExecute = function(req, res) {
+   topologyPoolModel.findById(req.params.id, function(err, doc) {
+    
+    doc.name = req.body.pool.name;
+    doc.description = req.body.pool.description;
+    doc.poolMethod = req.body.pool.poolMethod;
+    doc.poolMinAvailable = req.body.pool.poolMinAvailable;
+    doc.poolMaxTotal = req.body.pool.poolMaxTotal;
+    console.log('attempting to update document');
+    console.log(doc);
+    validatePool(doc, function(err) {
+		if (!err) {
+			doc.save(function(err) {
+				if (!err) {
+					res.redirect('/topology/pools');
+				}
+				else {
+					console.log('error saving to database');
+					res.redirect('/topology/pools');
+				}
+			});
+		}else {
+			console.log('invalid data:' + err);
+			res.redirect('/topology/pools');
+		}
+    });
+  });
+};
+
 exports.create = function(req, res) {
 	try {
 		console.log('creating new topology pool');

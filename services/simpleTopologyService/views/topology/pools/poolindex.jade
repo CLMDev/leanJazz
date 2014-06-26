@@ -16,29 +16,29 @@ extends ../../layout
 
 block content
   h1= title
-  p The following is a list of the available topologies
+  p The following is a list of the available pools
   - if(docs.length)
     table.table.table-striped
       thead
         tr
-          th Topology Name
-          th Solution 
-          th Reference URL
+          th Pool Name
+          th Topology
+          th Type
           th Description
       tbody
-          each topology in docs
+          each pool in docs
             tr
-              td #{topology.name}
-              td #{topology.solution}
-              td #{topology.referenceURL}
-              td #{topology.description}
+              td #{pool.name}
+              td #{pool.topologyRef.name}
+              td #{pool.type}
+              td #{pool.description}
               td
-                a.btn(href="/topology/topologies/#{topology.id}/edit") Edit
+                a.btn(href="/topology/pools/#{pool._id}/edit") Edit
               td
-                form(method='post', action='/topology/topologies/' + topology.id)
+                form(method='post', action='/topology/pools/' + pool._id)
                   input(name='_method', value='DELETE', type='hidden')
                   button.btn(type='submit') Delete
   - else
-    p No available topologies
+    p No available pools
   p
-    a(href='/topology/topologies/new', class='btn primary') Create a new Topology
+    a(href='/topology/pools/new', class='btn primary') Create a new Pool
