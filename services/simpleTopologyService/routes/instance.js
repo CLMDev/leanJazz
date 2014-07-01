@@ -78,18 +78,3 @@ exports.deleteView = function(req, res) {
   });
 };
 
-exports.find = function(req, res) {
-	console.log('instance.find: finding ' + req.params.id);
-	topologyPool.findById(req.params.id, function(err, doc) {
-		console.log('printing doc');
-		console.log(doc);
-		console.log('printing error');
-		console.log(err);
-		if (! doc) {
-			res.send(404);
-		}else {
-			res.send(doc);
-		}
-	});
-};
-
