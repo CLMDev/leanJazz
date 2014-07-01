@@ -30,6 +30,8 @@ mongoose.connect('mongodb://localhost/leanJazz',
 var routes = require('./routes');
 var topology = require('./routes/topology');
 var topologyPool = require('./routes/pool');
+var topologyInstance = require('./routes/instance');
+
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
@@ -84,7 +86,8 @@ app.get('/topology/pools/new', topologyPool.addViewSetup);
 app.post('/topology/pools', topologyPool.addViewExecute);
 app.get('/topology/pools/:id/edit', topologyPool.editViewSetup);
 app.put('/topology/pools/:id', topologyPool.editViewExecute);
-app.get('/topology/pools/:id/instances', topologyPool.getInstanceView);
+app.get('/topology/pools/:id/instances', topologyInstance.findAllView);
+app.del('/topology/pools/:pid/instances/:id', topologyInstance.deleteView);
 
 //setup routes for the topologies API
 app.get('/api/v1/topology/topologies', topology.findAll);
@@ -95,6 +98,8 @@ app.put('/api/v1/topology/topologies/:id', topology.update);
 
 app.get('/api/v1/topology/pools', topologyPool.findAll);
 app.get('/api/v1/topology/pools/:id', topologyPool.find);
+app.get('/api/v1/topology/pools/:pid/instances', topologyInstance.findAll);
+app.get('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.find);
 app.post('/api/v1/topology/pools', topologyPool.create);
 app.del('/api/v1/topology/pools/:id', topologyPool.delete);
 

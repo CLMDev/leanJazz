@@ -130,20 +130,7 @@ exports.editViewExecute = function(req, res) {
   });
 };
 
-exports.getInstanceView = function(req, res) {
-   console.log('req.params.id:'+req.params.id);
-   minstance.find({poolRef:req.params.id}, function(err, instances) {
-   if (err) {
-     console.log ( 'error get instances associated with pool');
-     console.err(err);
-     return;
-   }   
-   res.render('topology/instances/instanceindex', {
-      title: 'Associated Instances',
-      docs: instances
-    });
-  });
-};
+
 
 exports.create = function(req, res) {
 	try {
