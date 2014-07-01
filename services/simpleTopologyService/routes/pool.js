@@ -138,10 +138,9 @@ exports.getInstanceView = function(req, res) {
      console.err(err);
      return;
    }   
-   instances.forEach( function (instance){
-     console.log ( JSON.stringify(instance));
-     //res.send( JSON.stringify(instance))
-    
+   res.render('topology/instances/instanceindex', {
+      title: 'Associated Instances',
+      docs: instances
     });
   });
 };
