@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-FROM leanjazz/simpletopologyservice
+FROM rjminsha/simpletopologyservice
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install \
     openssh-server \
