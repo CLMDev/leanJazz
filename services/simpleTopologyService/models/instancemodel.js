@@ -34,6 +34,14 @@ var TopologyInstanceSchema = new Schema({
 	topologyRef: {type: String, ref: 'Topology'},
 	poolRef: {type: String, ref: 'mTopologyPool'},
 	buildid: String,
+        iwdStatus: String,
+        iwdURI: String,
+        ucdStatus: String,
+        ucdURI: String,
+        creationDate: String,
+        checkoutDate: String,
+        checkoutUser: String,
+        checkoutComment: String,
 	checkedout: {type: Boolean, default: false },
 	deleted: {type: Boolean, default: false }
 	},{strict: 'throw'}

@@ -16,6 +16,7 @@
 
 var topologyPoolModel = require('../models/poolmodel');
 var Topology = require('../models/topologymodel');
+var minstance= require('../models/instancemodel');
 
 exports.findAllView = function(req, res) {
   topologyPoolModel.find({},function(err, docs) {
@@ -129,6 +130,69 @@ exports.editViewExecute = function(req, res) {
   });
 };
 
+exports.getInstanceView = function(req, res) {
+   console.log('req.params.id:'+req.params.id);
+   minstance.find({poolRef:req.params.id}, function(err, instances) {
+   if (err) {
+     console.log ( 'error get instances associated with pool');
+     console.err(err);
+     return;
+   }   
+   instances.forEach( function (instance){
+     console.log ( JSON.stringify(instance));
+     //res.send( JSON.stringify(instance))
+    
+    });
+  });
+};
+
+exports.create = function(req, res) {
+	try {
+		console.log('creating new topology pool');
+		console.log(req.body);
+		topologyPoolModel.create(req.body, function(err, pool){ 
+			if (! err){
+				//return the created topology pool information
+				console.log('created new topology pool');
+				console.log(pool);
+				res.json(pool);
+			}else{
+				//return an error 
+				console.log('failed to create pool using:' + res.json);
+				console.log(pool);
+				console.log(err);
+				res.send(err, 400);
+			}
+		}); 
+	}catch (err) {
+		console.log('could not create new topology pool, most likely due to invalid data');
+		console.log(err);
+		res.send(err, 400);
+	}
+};
+exports.find = function(req, res) {
+	console.log('finding ' + req.params.id);
+	topologyPoolModel.findById(req.params.id, function(err, doc) {
+		if (! doc) {
+			res.send(404);
+		}else {
+			res.send(doc);
+		}
+	});
+};
+exports.delete = function(req, res) {
+	topologyPoolModel.findById(req.params.id, function(err, doc) {
+		if (!doc) {
+			res.send(404);
+		}else {
+			console.log('delete removing');
+			doc.remove(function() {
+			res.send(200);
+		});
+		console.log('removed');
+		}
+	});
+};
 exports.create = function(req, res) {
 	try {
 		console.log('creating new topology pool');

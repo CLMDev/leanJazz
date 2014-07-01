@@ -84,7 +84,7 @@ app.get('/topology/pools/new', topologyPool.addViewSetup);
 app.post('/topology/pools', topologyPool.addViewExecute);
 app.get('/topology/pools/:id/edit', topologyPool.editViewSetup);
 app.put('/topology/pools/:id', topologyPool.editViewExecute);
-//app.get('/topology/pools/:id/instances', topologyPool.getInstanceView);
+app.get('/topology/pools/:id/instances', topologyPool.getInstanceView);
 
 //setup routes for the topologies API
 app.get('/api/v1/topology/topologies', topology.findAll);
