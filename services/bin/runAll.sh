@@ -2,7 +2,7 @@
 . env.sh
 
 #run simple topology service with embeded mongodb
-$docker_cmd run -P -d --name=simpletopologyservice --env DB_PORT=27017 --env DB_HOSTNAME=localhost leanjazz/simpletopologyservice 
+$docker_cmd run -P -d --name=simpletopologyservice --env DB_PORT=27017 --env DB_HOSTNAME=localhost rjminsha/simpletopologyservice 
 
 #find the information about the running containers 
 db_port=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "27017/tcp") 0).HostPort}}' simpletopologyservice)

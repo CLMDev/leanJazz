@@ -9,7 +9,7 @@ echo "building base image"
 echo "###################"
 pushd . 
 cd ../base
-$docker_cmd build -t leanjazz/base .
+$docker_cmd build -t rjminsha/base .
 popd 
 
 echo "###################"
@@ -18,7 +18,7 @@ echo "###################"
 # build my simpleTopologyService docker image 
 pushd . 
 cd ../simpleTopologyService
-$docker_cmd build -t leanjazz/simpletopologyservice .
+$docker_cmd build -t rjminsha/simpletopologyservice .
 popd .
 
 echo "###################"
@@ -27,5 +27,5 @@ echo "###################"
 # build my simpleTopologyService docker image 
 pushd . 
 cd ../simpleTopologyServiceDev
-$docker_cmd build -t leanjazz/simpletopologyservicedev .
+$docker_cmd build -t rjminsha/simpletopologyservicedev .
 popd .
