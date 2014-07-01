@@ -50,7 +50,7 @@ exports.findAll = function(req, res) {
 
 exports.find = function(req, res) {
    console.log('req.params.id:'+req.params.id);
-   minstance.findbyId(req.params.id, function(err, instance) {
+   minstance.findById(req.params.id, function(err, instance) {
    if (err) {
      console.log ( 'error get instance');
      console.err(err);
