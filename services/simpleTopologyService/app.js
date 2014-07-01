@@ -98,7 +98,7 @@ app.put('/api/v1/topology/topologies/:id', topology.update);
 
 app.get('/api/v1/topology/pools', topologyPool.findAll);
 app.get('/api/v1/topology/pools/:id', topologyPool.find);
-app.get('/api/v1/topology/pools/:pid/instances', topologyInstance.findAll);
+app.get('/api/v1/topology/pools/:id/instances', topologyInstance.findAll);
 app.get('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.find);
 app.post('/api/v1/topology/pools', topologyPool.create);
 app.del('/api/v1/topology/pools/:id', topologyPool.delete);
