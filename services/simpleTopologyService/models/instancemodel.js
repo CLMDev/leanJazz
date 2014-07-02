@@ -43,7 +43,6 @@ var TopologyInstanceSchema = new Schema({
         checkoutUser: String,
         checkoutComment: String,
 	checkedout: {type: Boolean, default: false },
-	deleted: {type: Boolean, default: false }
 	},{strict: 'throw'}
 );
 

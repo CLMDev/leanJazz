@@ -17,9 +17,10 @@ extends ../../layout
 block content
   h1= title
   script(type='text/javascript').
-    window.onload = function() {
-      alert( "welcome to instance page!" );
+    var onDelete=function(){
+      alert( "Do you really want to delete this instance?" );
     }
+    
   p The following is a list of the instances
   - if(docs.length)
     table.table.table-striped
@@ -39,11 +40,14 @@ block content
               td #{instance.checkoutUser}
               td #{instance.checkoutComment}
               td
-                a.btn(href="/topology/pools/#{instance.poolRef}/#{instance.id}/checkout") CheckOut
+                if instance.checkedout
+                  form(method='post', action='/topology/pools/' + instance.poolRef+'/instances/' instance.id)
+                  input(name='_method', value='CHECKOUT', type='hidden')
+                  button.btn(type='submit') Checkout
               td
                 form(method='post', action='/topology/pools/' + instance.poolRef+'/instances/' instance.id)
                   input(name='_method', value='DELETE', type='hidden')
-                  button.btn(type='submit') Delete
+                  button.btn(type='submit', onClick=onDelete) Delete
   - else
     p No available instances
   
