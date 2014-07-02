@@ -16,6 +16,10 @@ extends ../../layout
 
 block content
   h1= title
+  script(type='text/javascript').
+    window.onload = function() {
+      alert( "welcome to instance page!" );
+    }
   p The following is a list of the instances
   - if(docs.length)
     table.table.table-striped
