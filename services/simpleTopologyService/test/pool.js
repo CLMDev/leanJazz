@@ -27,7 +27,7 @@ function tryParseJSON (jsonString){
         return false;
     }
 }
-var Pool = require('../models/pool');  
+var Pool = require('../models/poolmodel');  
 
 
 describe('Topology Pool should initialize initialization', function() {
