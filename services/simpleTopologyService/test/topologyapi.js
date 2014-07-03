@@ -16,7 +16,6 @@
 var http = require('http');
 http.globalAgent.maxSockets = 100;
 var assert = require('assert');
-var jq = require('jQuery');
 var fs = require('fs');
 var nconf = require('nconf');
 request = require('request-json');

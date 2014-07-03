@@ -22,9 +22,10 @@ var request = require('request-json');
 var today = Date.now();
 
 nconf.argv().env().file({ file: './config.json'});
-
 var topologyPort = nconf.get('WEB_PORT');
 var topologyHostname = nconf.get('WEB_HOSTNAME');
+console.log('topologyPort:' + topologyPort);
+console.log('topologyHostname:' + topologyHostname);
 var client = request.newClient("http://" + topologyHostname + ":" + topologyPort);
 
 describe('SimpleTopologyService Pool API v1', function() {
@@ -39,7 +40,7 @@ describe('SimpleTopologyService Pool API v1', function() {
             if (! err) {
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
                 assert.equal(
-                res.headers['content-type'],
+                    res.headers['content-type'],
                     'application/json; charset=utf-8',
                     'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
                 assert.equal(body.poolMethod, 'basic', 'Expected:basic,Actual:' + body.poolingMethod);
