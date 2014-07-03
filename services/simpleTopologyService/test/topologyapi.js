@@ -34,6 +34,40 @@ var data = {
   name: 'test-topology-' + today,
   description: 'testing topology creation update and deletion on ' + today,
   referenceURL: 'http://jazz.net/testtopology',
+  topologyDocument: '{
+  "name": "liupoolTesting3",
+  "description": "test populating pool for simple topology service",
+  "application": "CLM-E1-distributed-linux",
+  "blueprint": "IBM CLM E1 Distributed Linux CLM Only",
+  "baseResource": "/Testing",
+  "nodeProperties": {
+    "/IBM CLM E1 Distributed Linux Base topology/db2_awse": {
+      "cloud_group": "shared cloud group 1"
+    },
+    "/IBM CLM E1 Distributed Linux Base topology/ibm_http_servers": {
+      "cloud_group": "shared cloud group 1"
+    },
+    "/IBM CLM E1 Distributed Linux Base topology/standalone_server": {
+      "cloud_group": "shared cloud group 1"
+    },
+    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0": {
+      "cloud_group": "shared cloud group 1"
+    },
+    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1": {
+      "cloud_group": "shared cloud group 1"
+    },
+    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1_2": {
+      "cloud_group": "shared cloud group 1"
+    },
+    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1_2_3": {
+      "cloud_group": "shared cloud group 1"
+    },
+    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1_2_3_4": {
+      "cloud_group": "shared cloud group 1"
+    }
+  }
+}
+'
   providers: [{type: "UCD", url:"customUCD.rtp.raleigh.ibm.com", usernameProperty: "DEFAULT_PROVIDER_USERNAME",passwordProperty:"DEFAULT_PROVIDER_PASSWORD"}], 
 //  deployParams: '{"blueprint": "tneal Rational Base OS","baseResource": "/Testing","nodeProperties": {"/tneal Rational Base OS-RHEL/os_part": {"cloud_group": "shared cloud group 1","password": "aut0mat10n","password_0": "aut0mat10n"}}}',
   deployParameters: '',
@@ -47,7 +81,7 @@ var invaliddataset = [{
   referenceURL: 'not a URL',
   solution: 'CLM'
 }];
-describe('SimpleTopologyService Webui Tests', function() {
+describe('SimpleTopologyService::Topology Webui Tests', function() {
   describe('GET /topology/topologies', function() {
     it('should return a 200 response code', function(done) {
       http.get({ hostname: topologyHostname, path: '/topology/topologies', port: topologyPort }, function(res) {
@@ -69,7 +103,7 @@ describe('SimpleTopologyService Webui Tests', function() {
   });
 });
 
-describe('SimpleTopologyService Topology API v1', function() {
+describe('SimpleTopologyService::Topology API v1', function() {
   //create a record first
   before(function(done) {
                client.post('/api/v1/topology/topologies', data, function(err, res, body) {
