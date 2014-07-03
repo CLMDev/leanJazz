@@ -1,0 +1,10 @@
+{
+	"WEB_PORT" : 3001,
+	"WEB_HOSTNAME" : "localhost",
+	"DB_HOSTNAME" : "localhost",
+	"DB_PORT" : "27017",
+	"REMOVE-TEST-DATA" : "true", 
+	"DEFAULT_PROVIDER_URL": "udeploy04.rtp.raleigh.ibm.com", 
+	"DEFAULT_PROVIDER_USERNAME" : "rjminsha", 
+	"DEFAULT_PROVIDER_PASSWORD" : "password"
+}
