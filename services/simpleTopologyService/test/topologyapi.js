@@ -34,52 +34,18 @@ var data = {
   name: 'test-topology-' + today,
   description: 'testing topology creation update and deletion on ' + today,
   referenceURL: 'http://jazz.net/testtopology',
-  topologyDocument: '{
-  "name": "liupoolTesting3",
-  "description": "test populating pool for simple topology service",
-  "application": "CLM-E1-distributed-linux",
-  "blueprint": "IBM CLM E1 Distributed Linux CLM Only",
-  "baseResource": "/Testing",
-  "nodeProperties": {
-    "/IBM CLM E1 Distributed Linux Base topology/db2_awse": {
-      "cloud_group": "shared cloud group 1"
-    },
-    "/IBM CLM E1 Distributed Linux Base topology/ibm_http_servers": {
-      "cloud_group": "shared cloud group 1"
-    },
-    "/IBM CLM E1 Distributed Linux Base topology/standalone_server": {
-      "cloud_group": "shared cloud group 1"
-    },
-    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0": {
-      "cloud_group": "shared cloud group 1"
-    },
-    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1": {
-      "cloud_group": "shared cloud group 1"
-    },
-    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1_2": {
-      "cloud_group": "shared cloud group 1"
-    },
-    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1_2_3": {
-      "cloud_group": "shared cloud group 1"
-    },
-    "/IBM CLM E1 Distributed Linux Base topology/standalone_server_0_1_2_3_4": {
-      "cloud_group": "shared cloud group 1"
-    }
-  }
-}
-'
+  topologyDocument: '',
   providers: [{type: "UCD", url:"customUCD.rtp.raleigh.ibm.com", usernameProperty: "DEFAULT_PROVIDER_USERNAME",passwordProperty:"DEFAULT_PROVIDER_PASSWORD"}], 
 //  deployParams: '{"blueprint": "tneal Rational Base OS","baseResource": "/Testing","nodeProperties": {"/tneal Rational Base OS-RHEL/os_part": {"cloud_group": "shared cloud group 1","password": "aut0mat10n","password_0": "aut0mat10n"}}}',
   deployParameters: '',
   validationParam: [],
-  solution: 'CLM'
 };
+var data_id;//id in mongo for the data above
 var invaliddataset = [{
   name: 'test-invalid-topology-invalidURL' + today,
   description: 'testing invalid topology creation update and deletion on ' + today,
   providers: ['{"typexxx": "UCD", "password-property":"ucd04-username",username-password:"ucd04-password"}'], 
   referenceURL: 'not a URL',
-  solution: 'CLM'
 }];
 describe('SimpleTopologyService::Topology Webui Tests', function() {
   describe('GET /topology/topologies', function() {
@@ -107,6 +73,8 @@ describe('SimpleTopologyService::Topology API v1', function() {
   //create a record first
   before(function(done) {
                client.post('/api/v1/topology/topologies', data, function(err, res, body) {
+                        data_id=body._id;
+                        console.log('data_id'+data_id);
                         done();
                 });
                console.log("SimpleTopologyService Topology API before created test data");
@@ -146,9 +114,9 @@ describe('SimpleTopologyService::Topology API v1', function() {
     var newdata = {
       name: 'test-topology-new' + today,
       description: 'testing a new topology creation update and deletion on ' + today,
-      referenceURL: 'http://jazz.net/testtopologynew',
-      solution: 'CLM'
+      referenceURL: 'http://jazz.net/testtopologynew'
     };
+    var newdata_id;
     it('should return at 200 response code on success and return json', function(done) {
       client.post('/api/v1/topology/topologies', newdata, function(err, res, body) {
         assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
@@ -156,7 +124,10 @@ describe('SimpleTopologyService::Topology API v1', function() {
           res.headers['content-type'],
             'application/json; charset=utf-8',
             'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
-        console.log("created " + newdata.name);
+        console.log("::::::response: " + body.name);
+        newdata_id=body._id;
+        console.log("::::::response: " +  newdata_id);
+
         done();
       });
     });
@@ -187,7 +158,7 @@ TBD: not sure why this is not working
         console.log("not removing " + newdata.name);
         done();
       }else {
-        client.del('/api/v1/topology/topologies/' + newdata.name, function(err, res, body) {
+        client.del('/api/v1/topology/topologies/' + newdata_id, function(err, res, body) {
           assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
           console.log("removed " + newdata.name);
           done();
@@ -199,7 +170,7 @@ TBD: not sure why this is not working
       if (remove == 'false') {
           done();
       }else {
-        client.get('/api/v1/topology/topologies/' + newdata.name, function(err, res, body) {
+        client.get('/api/v1/topology/topologies/' + newdata_id, function(err, res, body) {
           assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
           done();
         });
@@ -222,7 +193,7 @@ TBD: not sure why this is not working
     var response;
     var body;
     before(function(done) {
-      client.get('/api/v1/topology/topologies/' + data.name, function(err, res, resbody) {
+      client.get('/api/v1/topology/topologies/' + data_id, function(err, res, resbody) {
         body = resbody;
         done();
       });
@@ -249,7 +220,7 @@ TBD: not sure why this is not working
   describe('PUT /api/v1/topology/topologies:id', function() {
     it('should return at 200 response code if a valid referenceURL is passed', function(done) {
       data.referenceURL = 'http://www.google.com';
-      client.put('/api/v1/topology/topologies/' + data.name, data, function(err, res, body) {
+      client.put('/api/v1/topology/topologies/' + data_id, data, function(err, res, body) {
         assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
         assert.equal(body.referenceURL, 'http://www.google.com', 'Expected reference URL to be changedto www.google.com was Actual:' + body.referenceURL);
         done();
@@ -257,7 +228,7 @@ TBD: not sure why this is not working
     });
     it('should return at 400 response code if invalid data is passed', function(done) {
       var putdata = function(data){
-        client.put('/api/v1/topology/topologies/' + data.name, putdata, function(err, res, body) {
+        client.put('/api/v1/topology/topologies/' + data_id, data, function(err, res, body) {
           assert.equal(res.statusCode, 400, 'Expected: 400 for invalid data. Actual: ' + res.statusCode + ' body ' + body);
         });
       };
@@ -272,7 +243,8 @@ TBD: not sure why this is not working
         done();
       });
     });
-    it('can update pools with new pool URL', function(done) {
+    //no longer designed this way, to be deleted
+    /*it('can update pools with new pool URL', function(done) {
       var updatedPools = ['/topology/pools/fakeid'];
       client.put('/api/v1/topology/topologies/' + data.name, {pools: ['/topology/pools/fakeid']}, function(err, res, body) {
         assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
@@ -281,6 +253,6 @@ TBD: not sure why this is not working
         done();
       });
     });
-  });
+  });*/
 });
 });
