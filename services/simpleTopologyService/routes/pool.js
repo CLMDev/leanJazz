@@ -51,8 +51,7 @@ var validatePool = function(doc, next) {
 	console.log(doc);
     if (validator.isNull(doc.name)) {
 		next(new Error('Name of the pool can not be null'));
-    }
-    else {
+    } else {
 		console.log('validated json');
 		next(null);
 	}
@@ -136,7 +135,12 @@ exports.create = function(req, res) {
 	try {
 		console.log('creating new topology pool');
 		console.log(req.body);
-		topologyPoolModel.create(req.body, function(err, pool){ 
+		var inputOBJ=JSON.parse(req.body);
+		console.log('input reference id:'+inputOBJ.topologyRef);
+		Topology.find({_id:inputOBJ.topologyRef}, function(err, docs) {
+		if (docs) {
+
+		  topologyPoolModel.create(req.body, function(err, pool){ 
 			if (! err){
 				//return the created topology pool information
 				console.log('created new topology pool');
@@ -149,7 +153,16 @@ exports.create = function(req, res) {
 				console.log(err);
 				res.send(err, 400);
 			}
-		}); 
+		  }); //topologyPoolModel
+		}//if(docs)
+		else{
+				//return an error 
+				console.log('failed to create pool using:' + res.json);
+				console.log('topologyRef can not be found!');
+				
+				res.send(err, 400);
+		}
+		});//Topology.find
 	}catch (err) {
 		console.log('could not create new topology pool, most likely due to invalid data');
 		console.log(err);

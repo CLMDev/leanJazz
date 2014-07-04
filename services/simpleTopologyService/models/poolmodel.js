@@ -32,21 +32,7 @@ mongoose.connect('mongodb://localhost/leanJazz',
     }
 });
 
-/* 
-	if node is single threaded then I should not need to worry about if the pool is stable or not 
-	because it will only handle one thread at a time.
-
-	that is true if I were to block on deployments and such.  However, that would not be good. 
-
-var EventEmitter = require("events").EventEmitter;
-var ee = new EventEmitter();
-ee.on("poolStableEvent", function () {
-    console.log("poolStable event");
-});
-ee.on("poolProcessingEvent", function () {
-    console.log("poolProcessing event");
-});
-*/
+var Topology = require ('./topologymodel');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -57,7 +43,7 @@ var TopologyPoolSchema = new Schema({
 	type: {type: String, default: 'noapp'},
 	topologyRef: {type: String, ref: 'Topology'},
 	poolMethod: {type: String, default: 'basic'},
-	poolMinAvailable: {type: Number, default: 5},
+	poolMinAvailable: {type: Number, default: 2},
 	poolMaxTotal: {type: Number, default: 10},
 	available: {type: Number, default: 0},
 	checkedout: {type: Number, default: 0},
@@ -74,7 +60,7 @@ TopologyPoolSchema.virtual('o.poolingMethod').get(function () {
 
 TopologyPoolSchema.path('name').set(function(v) {
 	console.log('setting id to name');
-	//this._id = v;
+
 	if (this.new) {
 		console.log('this is a new pool initiatizing');
 	}
@@ -101,9 +87,6 @@ var validatePoolMaxTotal = function(val) {
 	return (val >= this.poolMinAvailable);
 };
 
-
-
-//TopologyPoolSchema.path('topologyRef').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
 TopologyPoolSchema.path('type').validate(validateType, 'validation of `{PATH}` failed with value `{VALUE}` failed as the value needs to be either app or noapp');
 TopologyPoolSchema.path('poolMinAvailable').validate(validatePoolMinAvailable, 'validation of `{PATH}` failed with value `{VALUE}` invalid value set for pool min');
 TopologyPoolSchema.path('poolMaxTotal').validate(validatePoolMaxTotal, 'validation of `{PATH}` failed with value `{VALUE}` invalud valiue set for pool max');
@@ -268,11 +251,6 @@ AggPoolingMethod.prototype.fGetType = function(){
 	return this.aboutme;
 };
 
-/*
-var poolingMethods = {
-	"basic" : BasicPoolingMethod,
-};
-*/
 
 /*
 //constructor 
