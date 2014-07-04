@@ -137,8 +137,8 @@ exports.create = function(req, res) {
 		console.log(req.body);
 		var inputOBJ=JSON.parse(req.body);
 		console.log('input reference id:'+inputOBJ.topologyRef);
-		Topology.find({_id:inputOBJ.topologyRef}, function(err, docs) {
-		if (docs) {
+		Topology.count({_id:inputOBJ.topologyRef}, function(err, count) {
+		if (count==1) {
 
 		  topologyPoolModel.create(req.body, function(err, pool){ 
 			if (! err){
