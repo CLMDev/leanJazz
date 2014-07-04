@@ -27,13 +27,16 @@ var topologyPort = nconf.get('PORT');
 var topologyHostname = nconf.get('HOSTNAME');
 var client = request.newClient('http://localhost:' + topologyPort);
 
-describe('SimpleTopologyService Pool API v1', function() {
+describe('SimpleTopologyService::Pool API v1', function() {
     var newdata = {
         name: 'test-pool-new' + today,
         description: 'pool of test topology instances of the latest build',
         topologyRef: topologyHostname + ':' + topologyPort + '/topology/topologies/fakerecord',
-        type: 'latest'
+        poolMinAvailable: 0,
+        poolMaxTotal: 2,
+        type: 'noapp'
     };
+    var newdata_id;
     before(function(done) {
         client.post('/api/v1/topology/pools', newdata, function(err, res, body) {
             if (! err) {

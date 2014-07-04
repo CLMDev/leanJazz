@@ -137,12 +137,9 @@ describe('SimpleTopologyService::Topology API v1', function() {
         done();
       });
     });
-/*
-TBD: not sure why this is not working 
     it('should be able to locate new topology record I just created and get 200 status code with json', function(done) {
 
-//      client.get('/api/v1/topology/topologies/test-topology-new1397761053033', function(err, res, body) {
-      client.get('/api/v1/topology/topologies/' + newdata.name, function(err, res, body) {
+      client.get('/api/v1/topology/topologies/' + newdata_id, function(err, res, body) {
         assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
         assert.equal(
           res.headers['content-type'],
@@ -151,7 +148,6 @@ TBD: not sure why this is not working
         done();
       });
     });
-*/    
     it('should be able to delete new topology record and recieve 200 response code in response', function(done) {
       var remove = nconf.get('REMOVE-TEST-DATA');
       if (remove == 'false') {
