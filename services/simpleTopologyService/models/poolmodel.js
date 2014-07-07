@@ -190,10 +190,10 @@ TopologyPoolSchema.statics.create = function(json, callback){
 	console.log(">>>create");
 	console.log(json);
 	var obj = new mTopologyPool(json);
-	console.log("saving topology");
+	console.log("saving pool");
 	console.log(obj);
 	obj.save(function(err, newpool){
-		console.log("saved topology, err:" + err);	
+		console.log("saved pool, err:" + err);	
 		callback(err,newpool);
 	});
 	console.log("<<<create");

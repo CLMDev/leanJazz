@@ -4,5 +4,6 @@
 	"REMOVE-TEST-DATA" : "true", 
 	"DEFAULT_PROVIDER_URL": "yourudeploy.rtp.raleigh.ibm.com", 
 	"DEFAULT_PROVIDER_USERNAME" : "yourusername", 
-	"DEFAULT_PROVIDER_PASSWORD" : "yourpassword"
+	"DEFAULT_PROVIDER_PASSWORD" : "yourpassword",
+	"NOAPP_POOL_ID": "53abcc9c47bf9b9e0b50687f"
 }

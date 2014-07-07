@@ -97,11 +97,16 @@ app.del('/api/v1/topology/topologies/:id', topology.delete);
 app.put('/api/v1/topology/topologies/:id', topology.update);
 
 app.get('/api/v1/topology/pools', topologyPool.findAll);
+app.post('/api/v1/topology/pools', topologyPool.create);
 app.get('/api/v1/topology/pools/:id', topologyPool.find);
+app.del('/api/v1/topology/pools/:id', topologyPool.delete);
+//app.put('/api/v1/topology/pools/:id', topologyPool.update);
+
 app.get('/api/v1/topology/pools/:id/instances', topologyInstance.findAll);
 app.get('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.find);
-app.post('/api/v1/topology/pools', topologyPool.create);
-app.del('/api/v1/topology/pools/:id', topologyPool.delete);
+//app.del('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.delete);
+//app.put('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.update);
+
 
 http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
