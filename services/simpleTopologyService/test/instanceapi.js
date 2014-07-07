@@ -100,43 +100,43 @@ describe('SimpleTopologyService::Instance API v1', function() {
                 assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
                     'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
                 instance=body[0];
-                console.log('first instance in the pool:' + instance);
                 instance_id=instance._id;
+                var instance_name=instance.name
+                console.log('first instance in the pool:' + instance_id + ' name:'+instance_name);
                 done();
             });
         });
        
-        it('should get a 400 response code if request wtih incorrect pool id', function(done) {
+        it('should get a 404 response code if request wtih incorrect pool id', function(done) {
             client.get('/api/v1/topology/pools/' + incorrect_pool_id+'/instances', function(err, res, body) {
-                assert.equal(res.statusCode, 400, 'Expected: 400 Actual: ' + res.statusCode);
+                assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                 done();
             });
         });
     });
     describe('GET /api/v1/topology/pools/:pid/instances/:id', function() {
         it('should be able get a specific instance and a 200 response code and json', function(done) {
-            client.get('/api/v1/topology/pools/' + pool_id+'/instances'+instance_id, function(err, res, body) {
+            client.get('/api/v1/topology/pools/' + pool_id+'/instances/'+instance_id, function(err, res, body) {
+
+                console.log('pool id:' + pool_id);
+                console.log('instance id:' + instance_id);
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
                 assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
                     'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
                 done();
             });
         });
-        it('should get a 400 response code if requested with a non-existing pool id', function(done) {
+        it('should get a 404 response code if requested with a non-existing pool id', function(done) {
 
-            client.get('/api/v1/topology/pools/' + incorrect_pool_id+'/instances'+instance_id, function(err, res, body) {
-                assert.equal(res.statusCode, 400, 'Expected: 400 Actual: ' + res.statusCode);
-                assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
-                    'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
+            client.get('/api/v1/topology/pools/' + incorrect_pool_id+'/instances/'+instance_id, function(err, res, body) {
+                assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                 done();
             });
         });
-        it('should get a 400 response code if requested with a non-existing instance id', function(done) {
+        it('should get a 404 response code if requested with a non-existing instance id', function(done) {
 
-            client.get('/api/v1/topology/pools/' + pool_id+'/instances'+incorrect_instance_id, function(err, res, body) {
-                assert.equal(res.statusCode, 400, 'Expected: 400 Actual: ' + res.statusCode);
-                assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
-                    'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
+            client.get('/api/v1/topology/pools/' + pool_id+'/instances/'+incorrect_instance_id, function(err, res, body) {
+                assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                 done();
             });
         });
@@ -144,23 +144,23 @@ describe('SimpleTopologyService::Instance API v1', function() {
     
     describe('DEL /api/v1/topology/pools/:pid/instances/:id', function() {
         it('should be able get pooled instances and a 200 response code and json', function(done) {
-            client.del('/api/v1/topology/pools/' + pool_id+'/instances'+instance_id, function(err, res, body) {
+            client.del('/api/v1/topology/pools/' + pool_id+'/instances/'+instance_id, function(err, res, body) {
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
                 assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
                     'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
                 done();
             });
         });
-        it('should be get a 400 response code if request with an incorrect pool_id', function(done) {
-            client.del('/api/v1/topology/pools/' + incorrect_pool_id+'/instances'+instance_id, function(err, res, body) {
-                assert.equal(res.statusCode, 400, 'Expected: 400 Actual: ' + res.statusCode);
+        it('should be get a 404 response code if request with an incorrect pool_id', function(done) {
+            client.del('/api/v1/topology/pools/' + incorrect_pool_id+'/instances/'+instance_id, function(err, res, body) {
+                assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                
                 done();
             });
         });
-        it('should be get a 400 response code if request with an incorrect instance id', function(done) {
-            client.del('/api/v1/topology/pools/' + pool_id+'/instances'+incorrect_instance_id, function(err, res, body) {
-                assert.equal(res.statusCode, 400, 'Expected: 400 Actual: ' + res.statusCode);
+        it('should be get a 404 response code if request with an incorrect instance id', function(done) {
+            client.del('/api/v1/topology/pools/' + pool_id+'/instances/'+incorrect_instance_id, function(err, res, body) {
+                assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                 
                 done();
             });

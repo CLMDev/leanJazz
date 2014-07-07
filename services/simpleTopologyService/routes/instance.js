@@ -43,11 +43,10 @@ exports.findAll = function(req, res) {
           minstance.find({poolRef:req.params.id}, function(err, instances) {
           if (err) {
             console.log ( 'error get instances associated with pool');
-            console.err(err);
             res.send(404);
             return;
           }   
-          res.send(instances);
+          res.json(instances);
           });
         } 
         else
@@ -64,11 +63,10 @@ exports.find = function(req, res) {
            minstance.findById(req.params.id, function(err, instance) {
            if (err) {
              console.log ( 'error get instance');
-             console.err(err);
              res.send(404);
              return;
            }   
-           res.send(instance);
+           res.json(instance);
            });
        }
        else
@@ -83,7 +81,6 @@ exports.deleteView = function(req, res) {
    minstance.findById(req.params.id, function(err, instance) {
    if (err) {
      console.log ( 'error get instance to remove');
-     console.err(err);
      return;
    }   
    res.render('topology/instances/instanceindex', {
