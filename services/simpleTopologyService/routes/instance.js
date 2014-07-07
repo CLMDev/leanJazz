@@ -37,27 +37,42 @@ exports.findAllView = function(req, res) {
 
 exports.findAll = function(req, res) {
    console.log('req.params.id:'+req.params.id);
-   minstance.find({poolRef:req.params.id}, function(err, instances) {
-   if (err) {
-     console.log ( 'error get instances associated with pool');
-     console.err(err);
-     res.send(404);
-     return;
-   }   
-   res.send(instances);
+   topologyPoolModel.count({_id:req.params.id}, function(err, count) {
+		console.log('::::count of pool:'+count);
+		if (count==1) { 
+          minstance.find({poolRef:req.params.id}, function(err, instances) {
+          if (err) {
+            console.log ( 'error get instances associated with pool');
+            console.err(err);
+            res.send(404);
+            return;
+          }   
+          res.send(instances);
+          });
+        } 
+        else
+         res.send(404);
   });
 };
 
 exports.find = function(req, res) {
    console.log('req.params.id:'+req.params.id);
-   minstance.findById(req.params.id, function(err, instance) {
-   if (err) {
-     console.log ( 'error get instance');
-     console.err(err);
-     res.send(404);
-     return;
-   }   
-   res.send(instance);
+   console.log('req.params.pid:'+req.params.pid);
+   topologyPoolModel.count({_id:req.params.pid}, function(err, count) {
+		console.log('::::count of pool:'+count);
+		if (count==1) { 
+           minstance.findById(req.params.id, function(err, instance) {
+           if (err) {
+             console.log ( 'error get instance');
+             console.err(err);
+             res.send(404);
+             return;
+           }   
+           res.send(instance);
+           });
+       }
+       else
+         res.send(404);
   });
 };
 
