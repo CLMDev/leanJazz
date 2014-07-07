@@ -133,11 +133,12 @@ exports.editViewExecute = function(req, res) {
 
 exports.create = function(req, res) {
 	try {
-		console.log('creating new topology pool');
+		console.log('::::creating new topology pool');
 		console.log(req.body);
-		var inputOBJ=JSON.parse(req.body);
-		console.log('input reference id:'+inputOBJ.topologyRef);
-		Topology.count({_id:inputOBJ.topologyRef}, function(err, count) {
+		//var inputOBJ=JSON.parse(req.body);
+		console.log('::::input reference id:'+req.body.topologyRef);
+		Topology.count({_id:req.body.topologyRef}, function(err, count) {
+		console.log('::::count of topology document:'+count);
 		if (count==1) {
 
 		  topologyPoolModel.create(req.body, function(err, pool){ 
@@ -154,7 +155,7 @@ exports.create = function(req, res) {
 				res.send(err, 400);
 			}
 		  }); //topologyPoolModel
-		}//if(docs)
+		}//if()
 		else{
 				//return an error 
 				console.log('failed to create pool using:' + res.json);
@@ -191,30 +192,6 @@ exports.delete = function(req, res) {
 		console.log('removed');
 		}
 	});
-};
-exports.create = function(req, res) {
-	try {
-		console.log('creating new topology pool');
-		console.log(req.body);
-		topologyPoolModel.create(req.body, function(err, pool){ 
-			if (! err){
-				//return the created topology pool information
-				console.log('created new topology pool');
-				console.log(pool);
-				res.json(pool);
-			}else{
-				//return an error 
-				console.log('failed to create pool using:' + res.json);
-				console.log(pool);
-				console.log(err);
-				res.send(err, 400);
-			}
-		}); 
-	}catch (err) {
-		console.log('could not create new topology pool, most likely due to invalid data');
-		console.log(err);
-		res.send(err, 400);
-	}
 };
 exports.find = function(req, res) {
 	console.log('finding ' + req.params.id);

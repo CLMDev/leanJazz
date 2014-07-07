@@ -116,7 +116,7 @@ describe('SimpleTopologyService::Pool API v1', function() {
         it('should return at 400 response code if there is a validation error', function(done) {
             var invalidPoolData = {
                         name: 'test-pool-new-invalid' + today,
-                        description: 'invalid pool of test topology instances of the latest build',
+                        description: 'invalid pool with an invalide topology reference',
                         topologyRef: 'not a topology id' 
                 };
                 client.post('/api/v1/topology/pools', invalidPoolData, function(err, res, body) {
