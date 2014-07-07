@@ -100,7 +100,7 @@ describe('SimpleTopologyService::Instance API v1', function() {
                 assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
                     'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
                 instance=body[0];
-                console.log('first instance in the pool:" + instance);
+                console.log('first instance in the pool:' + instance);
                 instance_id=instance._id;
                 done();
             });
