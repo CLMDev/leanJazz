@@ -104,8 +104,8 @@ app.del('/api/v1/topology/pools/:id', topologyPool.delete);
 
 app.get('/api/v1/topology/pools/:id/instances', topologyInstance.findAll);
 app.get('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.find);
-//app.del('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.delete);
-//app.put('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.update);
+app.del('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.delete);
+app.put('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.update);
 
 
 http.createServer(app).listen(app.get('port'), function() {

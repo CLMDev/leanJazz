@@ -74,6 +74,67 @@ exports.find = function(req, res) {
   });
 };
 
+exports.delete = function(req, res) {
+   console.log('req.params.id:'+req.params.id);
+   console.log('req.params.pid:'+req.params.pid);
+   topologyPoolModel.count({_id:req.params.pid}, function(err, count) {
+		console.log('::::count of pool:'+count);
+		if (count==1) { 
+           minstance.findById(req.params.id, function(err, instance) {
+           if (err) {
+             console.log ( 'error get instance');
+             res.send(404);
+             return;
+           }   
+           console.log('populated instance'+ JSON.stringify(instance));
+           //instance.remove(function() {
+			//res.send(200);
+			//});
+           }).populate('topologyRef').populate('poolRef');
+       }
+       else
+         res.send(404);
+  });
+};
+
+exports.update = function(req, res) {
+   console.log('req.params.id:'+req.params.id);
+   console.log('req.params.pid:'+req.params.pid);
+   var updateDoc = req.body;
+   console.log(updateDoc);
+   topologyPoolModel.count({_id:req.params.pid}, function(err, count) {
+		console.log('::::count of pool:'+count);
+		if (count==1) { 
+           minstance.findById(req.params.id, function(err, instance) {
+           if (err) {
+             console.log ( 'error get instance');
+             res.send(404);
+             return;
+           } 
+           try {
+			console.log('found document, attempting to update');
+			for (var param in updateDoc) {
+			    if (param =='_id'||param =='name'||param =='type'||param=='topologyRef'||param=='poolRef')
+			      continue;//update to the above fields are ignored
+			   
+				console.log('updating ' + param + ' with ' + updateDoc[param]);
+				instance[param] = updateDoc[param];
+			}
+			instance.save();
+		   }catch (myerror) {
+			console.log('error caught ' + myerror);
+			res.send(myerror, 400);
+		   }  
+           res.json(instance);
+           });
+       }
+       else
+         res.send(404);
+  });
+};
+
+
+
 
 
 exports.deleteView = function(req, res) {
