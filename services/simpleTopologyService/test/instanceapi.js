@@ -141,6 +141,20 @@ describe('SimpleTopologyService::Instance API v1', function() {
             });
         });
     });
+    describe('PUT /api/v1/topology/pools/:pid/instances/:id', function() {
+        it('should be able to change instance to checked out and get a 200 response code and json', function(done) {
+            instance.checkedout=true;
+            instance.checkoutUser='Default User';
+            instance.checkoutDate=today;
+            instance.checkoutComment='test';
+            client.put('/api/v1/topology/pools/' + pool_id+'/instances/'+instance_id,instance, function(err, res, body) {
+                assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
+                assert.equal(body.checkedout,true, 'Expected: true Actual: ' + body.checkedOut );
+                done();
+            });
+        });
+    });
+  
     
     describe('DEL /api/v1/topology/pools/:pid/instances/:id', function() {
         it('should be able get pooled instances and a 200 response code and json', function(done) {
@@ -167,14 +181,4 @@ describe('SimpleTopologyService::Instance API v1', function() {
         });
     });
     
-    describe('PUT /api/v1/topology/pools/:pid/instances/:id', function() {
-        it('should be able to change instance to checked out and get a 200 response code and json', function(done) {
-            client.put('/api/v1/topology/pools/' + pool_id+'/instances'+instance_id, function(err, res, body) {
-                assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
-                assert.equal(body.checkedOut,true, 'Expected: true Actual: ' + body.checkedOut );
-                done();
-            });
-        });
-    });
-  
 });

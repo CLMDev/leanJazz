@@ -115,7 +115,13 @@ exports.update = function(req, res) {
 			console.log('found document, attempting to update');
 			for (var param in updateDoc) {
 			    if (param =='_id'||param =='name'||param =='type'||param=='topologyRef'||param=='poolRef')
+                              {
+				console.log('omitting ' + param );
+                             
 			      continue;//update to the above fields are ignored
+                              }
+                            if(param=='checkedout'&& updateDoc[param]== false)
+                              continue;//checkout only, no checkin support
 			   
 				console.log('updating ' + param + ' with ' + updateDoc[param]);
 				instance[param] = updateDoc[param];
