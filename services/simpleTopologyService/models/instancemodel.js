@@ -38,6 +38,7 @@ var TopologyInstanceSchema = new Schema({
         iwdURI: String,
         ucdStatus: String,
         ucdURI: String,
+        ucdID: String,
         creationDate: String,
         checkoutDate: String,
         checkoutUser: String,

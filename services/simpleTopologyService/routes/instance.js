@@ -19,7 +19,7 @@ var Topology = require('../models/topologymodel');
 var minstance= require('../models/instancemodel');
 
 
-
+process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 exports.findAllView = function(req, res) {
    console.log('req.params.id:'+req.params.id);
    minstance.find({poolRef:req.params.id}, function(err, instances) {
@@ -87,9 +87,37 @@ exports.delete = function(req, res) {
              return;
            }   
            console.log('populated instance'+ JSON.stringify(instance));
-           //instance.remove(function() {
-			//res.send(200);
-			//});
+/* need to create a json to present the environment to be deleted
+[
+    {
+        "application": "CLM-E1-distributed-linux",
+        "name": "pool-53abc-201406300829-No5",
+        "id": "934e8419-6179-4944-8635-322a04725f88"
+    }
+]
+*/
+           var topdoc=instance.topologyRef.topologyDocument;
+           var appname=JSON.parse(topdoc).application;
+           var to_be_deleted={ application: appname, name: instance.name, id: instance.ucdID};
+           var json_to_be_deleted=JSON.stringify([to_be_deleted]);
+           console.log('json_to_be_deleted'+ json_to_be_deleted);
+           var dir='/tmp/pool-'+instance.poolRef.id;
+           var stream=fs.createWriteStream(dir+'/'+instance.name+ '_delete.json');
+           stream.end(json_to_be_deleted, function(){
+             var exec = require('child_process').exec, child;
+             child = exec('/root/deleteEnv.py -v --udclient /root/udclient/udclient '+ dir +'/'+instance.name+ '_delete.json',
+            function (error, stdout, stderr) {
+              console.log('instance is deleted in UCD:');
+              
+              console.log('stdout: ' + stdout);
+              console.log('stderr: ' + stderr);
+              instance.remove(function() {
+			  res.send(200);
+			  });
+            });//exec
+           })//stream.end
+            
+           
            }).populate('topologyRef').populate('poolRef');
        }
        else

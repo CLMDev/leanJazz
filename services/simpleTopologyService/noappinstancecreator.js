@@ -135,7 +135,7 @@ var timeoutcb= function(){
                 } 
                 console.log(pname +'environment creation logs:'+ data);
                 clog = JSON.parse(data); 
-                env_id= clog.id;
+                var env_id= clog.id;
                 console.log(pname +'env_id:'+ env_id);
                 if(env_id == 'Failed'){
                  console.log(pname +'instance creation failed, please check if iwd have reource for the request.');
@@ -147,8 +147,9 @@ var timeoutcb= function(){
                 instance.name=instance_name;
                 instance.description='instance for pooling, with bare environment';
                 instance.type='noapp';
-                instance.topologyRef=pool.topologyRef._id
-                instance.poolRef=pool._id
+                instance.topologyRef=pool.topologyRef._id;
+                instance.poolRef=pool._id;
+                instance.ucdID=env_id;
                 instance.ucdURI='https://udeploy04.rtp.raleigh.ibm.com:8443/#environment/'+env_id;
                 instance.creationDate=date;
                 instance.save (function(err) {
