@@ -120,11 +120,13 @@ exports.editViewSetup = function(req, res) {
 };
 exports.editViewExecute = function(req, res) {
   Topology.findById(req.params.id, function(err, doc) {
+    
     doc.updated_at = new Date();
     doc.name = req.body.topology.name;
     doc.solution = req.body.topology.solution;
     doc.referenceURL = req.body.topology.referenceURL;
     doc.description = req.body.topology.description;
+    doc.topologyDocument=req.body.topology.topologyDocument;
     console.log('attempting to update document');
     console.log(doc);
     validateTopology(doc, function(err) {
