@@ -157,11 +157,19 @@ describe('SimpleTopologyService::Instance API v1', function() {
   
     
     describe('DEL /api/v1/topology/pools/:pid/instances/:id', function() {
-        it('should be able get pooled instances and a 200 response code and json', function(done) {
+        it('should be able get a 200 response code and json', function(done) {
+            setTimeout(4000);//actual exection time is about 2s, which is reasonable
             client.del('/api/v1/topology/pools/' + pool_id+'/instances/'+instance_id, function(err, res, body) {
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
                 assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
                     'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
+                done();
+            });
+        });
+        it('should get a 404 response code if requested with a deleted instance id', function(done) {
+
+            client.get('/api/v1/topology/pools/' + pool_id+'/instances/'+instance_id, function(err, res, body) {
+                assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                 done();
             });
         });
@@ -174,6 +182,7 @@ describe('SimpleTopologyService::Instance API v1', function() {
         });
         it('should be get a 404 response code if request with an incorrect instance id', function(done) {
             client.del('/api/v1/topology/pools/' + pool_id+'/instances/'+incorrect_instance_id, function(err, res, body) {
+               
                 assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                 
                 done();
