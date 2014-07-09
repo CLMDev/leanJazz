@@ -27,7 +27,7 @@ pwd
 dir 
 
 echo "Running basic curl" 
-curl http://sts_alias:$STS_ALIAS_PORT_3001_TCP_PORT/topology/topologies
+curl --max-time 10 http://sts_alias:$STS_ALIAS_PORT_3001_TCP_PORT/topology/topologies
 
 echo "Running full test suite" 
 env WEB_PORT=$STS_ALIAS_PORT_3001_TCP_PORT WEB_HOSTNAME=$STS_ALIAS_PORT_3001_TCP_ADDR DB_PORT=$STS_ALIAS_PORT_27017_TCP_PORT DB_HOSTNAME=$STS_ALIAS_PORT_27017_TCP_ADDR mocha --reporter spec
