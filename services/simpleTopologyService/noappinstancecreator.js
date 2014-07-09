@@ -118,6 +118,8 @@ var timeoutcb= function(){
         var json=JSON.stringify(tdoc_object);
         var stream=fs.createWriteStream(dir+'/'+instance_name+ '.json');
         stream.end(json, function(){
+          console.log(pname +'::fork background process for instance : '+instance_name);
+        
           var exec = require('child_process').exec, child;
           child = exec('/root/createEnv.py -v --udclient /root/udclient/udclient --iwdcli /root/deployer.cli/bin/deployer --outputFile '
             +dir+'/'+instance_name+ '.log ' + dir +'/'+instance_name+ '.json',
