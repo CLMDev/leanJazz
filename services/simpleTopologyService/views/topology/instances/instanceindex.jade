@@ -19,7 +19,7 @@ block content
   script(type='text/javascript').
     $( document ).ready(function() {
       console.log( "ready!" );
-      $(':submit[name="Delete"][value="Delete"]')
+      $('button[type="submit"][name="Delete"]')
         click(function( ) {
          return window.confirm(this.title || 'Delete this record?');
         });      
@@ -51,7 +51,7 @@ block content
               td
                 form(method='post')
                   input(name='_method', value='DELETE', type='hidden')
-                  button.btn(type='submit', title='Delete '+ instance.id +'?') Delete
+                  button.btn(type='submit', title=instance.id) Delete
   - else
     p No available instances
   
