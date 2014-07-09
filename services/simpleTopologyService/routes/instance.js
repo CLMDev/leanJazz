@@ -20,6 +20,7 @@ var minstance= require('../models/instancemodel');
 
 
 process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
+var fs = require('fs');
 exports.findAllView = function(req, res) {
    console.log('req.params.id:'+req.params.id);
    minstance.find({poolRef:req.params.id}, function(err, instances) {
@@ -96,10 +97,7 @@ exports.delete = function(req, res) {
     }
 ]
 */
-           var topdoc=instance.topologyRef.topologyDocument;
-           var appname=JSON.parse(topdoc).application;
-           var to_be_deleted={ application: appname, name: instance.name, id: instance.ucdID};
-           var json_to_be_deleted=JSON.stringify([to_be_deleted]);
+           var json_to_be_deleted=instance.ucdEnvDesc;
            console.log('json_to_be_deleted'+ json_to_be_deleted);
            var dir='/tmp/pool-'+instance.poolRef.id;
            var stream=fs.createWriteStream(dir+'/'+instance.name+ '_delete.json');

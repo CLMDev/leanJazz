@@ -119,7 +119,7 @@ var timeoutcb= function(){
         var stream=fs.createWriteStream(dir+'/'+instance_name+ '.json');
         stream.end(json, function(){
           var exec = require('child_process').exec, child;
-          child = exec('/root/createEnv.py --udclient /root/udclient/udclient --iwdcli /root/deployer.cli/bin/deployer --outputFile '
+          child = exec('/root/createEnv.py -v --udclient /root/udclient/udclient --iwdcli /root/deployer.cli/bin/deployer --outputFile '
             +dir+'/'+instance_name+ '.log ' + dir +'/'+instance_name+ '.json',
             function (error, stdout, stderr) {
               console.log(pname +' instance creation callback:');
@@ -134,14 +134,9 @@ var timeoutcb= function(){
                 return;
                 } 
                 console.log(pname +'environment creation logs:'+ data);
-                clog = JSON.parse(data); 
+                var clog = JSON.parse(data); 
                 var env_id= clog.id;
                 console.log(pname +'env_id:'+ env_id);
-                if(env_id == 'Failed'){
-                 console.log(pname +'instance creation failed, please check if iwd have reource for the request.');
-                 timer=setTimeout(timeoutcb, 60000); //every 60 seconds
-                 return;
-                }
  
                 var instance= new minstance();
                 instance.name=instance_name;
@@ -149,9 +144,14 @@ var timeoutcb= function(){
                 instance.type='noapp';
                 instance.topologyRef=pool.topologyRef._id;
                 instance.poolRef=pool._id;
-                instance.ucdID=env_id;
+                instance.ucdEnvDesc=data;
                 instance.ucdURI='https://udeploy04.rtp.raleigh.ibm.com:8443/#environment/'+env_id;
                 instance.creationDate=date;
+                if(clog.status == 'Failed'){
+                 console.log(pname +'instance creation failed, please check if iwd have reource for the request.');
+                 instance.iwdStatus="Failed";
+                } else
+                 instance.iwdStatus="Started";
                 instance.save (function(err) {
                 if (err) {
                   console.log(pname +' error saving instance');

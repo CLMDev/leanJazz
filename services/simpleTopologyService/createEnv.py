@@ -108,14 +108,14 @@ def create_environment(envDescFileName):
         envInfo['id'] = env['id']
         print("Created environment: name=" + env['name'] + "\tID=" + env['id'])
     except ValueError:
-        envInfo['id'] = 'Failed'
+        envInfo['status'] = 'Failed'
         print('Failed to create environment via command: ' + createEnvCmd)
         return envInfo
 
     # Wait until the virtual system instance has finished deploying.
     ret=waitForInstance(envDesc['application'], env['name'])
     if ret == 'Failed' :
-        envInfo['id'] = 'Failed'
+        envInfo['status'] = 'Failed'
 
     # Return the newly created environment id
     return envInfo
@@ -163,11 +163,8 @@ args = processArgs()
 
 # Create the specified number of environments, then delete them
 env = create_environment(args.envDescFile)
-if env['id'] != 'Failed':
-        environments.append(env)
 
-if (args.outputFile is None) or len(args.outputFile) <= 0:
-        args.outputFile = 'createdEnvironments_' + time.strftime("%Y%m%d-%H%M")
+environments.append(env)
 
 if len(args.outputFile) > 0:
     write_output(args.outputFile)
