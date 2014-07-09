@@ -17,9 +17,13 @@ extends ../../layout
 block content
   h1= title
   script(type='text/javascript').
-    var onDelete=function(){
-      alert( "Do you really want to delete this instance?" );
-    }
+    $( document ).ready(function() {
+      console.log( "ready!" );
+      $(':submit[name="Delete"][value="Delete"]')
+        click(function( ) {
+         return window.confirm(this.title || 'Delete this record?');
+        });      
+    });
     
   p The following is a list of the instances
   - if(docs.length)
@@ -45,9 +49,9 @@ block content
                     input(name='_method', value='CHECKOUT', type='hidden')
                     button.btn(type='submit') Checkout
               td
-                form(method='post', action='/topology/pools/' + instance.poolRef+'/instances/' instance.id)
+                form(method='post')
                   input(name='_method', value='DELETE', type='hidden')
-                  button.btn(type='submit', onClick=onDelete) Delete
+                  button.btn(type='submit', title='Delete '+ instance.id +'?') Delete
   - else
     p No available instances
   
