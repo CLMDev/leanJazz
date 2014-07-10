@@ -157,8 +157,8 @@ describe('SimpleTopologyService::Instance API v1', function() {
   
     
     describe('DEL /api/v1/topology/pools/:pid/instances/:id', function() {
+        this.timeout(4000);//actual exection time is about 2s, which is reasonable
         it('should be able get a 200 response code and json', function(done) {
-            setTimeout(4000);//actual exection time is about 2s, which is reasonable
             client.del('/api/v1/topology/pools/' + pool_id+'/instances/'+instance_id, function(err, res, body) {
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
                 assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',

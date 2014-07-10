@@ -19,14 +19,120 @@ block content
   script(type='text/javascript').
     $( document ).ready(function() {
       console.log( "ready!" );
-      $('button[type="submit"][name="Delete"]')
-        click(function( ) {
-         return window.confirm(this.title || 'Delete this record?');
+      
+      var  btn_obj;
+      $('#checkoutdialog').dialog({
+        modal: true,
+        autoOpen: false,
+        buttons: [
+          {
+           text: 'OK',
+           click: function() {
+             $( this ).dialog( "close" );
+             console.log( "button object:"+btn_obj );
+             console.log( 'input from dialog:'+$('input').val() );
+             var today= new Date();
+             $.ajax({
+               url: btn_obj.value,
+               data: {
+                 checkedout: true,
+                 checkoutUser: "default user",
+                 checkoutDate: today.toLocaleDateString(), 
+                 checkoutComment: $('input').val() 
+               },
+               type: "PUT",
+               dataType : "json",
+               success: function( json ) {
+                  console.log( "btn_obj.id:"+btn_obj.id );
+                  var btn=$('#'+btn_obj.id);
+                  var comment=btn.parent().prev();
+                  comment.text(json.checkoutComment);
+                  var user=comment.prev();
+                  user.text(json.checkoutUser);
+                  btn.remove();
+                  
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+
+           }
+          },
+          {
+           text: 'CANCEL',
+           click: function() {
+             $( this ).dialog( "close" );
+           }
+          }
+        ]
+      });//checkout dialog
+      $('#deletedialog').dialog({
+        modal: true,
+        autoOpen: false,
+        buttons: [
+          {
+           text: 'OK',
+           click: function() {
+             $( this ).dialog( "close" );
+             $.ajax({
+               url: btn_obj.value,
+               data: {
+               },
+               type: "DEL",
+               dataType : "json",
+               success: function( json ) {
+                  console.log( "btn_obj.id:"+btn_obj.id );
+                  var btn=$('#'+btn_obj.id);
+                  var row=btn.parent().parent();
+                  row.remove();
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+
+           }
+          },
+          {
+           text: 'CANCEL',
+           click: function() {
+             $( this ).dialog( "close" );
+           }
+          }
+        ]
+      });//delete dialog
+      console.log(  $(':button:contains("Delete")') );
+        $(':button:contains("Delete")')
+        .click(function() {
+         btn_obj=this;
+         console.log('setting button obj'+btn_obj);
+         $('#deletedialog').dialog('open');
         });      
-    });
+        $(':button:contains("Checkout")')
+        .click(function() {
+         btn_obj=this;
+         $('#checkoutdialog').dialog('open');
+        });//checkout
+    });//ready
     
   p The following is a list of the instances
-  - if(docs.length)
+  - if(docs.length) 
+    div(id="checkoutdialog", title="checkout comments")
+     p
+      label
+       please input comments
+      input( type="text" id="comments_input") 
+
+    div(id="deletedialog", title="Delete Confirmation")
+     p
+      label
+        Are you sure you want to delete it? 
+
     table.table.table-striped
       thead
         tr
@@ -45,13 +151,9 @@ block content
               td #{instance.checkoutComment}
               td
                 if !instance.checkedout
-                  form(method='post', action='/topology/pools/' + instance.poolRef+'/instances/' instance.id)
-                    input(name='_method', value='CHECKOUT', type='hidden')
-                    button.btn(type='submit') Checkout
+                  button.btn(type='submit',value='/api/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
               td
-                form(method='post')
-                  input(name='_method', value='DELETE', type='hidden')
-                  button.btn(type='submit', title=instance.id) Delete
+                button.btn(type='submit',value='/api/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
   - else
     p No available instances
   
