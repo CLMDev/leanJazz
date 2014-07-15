@@ -107,7 +107,25 @@ app.get('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.find);
 app.del('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.delete);
 app.put('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.update);
 
+app.get('/buildstreams', buildstream.findAllView);
+app.get('/buildstreams/new', buildstream.addViewSetup);
+app.post('/buildstreams', buildstream.addViewExecute);
+app.get('/buildstreams/:id/edit', buildstream.editViewSetup);
+app.put('/buildstreams/:id', buildstream.editViewExecute);
 
+app.get('/api/v1/buildstreams', buildstream.findAll);
+app.post('/api/v1/buildstreams', buildstream.create);
+app.get('/api/v1/buildstreams/:id', buildstream.find);
+app.del('/api/v1/buildstreams/:id', buildstream.delete);
+app.put('/api/v1/buildstreams/:id', buildstream.update);
+/*
+app.get('/builds', build.findAllView);
+app.get('/builds/new', build.addViewSetup);
+app.post('/builds', build.addViewExecute);
+app.get('/builds/:id/edit', build.editViewSetup);
+app.put('/builds/:id', build.editViewExecute);
+
+*/
 http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
