@@ -91,7 +91,7 @@ var timeoutcb= function(){
         var tdoc_object=JSON.parse(pool.topologyRef.topologyDocument);
               
         var pool_id_long=''+pool._id;
-        var pool_id_short=pool_id_long.substr(0,5);
+        var pool_id_short=pool_id_long.substr(17);
         var date=new Date();
         var year=date.getFullYear();
         var month=date.getMonth()+1;
