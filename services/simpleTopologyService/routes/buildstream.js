@@ -84,7 +84,7 @@ exports.addViewExecute = function(req, res) {
 };
 
 exports.editViewSetup = function(req, res) {
-  mbuildStream.findById(req.params.id, function(err, doc) {
+  mbuildStream.find({buildStream:req.params.id}, function(err, doc) {
     res.render('topology/buildstreams/editbuildstream', {
       title: 'Edit Build Stream',
       buildstream: doc
@@ -122,26 +122,27 @@ exports.editViewExecute = function(req, res) {
 
 exports.find = function(req, res) {
 	console.log('build stream find: finding ' + req.params.id);
-	mbuildStream.findById(req.params.id, function(err, doc) {
-		console.log('printing doc');
-		console.log(doc);
-		console.log('printing error');
-		console.log(err);
-		if (! doc) {
+	mbuildStream.find({buildStream:req.params.id}, function(err, docs) {
+		console.log('printing docs');
+		console.log(docs);
+
+		if (docs.length==0) {
 			res.send(404);
 		}else {
-			res.send(doc);
+		        console.log('print build stream object found:');
+		        console.log(docs[0]);
+			res.send(docs[0]);
 		}
 	});
 };
 
 
 exports.delete = function(req, res) {
-	mbuildStream.findById(req.params.id, function(err, doc) {
-		if (!doc) {
+	mbuildStream.find({buildStream:req.params.id}, function(err, docs) {
+		if (docs.length==0) {
 			res.send(404);
 		}else {
-			doc.remove(function() {
+			docs[0].remove(function() {
 			res.send(200);
 			});
 		}
@@ -149,19 +150,20 @@ exports.delete = function(req, res) {
 };
 
 exports.update = function(req, res) {
-  mbuildStream.findById(req.params.id, function(err, doc) {
 	console.log('Updating document ' + req.params.id);
+	mbuildStream.find({buildStream:req.params.id}, function(err, docs) {
 	updateDoc = req.body;
 	console.log(updateDoc);
         if (err) {
 		console.log('error finding build stream');
 		res.send(err, 400);
-	}else if (! doc) {
+	}else if ( docs.length==0) {
 		console.log('could not find document');
 		res.send(400);
 	}else {
 		try {
 			console.log('found document, attempting to update');
+                        doc=docs[0];
 			for (var param in updateDoc) {
 				console.log('updating ' + param + ' with ' + updateDoc[param]);
 				doc[param] = updateDoc[param];
@@ -186,7 +188,7 @@ exports.update = function(req, res) {
 };
 
 exports.create = function(req, res) {
-	validateTopology(req.body, function(err) {
+	validateBuildStream(req.body, function(err) {
 		if (! err) {
 			try {
 			var newBuildStream = new mbuildStream(req.body);
