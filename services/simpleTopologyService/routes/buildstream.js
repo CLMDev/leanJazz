@@ -14,7 +14,7 @@
 *   limitations under the License.
 */
 
-var mbuildStream = require('../models/builstreammodel');
+var mbuildStream = require('../models/buildstreammodel');
 
 var validator = require('validator');
 var validateBuildStream = function(doc, next) {
@@ -37,7 +37,7 @@ exports.findAllView = function(req, res) {
      console.err(err);
      return;
    }   
-   res.render('buildstreams/buildstreamindex', {
+   res.render('topology/buildstreams/buildstreamindex', {
       title: 'Available build streams',
       docs: buildstreams
     });
@@ -63,9 +63,9 @@ exports.addViewSetup = function(req, res) {
 };
 
 exports.addViewExecute = function(req, res) {
-	validateBuildStream(req.body.topology, function(err) {
+	validateBuildStream(req.body.buildstream, function(err) {
 		if (! err) {
-			var buildStream = new mbuildStream(req.body.topology);
+			var buildStream = new mbuildStream(req.body.buildstream);
 			buildStream.save(function(err) {
 				if (! err) {
 					res.redirect('/buildstreams');

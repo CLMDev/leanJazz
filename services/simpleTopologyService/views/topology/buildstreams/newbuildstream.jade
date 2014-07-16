@@ -15,7 +15,7 @@
 extends ../../layout
 block content
   h1 Register a new build stream
-  form.form-horizontal(method='post', action='/builds')
+  form.form-horizontal(method='post', action='/buildstreams')
     fieldset
       legend Register a build
       div.clearfix
@@ -24,7 +24,7 @@ block content
             div.span3
               p Build Stream
             div
-              textarea.span6(name='buildstream[buildStream]', rows=20, class='xlarge')               
+              input.span3(name='buildstream[buildStream]')
           div.row
             div.span3
               p referenceURL

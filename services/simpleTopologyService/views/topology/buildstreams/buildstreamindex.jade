@@ -66,26 +66,14 @@ block content
          console.log('setting button obj'+btn_obj);
          $('#deletedialog').dialog('open');
         });      
-        $(':button:contains("Checkout")')
-        .click(function() {
-         btn_obj=this;
-         $('#checkoutdialog').dialog('open');
-        });//checkout
     });//ready
     
-  p The following is a list of the instances
-  - if(docs.length) 
-    div(id="checkoutdialog", title="checkout comments")
-     p
-      label
-       please input comments
-      input( type="text" id="comments_input") 
-
+  p The following is a list of the build streams
     div(id="deletedialog", title="Delete Confirmation")
      p
       label
         Are you sure you want to delete it? 
-
+  - if(docs.length) 
     table.table.table-striped
       thead
         tr
@@ -93,13 +81,13 @@ block content
           th Reference URL
           th Description         
       tbody
-          each build in docs
+          each buildstream in docs
             tr
               td #{buildstream.buildStream}
               td #{buildstream.refURL}
               td #{buildstream.description}
               td
-                button.btn(type='submit',value='/api/v1/buildstreams/' + buildstream.buildStream, id='delete_'+ buildstream.buildStream+, title='Delete '+buildstream.buildStream+' ?') Delete
+                button.btn(type='submit',value='/api/v1/buildstreams/' + buildstream.buildStream, id='delete_'+ buildstream.buildStream, title='Delete '+buildstream.buildStream+' ?') Delete
   - else
     p No available build streams
   p

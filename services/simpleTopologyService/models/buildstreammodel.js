@@ -33,7 +33,7 @@ var BuildStreamSchema = new Schema({
 	},{strict: 'throw'}
 );
 
-var mBuildStream = mongoose.model('mBuildStream', BuildSchema);
+var mBuildStream = mongoose.model('mBuildStream', BuildStreamSchema);
 module.exports = mBuildStream;
 
 
