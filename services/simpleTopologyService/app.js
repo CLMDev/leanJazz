@@ -31,6 +31,8 @@ var routes = require('./routes');
 var topology = require('./routes/topology');
 var topologyPool = require('./routes/pool');
 var topologyInstance = require('./routes/instance');
+var buildstream = require('./routes/buildstream');
+var build = require('./routes/build');
 
 var user = require('./routes/user');
 var http = require('http');
