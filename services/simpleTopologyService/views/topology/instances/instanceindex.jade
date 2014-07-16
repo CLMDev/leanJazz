@@ -79,10 +79,7 @@ block content
              $( this ).dialog( "close" );
              $.ajax({
                url: btn_obj.value,
-               data: {
-               },
-               type: "DEL",
-               dataType : "json",
+               type: "DELETE",
                success: function( json ) {
                   console.log( "btn_obj.id:"+btn_obj.id );
                   var btn=$('#'+btn_obj.id);
