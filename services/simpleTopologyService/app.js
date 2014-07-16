@@ -88,6 +88,7 @@ app.get('/topology/pools/new', topologyPool.addViewSetup);
 app.post('/topology/pools', topologyPool.addViewExecute);
 app.get('/topology/pools/:id/edit', topologyPool.editViewSetup);
 app.put('/topology/pools/:id', topologyPool.editViewExecute);
+app.del('/topology/pools/:id', topologyPool.deleteView);
 app.get('/topology/pools/:id/instances', topologyInstance.findAllView);
 app.del('/topology/pools/:pid/instances/:id', topologyInstance.deleteView);
 

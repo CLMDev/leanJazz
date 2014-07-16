@@ -180,19 +180,19 @@ exports.find = function(req, res) {
 		}
 	});
 };
-exports.delete = function(req, res) {
+exports.deleteView = function(req, res) {
 	topologyPoolModel.findById(req.params.id, function(err, doc) {
 		if (!doc) {
-			res.send(404);
+			console.log('could not remove document using ID ' + req.params.id);
+			res.redirect('/topology/pools');
 		}else {
-			console.log('delete removing');
 			doc.remove(function() {
-			res.send(200);
-		});
-		console.log('removed');
+				res.redirect('/topology/pools/');
+			});
 		}
 	});
 };
+
 exports.find = function(req, res) {
 	console.log('finding ' + req.params.id);
 	topologyPoolModel.findById(req.params.id, function(err, doc) {
