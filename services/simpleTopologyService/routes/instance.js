@@ -115,7 +115,7 @@ exports.delete = function(req, res) {
                   console.log(pname +'available instances for pool:'+doc.available);
                   doc.save (function(err) {
                     if (err) {
-                      console.log(pname +' error saving pool');
+                      console.log('error saving pool');
                       console.log(err);
                     }
                   });//pool.save
