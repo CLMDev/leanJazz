@@ -110,6 +110,16 @@ exports.delete = function(req, res) {
               console.log('stdout: ' + stdout);
               console.log('stderr: ' + stderr);
               instance.remove(function() {
+                topologyPoolModel.findById(req.params.pid,  function(err, doc) {                
+                  doc.available--;
+                  console.log(pname +'available instances for pool:'+doc.available);
+                  doc.save (function(err) {
+                    if (err) {
+                      console.log(pname +' error saving pool');
+                      console.log(err);
+                    }
+                  });//pool.save
+                });//mpool.findById              
 			  res.send(200);
 			  });
             });//exec

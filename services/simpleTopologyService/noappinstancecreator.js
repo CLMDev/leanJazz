@@ -139,6 +139,15 @@ var timeoutcb= function(){
                 var clog = JSON.parse(data); 
                 var env_id= clog.id;
                 console.log(pname +'env_id:'+ env_id);
+                
+                if(env_id === undefined){
+                  console.log('env_id:undefined');
+                  //UCD cli hit errors, we should not create instance here; instead, we should remove the request from processing queue.
+                  client.lrem(pool_id+'-noapp-processing',1, request , function (err){                   
+                    timer=setTimeout(timeoutcb, 60000);
+                  });
+                  return;
+                }
  
                 var instance= new minstance();
                 instance.name=instance_name;
@@ -160,14 +169,16 @@ var timeoutcb= function(){
                 }
                 });//instance.save
       
-                pool.available++;
-                console.log(pname +'available instances for pool:'+pool.available);
-                pool.save (function(err) {
-                if (err) {
-                  console.log(pname +' error saving pool');
-                  console.log(err);
-                }
-                });//pool.save
+                mpool.findById(pool.id,  function(err, doc) {                
+                  doc.available++;
+                  console.log(pname +'available instances for pool:'+doc.available);
+                  doc.save (function(err) {
+                    if (err) {
+                      console.log(pname +' error saving pool');
+                      console.log(err);
+                    }
+                  });//pool.save
+                });//mpool.findById
                   
                 client.lrem(pool_id+'-noapp-processing',1, request , function (err){
                  if (err) {
