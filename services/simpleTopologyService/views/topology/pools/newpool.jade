@@ -34,7 +34,7 @@ block content
             div.span3
               p Topology
             div
-              select(name='pool[topologyRef]')
+              select.span3(name='pool[topologyRef]')
                 each topology in topdocs
                   option(value='#{topology.id}') #{topology.name}
                 
@@ -43,7 +43,7 @@ block content
             div.span3
               p Type
             div
-              select
+              select.span3
                 option(value="app") app
                 option(value="noapp") noapp
                 

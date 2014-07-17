@@ -24,22 +24,24 @@ block content
             div.span3
               p BUILDID
             div
-              input.span6(name='build[BUILDID]')
+              input.span3(name='build[BUILDID]')
           div.row
             div.span3
               p Build Stream
             div
-              textarea.span6(name='build[buildStream]', rows=20, class='xlarge')               
+              select.span3(name='build[buildStream]')
+                each bs in buildstreams
+                  option(value='#{bs.buildStream}') #{bs.buildStream}
           div.row
             div.span3
               p referenceURL
             div
-              input.span6(name='build[refURL]')
+              input.span3(name='build[refURL]')
           div.row
             div.span3
               p description
             div
-              input.span6(name='build[description]')
+              input.span3(name='build[description]')
           div.row
             div.span3
               p recommend this build?

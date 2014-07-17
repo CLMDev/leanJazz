@@ -15,6 +15,7 @@
 */
 
 var mbuild = require('../models/buildmodel');
+var mbuildStream = require('../models/buildstreammodel');
 
 var validator = require('validator');
 var validateBuild = function(doc, next) {
@@ -60,8 +61,12 @@ exports.findAll = function(req, res) {
 };
 
 exports.addViewSetup = function(req, res) {
+        mbuildStream.find({}, function(err, docs) {
+         
         res.render('topology/builds/newbuild.jade', {
-                title: 'Create new build'
+                title: 'Create new build',
+                buildstreams: docs
+        });
         });
 };
 
