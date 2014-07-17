@@ -121,14 +121,21 @@ app.post('/api/v1/buildstreams', buildstream.create);
 app.get('/api/v1/buildstreams/:id', buildstream.find);
 app.del('/api/v1/buildstreams/:id', buildstream.delete);
 app.put('/api/v1/buildstreams/:id', buildstream.update);
-/*
+
 app.get('/builds', build.findAllView);
 app.get('/builds/new', build.addViewSetup);
 app.post('/builds', build.addViewExecute);
 app.get('/builds/:id/edit', build.editViewSetup);
 app.put('/builds/:id', build.editViewExecute);
 
-*/
+app.get('/api/v1/builds', build.findAll);
+app.post('/api/v1/builds', build.create);
+app.get('/api/v1/builds/:id', build.find);
+app.del('/api/v1/builds/:id', build.delete);
+app.put('/api/v1/builds/:id', build.update);
+
+
+
 http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
