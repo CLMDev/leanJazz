@@ -31,7 +31,7 @@ var client = request.newClient('http://localhost:' + topologyPort);
 describe('SimpleTopologyService::Build API v1', function() {
     
     var newbuild = {
-        BUILDID=CALM501-T20140716-2028;
+        BUILDID:'CALM501-T20140716-2028',
         buildStream: 'main-501',
         description: 'test build stream',
         refURL: 'https://jazzweb.ratl.swg.usma.ibm.com/calm/main-501/T/CALM501-T20140716-2028/'
@@ -68,7 +68,7 @@ describe('SimpleTopologyService::Build API v1', function() {
     
     describe('GET /api/v1/builds/', function() {
         it('should be able get all available build streams and a 200 response code and json', function(done) {
-            client.get('/api/v1/buildstreams/', function(err, res, body) {
+            client.get('/api/v1/builds/', function(err, res, body) {
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
                 assert.equal(res.headers['content-type'], 'application/json; charset=utf-8',
                     'Expected: application/json; charset=utf-8 Actual: ' + res.headers['content-type']);
@@ -79,7 +79,7 @@ describe('SimpleTopologyService::Build API v1', function() {
         });
        
     });
-    describe('GET /api/v1/buildstreams/:id', function() {
+    describe('GET /api/v1/builds/:id', function() {
         it('should be able get a specific build stream and a 200 response code and json', function(done) {
             client.get('/api/v1/builds/'+newbuild.BUILDID, function(err, res, body) {
 
@@ -104,7 +104,7 @@ describe('SimpleTopologyService::Build API v1', function() {
         it('should be able to update reference URL  and get a 200 response code and json', function(done) {
             update=newbuild;
             update.description='new description'
-            client.put('/api/v1/buildstreams/'+newbuild.BUILDID, update, function(err, res, body) {
+            client.put('/api/v1/builds/'+newbuild.BUILDID, update, function(err, res, body) {
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
                 assert.equal(body.description,'new description', 'Expected: new description Actual: ' + body.description );
                 done();
@@ -113,7 +113,7 @@ describe('SimpleTopologyService::Build API v1', function() {
     });
   
     
-    describe('DEL /api/v1/buildstreams/:id', function() {
+    describe('DEL /api/v1/builds/:id', function() {
         it('should be able get a 200 response code and json', function(done) {
             client.del('/api/v1/builds/' + newbuild.BUILDID, function(err, res, body) {
                 assert.equal(res.statusCode, 200, 'Expected: 200 Actual: ' + res.statusCode);
@@ -122,7 +122,7 @@ describe('SimpleTopologyService::Build API v1', function() {
         });
         it('should get a 404 response code if requested with a deleted build', function(done) {
 
-            client.get('/api/v1/buildsx/'+newbuild.BUILDID, function(err, res, body) {
+            client.get('/api/v1/builds/'+newbuild.BUILDID, function(err, res, body) {
                 assert.equal(res.statusCode, 404, 'Expected: 404 Actual: ' + res.statusCode);
                 done();
             });
