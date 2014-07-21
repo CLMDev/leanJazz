@@ -31,7 +31,7 @@ var BuildSchema = new Schema({
 	buildStream: String,
 	refURL: String,
 	description: String,
-	isRecommened: {type: Boolean, default: false },	
+	isRecommended: {type: Boolean, default: false },	
 	},{strict: 'throw'}
 );
 

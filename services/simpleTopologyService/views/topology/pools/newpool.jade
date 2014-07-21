@@ -62,9 +62,22 @@ block content
             div.span3
               p Topology
             div
-              select(name='pool[topologyRef]')
+              select.span3(name='pool[topologyRef]')
                 each topology in topdocs
                   option(value='#{topology.id}') #{topology.name}
+<<<<<<< HEAD
+=======
+                
+              
+          div.row
+            div.span3
+              p Type
+            div
+              select.span3
+                option(value="app") app
+                option(value="noapp") noapp
+                
+>>>>>>> c96f8ee49313ce144fb25737091713e911ee6883
           div.row
             div.span3
               p poolMinAvailable

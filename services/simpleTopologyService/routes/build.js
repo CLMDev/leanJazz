@@ -15,6 +15,7 @@
 */
 
 var mbuild = require('../models/buildmodel');
+var mbuildStream = require('../models/buildstreammodel');
 
 var validator = require('validator');
 var validateBuild = function(doc, next) {
@@ -60,13 +61,17 @@ exports.findAll = function(req, res) {
 };
 
 exports.addViewSetup = function(req, res) {
+        mbuildStream.find({}, function(err, docs) {
+         
         res.render('topology/builds/newbuild.jade', {
-                title: 'Create new build'
+                title: 'Create new build',
+                buildstreams: docs
+        });
         });
 };
 
 exports.addViewExecute = function(req, res) {
-	validateBuildStream(req.body.build, function(err) {
+	validateBuild(req.body.build, function(err) {
 		if (! err) {
 			var build = new mbuild(req.body.build);
 			build.save(function(err) {
@@ -95,29 +100,35 @@ exports.editViewSetup = function(req, res) {
   });
 };
 exports.editViewExecute = function(req, res) {
-  mbuild.findById(req.params.id, function(err, doc) {
+  mbuild.find({BUILDID:req.params.id}, function(err, docs) {
+    if(docs.length!=1){
+      console.log(' error: can not find the build') 
+      res.redirect('/builds');
+      return;
+    }
+    doc =docs[0];
     
-    
-    doc.buildStream = req.body.buildstream.buildStream;
-    doc.referenceURL = req.body.topology.referenceURL;
-    doc.description = req.body.topology.description;
+    doc.BUILDID = req.body.build.BUILDID;
+    doc.buildStream = req.body.build.buildStream;
+    doc.refURL = req.body.build.refURL;
+    doc.description = req.body.build.description;
     
     console.log('attempting to update document');
     console.log(doc);
-    validateBuildStream(doc, function(err) {
+    validateBuild(doc, function(err) {
 		if (!err) {
 			doc.save(function(err) {
 				if (!err) {
-					res.redirect('/buildstreams');
+					res.redirect('/builds');
 				}
 				else {
 					console.log('error saving to database');
-					res.redirect('/buildstreams');
+					res.redirect('/builds');
 				}
 			});
 		}else {
 			console.log('invalid data:' + err);
-			res.redirect('/buildstreams');
+			res.redirect('/builds');
 		}
     });
   });
@@ -178,7 +189,7 @@ exports.update = function(req, res) {
 					console.log('saved doc');
 					console.log(doc);
 				}else {
-					console.log('error caught validating build stream ' + err);
+					console.log('error caught validating build ' + err);
 					res.send(err, 400);
 				}
 			});
@@ -191,19 +202,19 @@ exports.update = function(req, res) {
 };
 
 exports.create = function(req, res) {
-	validateBuildStream(req.body, function(err) {
+	validateBuild(req.body, function(err) {
 		if (! err) {
 			try {
-			var newBuildStream = new mbuildStream(req.body);
-			newBuildStream.save(function(err) {
+			var newBuild = new mbuild(req.body);
+			newBuild.save(function(err) {
 				if (!err) {
-					res.send(newBuildStream);
+					res.send(newBuild);
 				}else {
 					res.send(err, 400);
 				}
 			});
 			}catch (myerror) {
-				console.log('could not save build stream, most likely due to invalid data');
+				console.log('could not save build, most likely due to invalid data');
 				console.log(myerror);
 				res.send(myerror, 400);
 			}
