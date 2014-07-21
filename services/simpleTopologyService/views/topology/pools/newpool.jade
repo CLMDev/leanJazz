@@ -14,7 +14,14 @@
 
 extends ../../layout
 block content
-  h1 Create a new pool 
+  h1 Create a new pool
+  script(type='text/javascript').
+    $( document ).ready(function() {
+      console.log( "ready!" );
+      $('#parent').hide();
+      $('#stream').hide();
+    });//ready
+   
   form.form-horizontal(method='post', action='/topology/pools')
     fieldset
       legend Create a pool for topology
@@ -29,24 +36,35 @@ block content
             div.span3
               p description
             div
-              input.span6(name='pool[description]')               
-          div.row
-            div.span3
-              p Topology
-            div
-              select(name='pool[topologyRef]')
-                each topology in topdocs
-                  option(value='#{topology.id}') #{topology.name}
-                
-              
+              input.span6(name='pool[description]') 
           div.row
             div.span3
               p Type
             div
               select
                 option(value="app") app
-                option(value="noapp") noapp
-                
+                option(value="noapp") noapp 
+          div.row(id="parent")
+            div.span6
+              p Parent Pool
+            div
+              select(name='pool[parentPool]')
+                each pool in pooldocs
+                  option(value='#{pool.id}') #{pool.name}            
+          div.row(id="stream")
+            div.span6
+              p Attached Stream
+            div
+              select(name='pool[attachedStream]')
+                each stream in streamdocs
+                  option(value='#{stream.buildStream}') #{stream.buildStream}     
+          div.row(id="topology")
+            div.span3
+              p Topology
+            div
+              select(name='pool[topologyRef]')
+                each topology in topdocs
+                  option(value='#{topology.id}') #{topology.name}
           div.row
             div.span3
               p poolMinAvailable

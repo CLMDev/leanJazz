@@ -17,6 +17,7 @@
 var topologyPoolModel = require('../models/poolmodel');
 var Topology = require('../models/topologymodel');
 var minstance= require('../models/instancemodel');
+var mstream= require('../models/buildstreammodel');
 
 exports.findAllView = function(req, res) {
   topologyPoolModel.find({},function(err, docs) {
@@ -37,7 +38,6 @@ exports.addViewSetup = function(req, res) {
       console.log('no topology found');
       topdocs = [];
     }
-    
     res.render('topology/pools/newpool.jade', {
                 title: 'Create new pool', 
                 topdocs: topdocs

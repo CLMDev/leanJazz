@@ -41,6 +41,8 @@ var TopologyPoolSchema = new Schema({
 	name: {type: String, unique: true},
 	description: String,
 	type: {type: String, default: 'noapp'},
+	parentPool:{type: String, default: 'no-parent'},
+	attachedStream:{type: String, default: 'no-stream'},
 	topologyRef: {type: String, ref: 'Topology'},
 	poolMethod: {type: String, default: 'basic'},
 	poolMinAvailable: {type: Number, default: 2},

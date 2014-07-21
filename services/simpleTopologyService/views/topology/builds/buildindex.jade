@@ -21,54 +21,6 @@ block content
       console.log( "ready!" );
       
       var  btn_obj;
-      $('#checkoutdialog').dialog({
-        modal: true,
-        autoOpen: false,
-        buttons: [
-          {
-           text: 'OK',
-           click: function() {
-             $( this ).dialog( "close" );
-             console.log( "button object:"+btn_obj );
-             console.log( 'input from dialog:'+$('input').val() );
-             var today= new Date();
-             $.ajax({
-               url: btn_obj.value,
-               data: {
-                 checkedout: true,
-                 checkoutUser: "default user",
-                 checkoutDate: today.toLocaleDateString(), 
-                 checkoutComment: $('input').val() 
-               },
-               type: "PUT",
-               dataType : "json",
-               success: function( json ) {
-                  console.log( "btn_obj.id:"+btn_obj.id );
-                  var btn=$('#'+btn_obj.id);
-                  var comment=btn.parent().prev();
-                  comment.text(json.checkoutComment);
-                  var user=comment.prev();
-                  user.text(json.checkoutUser);
-                  btn.remove();
-                  
-               },
-               error: function( xhr, status, errorThrown ) {
-                 alert( "Sorry, there was a problem!" );
-                 console.log( "Error: " + errorThrown );
-                 console.log( "Status: " + status );
-               }
-             });//ajax
-
-           }
-          },
-          {
-           text: 'CANCEL',
-           click: function() {
-             $( this ).dialog( "close" );
-           }
-          }
-        ]
-      });//checkout dialog
       $('#deletedialog').dialog({
         modal: true,
         autoOpen: false,
@@ -79,10 +31,7 @@ block content
              $( this ).dialog( "close" );
              $.ajax({
                url: btn_obj.value,
-               data: {
-               },
-               type: "DEL",
-               dataType : "json",
+               type: "DELETE",
                success: function( json ) {
                   console.log( "btn_obj.id:"+btn_obj.id );
                   var btn=$('#'+btn_obj.id);
@@ -113,12 +62,7 @@ block content
          console.log('setting button obj'+btn_obj);
          $('#deletedialog').dialog('open');
         });      
-        $(':button:contains("Checkout")')
-        .click(function() {
-         btn_obj=this;
-         $('#checkoutdialog').dialog('open');
-        });//checkout
-    });//ready
+      });//ready
     
   p The following is a list of the instances
   - if(docs.length) 
