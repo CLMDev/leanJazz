@@ -24,13 +24,18 @@ block content
           th Pool Name
           th Topology
           th Type
+          th Parent 
+          th Build Stream 
           th Description
       tbody
           each pool in docs
             tr
-              td #{pool.name}
+              td 
+                a(href="/topology/pools/#{pool._id}/instances/") #{pool.name}
               td #{pool.topologyRef.name}
               td #{pool.type}
+              td #{pool.parentPool}
+              td #{pool.attachedStream}
               td #{pool.description}
               td
                 a.btn(href="/topology/pools/#{pool._id}/edit") Edit
