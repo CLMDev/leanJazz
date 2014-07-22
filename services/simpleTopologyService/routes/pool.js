@@ -62,6 +62,12 @@ exports.addViewExecute = function(req, res) {
 	validatePool(req.body.pool, function(err) {
 		if (! err) {
 			var pool = new topologyPoolModel(req.body.pool);
+                        if(pool.type=='noapp'){
+                          pool.parentPool='N/A';
+                          pool.attachedStream='N/A';
+                        } else {
+                          pool.topologyRef='N/A';
+                        }
 			pool.save(function(err) {
 				if (! err) {
 					res.redirect('/topology/pools');
@@ -137,11 +143,12 @@ exports.create = function(req, res) {
 		console.log(req.body);
 		//var inputOBJ=JSON.parse(req.body);
 		console.log('::::input reference id:'+req.body.topologyRef);
-		Topology.count({_id:req.body.topologyRef}, function(err, count) {
-		console.log('::::count of topology document:'+count);
-		if (count==1) {
+                if(req.body.type=='noapp'){
+		  Topology.count({_id:req.body.topologyRef}, function(err, count) {
+		  console.log('::::count of topology document:'+count);
+		  if (count==1) {
 
-		  topologyPoolModel.create(req.body, function(err, pool){ 
+		    topologyPoolModel.create(req.body, function(err, pool){ 
 			if (! err){
 				//return the created topology pool information
 				console.log('created new topology pool');
@@ -154,16 +161,33 @@ exports.create = function(req, res) {
 				console.log(err);
 				res.send(err, 400);
 			}
-		  }); //topologyPoolModel
-		}//if()
-		else{
+		    }); //topologyPoolModel
+		  }//if(count==1)
+		  else{
 				//return an error 
 				console.log('failed to create pool using:' + res.json);
 				console.log('topologyRef can not be found!');
 				
 				res.send(err, 400);
-		}
-		});//Topology.find
+		  }
+		  });//Topology.find
+                } else { // type='app'
+                    topologyPoolModel.create(req.body, function(err, pool){
+                        if (! err){
+                                //return the created topology pool information
+                                console.log('created new topology pool');
+                                console.log(pool);
+                                res.json(pool);
+                        }else{
+                                //return an error
+                                console.log('failed to create pool using:' + res.json);
+                                console.log(pool);
+                                console.log(err);
+                                res.send(err, 400);
+                        }
+                    }); //topologyPoolModel
+                 }
+
 	}catch (err) {
 		console.log('could not create new topology pool, most likely due to invalid data');
 		console.log(err);

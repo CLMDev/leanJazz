@@ -18,8 +18,53 @@ block content
   script(type='text/javascript').
     $( document ).ready(function() {
       console.log( "ready!" );
-      $('#parent').hide();
-      $('#stream').hide();
+      $('#div_parent').hide();
+      $('#div_stream').hide();
+      $('#div_topology').show();
+      $('#select_type').change(function(){
+        if($('#select_type').val()=='noapp'){
+          $('#div_parent').hide();
+          $('#div_stream').hide();
+          $('#div_topology').show();
+        } else {
+          $('#div_parent').show();
+          $('#div_stream').show();
+          $('#div_topology').hide();
+               $.ajax({
+               url: "/api/v1/buildstreams/",
+               type: "GET",
+               success: function( json ) {
+                 var option_string='';
+                 json.forEach( function(stream){
+                 option_string=option_string+'<option>'+stream.buildStream+'</option>';
+                 });
+                 $('#div_stream select').html(option_string); 
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem to get build streams!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+               $.ajax({
+               url: "/api/v1/topology/pools/",
+               type: "GET",
+               success: function( json ) {
+                 var option_string='';
+                 json.forEach( function(pool){
+                   if(pool.type=='noapp') 
+                     option_string=option_string+'<option value="' +pool._id+'">'+pool.name+'</option>';
+                 });
+                 $('#div_parent select').html(option_string); 
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem to get no app pools!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+        }
+      });
     });//ready
    
   form.form-horizontal(method='post', action='/topology/pools')
@@ -41,53 +86,36 @@ block content
             div.span3
               p Type
             div
-              select
-                option(value="app") app
+              select(name='pool[type]', id="select_type")
                 option(value="noapp") noapp 
-          div.row(id="parent")
-            div.span6
+                option(value="app") app
+          div.row(id="div_parent")
+            div.span3
               p Parent Pool
             div
               select(name='pool[parentPool]')
-                each pool in pooldocs
-                  option(value='#{pool.id}') #{pool.name}            
-          div.row(id="stream")
-            div.span6
+          div.row(id="div_stream")
+            div.span3
               p Attached Stream
             div
               select(name='pool[attachedStream]')
-                each stream in streamdocs
-                  option(value='#{stream.buildStream}') #{stream.buildStream}     
-          div.row(id="topology")
+          div.row(id="div_topology")
             div.span3
               p Topology
             div
               select.span3(name='pool[topologyRef]')
                 each topology in topdocs
                   option(value='#{topology.id}') #{topology.name}
-<<<<<<< HEAD
-=======
-                
-              
-          div.row
-            div.span3
-              p Type
-            div
-              select.span3
-                option(value="app") app
-                option(value="noapp") noapp
-                
->>>>>>> c96f8ee49313ce144fb25737091713e911ee6883
           div.row
             div.span3
               p poolMinAvailable
             div
-              input.span6(name='pool[poolMinAvailable]')
+              input.span3(name='pool[poolMinAvailable]')
           div.row
             div.span3
               p poolMaxTotal
             div
-              input.span6(name='pool[poolMaxTotal]')
+              input.span3(name='pool[poolMaxTotal]')
 
         div.actions 
           div.row

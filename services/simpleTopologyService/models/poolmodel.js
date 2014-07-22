@@ -41,9 +41,9 @@ var TopologyPoolSchema = new Schema({
 	name: {type: String, unique: true},
 	description: String,
 	type: {type: String, default: 'noapp'},
-	parentPool:{type: String, default: 'no-parent'},
-	attachedStream:{type: String, default: 'no-stream'},
-	topologyRef: {type: String, ref: 'Topology'},
+	parentPool:{type: String, default: 'N/A'},
+	attachedStream:{type: String, default: 'N/A'},
+	topologyRef: {type: String, ref: 'N/A'},
 	poolMethod: {type: String, default: 'basic'},
 	poolMinAvailable: {type: Number, default: 2},
 	poolMaxTotal: {type: Number, default: 10},
@@ -194,6 +194,12 @@ TopologyPoolSchema.statics.create = function(json, callback){
 	var obj = new mTopologyPool(json);
 	console.log("saving pool");
 	console.log(obj);
+        if(obj.type=='noapp'){
+          obj.parentPool='N/A';
+          obj.attachedStream='N/A';
+        } else {
+          obj.topologyRef='N/A';
+        }
 	obj.save(function(err, newpool){
 		console.log("saved pool, err:" + err);	
 		callback(err,newpool);

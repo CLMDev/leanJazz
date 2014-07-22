@@ -27,31 +27,39 @@ block content
               input.span3(name='pool[name]', class='xlarge', value="#{pool.name}")
             div.row
               div.span3 
-                p TopolgoyReference
-              p.span3 #{pool.topologyRef.name}
-            div.row
-              div.span3 
                 p Type
               p.span3 #{pool.type}
             div.row
               div.span3 
+                p Description
+              input.span6(name='pool[description]', class='xlarge', value="#{pool.description}")
+            div.row
+              div.span3 
+                p TopolgoyReference
+              p.span3 #{pool.topologyRef.name}
+            div.row
+              div.span3 
+                p Parent Pool
+              p.span3 #{pool.parentPool}
+            div.row
+              div.span3 
+                p Build Stream 
+              p.span3 #{pool.attachedStream}
+            div.row
+              div.span3 
                 p PoolMethod
-              input.span6(name='pool[poolMethod]', class='xlarge', value="#{pool.poolMethod}")
+              input.span3(name='pool[poolMethod]', class='xlarge', value="#{pool.poolMethod}")
             
             div.row
               div.span3 
                 p PoolMinAvailable
-              input.span6(name='pool[poolMinAvailable]', class='xlarge', value="#{pool.poolMinAvailable}")
+              input.span3(name='pool[poolMinAvailable]', class='xlarge', value="#{pool.poolMinAvailable}")
             
             div.row
               div.span3 
                 p PoolMaxTotal
-              input.span6(name='pool[poolMaxTotal]', class='xlarge', value="#{pool.poolMaxTotal}")
+              input.span3(name='pool[poolMaxTotal]', class='xlarge', value="#{pool.poolMaxTotal}")
               
-            div.row
-              div.span3 
-                p Description
-              input.span6(name='pool[description]', class='xlarge', value="#{pool.description}")
         div.actions
           input.offset3(type='submit', value='Save', class='btn primary')
           button.offset1(type='reset', class='btn') Cancel
