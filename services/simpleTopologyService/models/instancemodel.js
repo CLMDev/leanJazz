@@ -33,6 +33,7 @@ var TopologyInstanceSchema = new Schema({
 	type: {type: String, default: 'noapp'},
 	topologyRef: {type: String, ref: 'Topology'},
 	poolRef: {type: String, ref: 'mTopologyPool'},
+	apppoolRef: {type: String, ref: 'mTopologyPool'},
 	buildid: String,
         iwdStatus: String,
         iwdURI: String,
@@ -43,7 +44,12 @@ var TopologyInstanceSchema = new Schema({
         checkoutDate: String,
         checkoutUser: String,
         checkoutComment: String,
-	checkedout: {type: Boolean, default: false },
+	    checkedout: {type: Boolean, default: false },
+	    appcheckoutDate: String,
+        appcheckoutUser: String,
+        appcheckoutComment: String,
+	    appcheckedout: {type: Boolean, default: false },
+	    appdeployed: {type: Boolean, default: false },
 	},{strict: 'throw'}
 );
 

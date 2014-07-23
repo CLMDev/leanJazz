@@ -1,0 +1,160 @@
+//  Copyright 2014 IBM
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+
+extends ../../layout
+
+block content
+  h1= title
+  script(type='text/javascript').
+    $( document ).ready(function() {
+      console.log( "ready!" );
+      
+      var  btn_obj;
+      $('#checkoutdialog').dialog({
+        modal: true,
+        autoOpen: false,
+        buttons: [
+          {
+           text: 'OK',
+           click: function() {
+             $( this ).dialog( "close" );
+             console.log( "button object:"+btn_obj );
+             console.log( 'input from dialog:'+$('input').val() );
+             var today= new Date();
+             $.ajax({
+               url: btn_obj.value,
+               data: {
+                 checkedout: true,
+                 checkoutUser: "default user",
+                 checkoutDate: today.toLocaleDateString(), 
+                 checkoutComment: $('input').val() 
+               },
+               type: "PUT",
+               dataType : "json",
+               success: function( json ) {
+                  console.log( "btn_obj.id:"+btn_obj.id );
+                  var btn=$('#'+btn_obj.id);
+                  var comment=btn.parent().prev();
+                  comment.text(json.checkoutComment);
+                  var user=comment.prev();
+                  user.text(json.checkoutUser);
+                  btn.remove();
+                  
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+
+           }
+          },
+          {
+           text: 'CANCEL',
+           click: function() {
+             $( this ).dialog( "close" );
+           }
+          }
+        ]
+      });//checkout dialog
+      $('#deletedialog').dialog({
+        modal: true,
+        autoOpen: false,
+        buttons: [
+          {
+           text: 'OK',
+           click: function() {
+             $( this ).dialog( "close" );
+             $.ajax({
+               url: btn_obj.value,
+               type: "DELETE",
+               success: function( json ) {
+                  console.log( "btn_obj.id:"+btn_obj.id );
+                  var btn=$('#'+btn_obj.id);
+                  var row=btn.parent().parent();
+                  row.remove();
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+
+           }
+          },
+          {
+           text: 'CANCEL',
+           click: function() {
+             $( this ).dialog( "close" );
+           }
+          }
+        ]
+      });//delete dialog
+      console.log(  $(':button:contains("Delete")') );
+        $(':button:contains("Delete")')
+        .click(function() {
+         btn_obj=this;
+         console.log('setting button obj'+btn_obj);
+         $('#deletedialog').dialog('open');
+        });      
+        $(':button:contains("Checkout")')
+        .click(function() {
+         btn_obj=this;
+         $('#checkoutdialog').dialog('open');
+        });//checkout
+    });//ready
+    
+  p The following is a list of the instances
+  - if(docs.length) 
+    div(id="checkoutdialog", title="checkout comments")
+     p
+      label
+       please input comments
+      input( type="text" id="comments_input") 
+
+    div(id="deletedialog", title="Delete Confirmation")
+     p
+      label
+        Are you sure you want to delete it? 
+
+    table.table.table-striped
+      thead
+        tr
+          th Instance Name
+          th Instance Type
+          th Creation Date
+          th BUILD ID
+          th App Deployment Status
+          th APP Checkout User
+          th APP Checkout Comment
+      tbody
+          each instance in docs
+            tr
+              td #{instance.name}
+              td #{instance.type}
+              td #{instance.creationDate}
+              td #{instance.buildid}
+              td #{instance.appdeployed}
+              td #{instance.appcheckoutUser}
+              td #{instance.appcheckoutComment}
+              td
+                if !instance.checkedout
+                  button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
+              td
+                button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
+  - else
+    p No available instances
+  

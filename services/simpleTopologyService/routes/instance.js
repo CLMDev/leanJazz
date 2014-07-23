@@ -23,32 +23,55 @@ process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 var fs = require('fs');
 exports.findAllView = function(req, res) {
    console.log('req.params.id:'+req.params.id);
-   minstance.find({poolRef:req.params.id}, function(err, instances) {
-   if (err) {
-     console.log ( 'error get instances associated with pool');
-     console.err(err);
-     return;
-   }   
-   res.render('topology/instances/instanceindex', {
-      title: 'Associated Instances',
-      docs: instances
-    });
-  });
+   topologyPoolModel.findById(req.params.id, function(err, pool) {
+		
+		if (pool==undefined) { 
+		  console.log ( 'pool not found');
+		  return;
+		}
+		if (pool.type='noapp'){
+          minstance.find({poolRef:req.params.id}, function(err, instances) {
+   
+          res.render('topology/instances/instanceindex', {
+            title: 'Associated Instances',
+            docs: instances
+          });
+          });
+        } else {//pool.type=='app'
+          minstance.find({apppoolRef:req.params.id}, function(err, instances) {
+   
+          res.render('topology/instances/appinstanceindex', {
+            title: 'Associated Instances',
+            docs: instances
+          });
+          });
+        }
 };
 
 exports.findAll = function(req, res) {
    console.log('req.params.id:'+req.params.id);
-   topologyPoolModel.count({_id:req.params.id}, function(err, count) {
-		console.log('::::count of pool:'+count);
-		if (count==1) { 
-          minstance.find({poolRef:req.params.id}, function(err, instances) {
-          if (err) {
-            console.log ( 'error get instances associated with pool');
+   topologyPoolModel.findById(req.params.id, function(err, pool) {
+		
+		if (pool!=undefined) { 
+		  if(pool.type=='noapp'){ 
+            minstance.find({poolRef:req.params.id}, function(err, instances) {
+            if (err) {
+            console.log ( 'error get instances associated with noapp pool');
             res.send(404);
             return;
-          }   
-          res.json(instances);
-          });
+            }   
+            res.json(instances);
+            });
+          } else {//poot.type=='app'
+            minstance.find({apppoolRef:req.params.id}, function(err, instances) {
+            if (err) {
+            console.log ( 'error get instances associated with app pool');
+            res.send(404);
+            return;
+            }   
+            res.json(instances);
+            });
+          }
         } 
         else
          res.send(404);
@@ -156,8 +179,29 @@ exports.update = function(req, res) {
                              
 			      continue;//update to the above fields are ignored
                               }
-                            if(param=='checkedout'&& updateDoc[param]== false)
-                              continue;//checkout only, no checkin support
+                            if(param=='checkedout'){
+                              if(updateDoc[param]== false)
+                                continue;//checkout only, no checkin support
+                              else {
+                                topologyPoolModel.findById(instance.poolRef, function(err, npool){
+                                npool.available=npool.available-1;
+                                npool.checkedout=npool.checkedout+1;
+                                npool.save();
+                                });
+                              }
+                            }
+                            if(param=='appcheckedout'){
+                              if(updateDoc[param]== false)
+                                continue;//checkout only, no checkin support
+                              else {
+                                topologyPoolModel.findById(instance.apppoolRef, function(err, apppool){
+                                apppool.available=apppool.available-1;
+                                apppool.checkedout=apppool.checkedout+1;
+                                apppool.save();
+                                });
+                              }
+                            }
+                                
 			   
 				console.log('updating ' + param + ' with ' + updateDoc[param]);
 				instance[param] = updateDoc[param];
