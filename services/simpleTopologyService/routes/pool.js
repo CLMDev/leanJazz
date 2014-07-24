@@ -29,7 +29,7 @@ exports.findAllView = function(req, res) {
       title: 'Available Pools',
       docs: docs
     });
-  }).populate('topologyRef', 'name');
+  }).populate('topologyRef');
 };
 
 exports.addViewSetup = function(req, res) {
@@ -65,10 +65,7 @@ exports.addViewExecute = function(req, res) {
                         if(pool.type=='noapp'){
                           pool.parentPool='N/A';
                           pool.attachedStream='N/A';
-                        } else {
-                          pool.topologyRef='N/A';
-                        }
-			pool.save(function(err) {
+			  pool.save(function(err) {
 				if (! err) {
 					res.redirect('/topology/pools');
 				}else {
@@ -76,7 +73,23 @@ exports.addViewExecute = function(req, res) {
 					console.log(err);
 					res.redirect('/topology/pools/new');
 				}
-			});
+		  	  });
+                        } else {
+                        topologyPoolModel.findById(pool.parentPool, function( err, parent)
+                          {
+                            pool.topologyRef= parent.topologyRef;
+			    pool.save(function(err) {
+				if (! err) {
+					res.redirect('/topology/pools');
+				}else {
+					console.log('error saving pool');
+					console.log(err);
+					res.redirect('/topology/pools/new');
+				}
+			    });
+                          });//topogloygPoolModel.findById
+                        }//else
+
 		}else {
 			console.log('error in addViewExecute validating pool');
 			console.log(err);
