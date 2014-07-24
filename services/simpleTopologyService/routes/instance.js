@@ -24,28 +24,26 @@ var fs = require('fs');
 exports.findAllView = function(req, res) {
    console.log('req.params.id:'+req.params.id);
    topologyPoolModel.findById(req.params.id, function(err, pool) {
-		
-		if (pool==undefined) { 
-		  console.log ( 'pool not found');
-		  return;
-		}
-		if (pool.type='noapp'){
-          minstance.find({poolRef:req.params.id}, function(err, instances) {
-   
-          res.render('topology/instances/instanceindex', {
+     if (pool==undefined) { 
+       console.log ( 'pool not found');
+       return;
+     }
+     if (pool.type='noapp'){
+       minstance.find({poolRef:req.params.id}, function(err, instances) {
+         res.render('topology/instances/instanceindex', {
             title: 'Associated Instances',
             docs: instances
           });
-          });
-        } else {//pool.type=='app'
-          minstance.find({apppoolRef:req.params.id}, function(err, instances) {
-   
-          res.render('topology/instances/appinstanceindex', {
+       });
+     } else {//pool.type=='app'
+       minstance.find({apppoolRef:req.params.id}, function(err, instances) {
+         res.render('topology/instances/appinstanceindex', {
             title: 'Associated Instances',
             docs: instances
-          });
-          });
-        }
+         });
+       });
+     }
+   });
 };
 
 exports.findAll = function(req, res) {

@@ -40,7 +40,6 @@ var http = require('http');
 var request = require('request-json');
 var topologyPort = nconf.get('PORT');
 var json_client = request.newClient('http://localhost:' + topologyPort);
-
 console.log(pname+': App Deployer process is running! ');
 
 var pool_id=0;
@@ -79,7 +78,6 @@ var timeoutcb= function(){
       return console.error(err);
       }     
       pools.forEach(function( pool){
-    
         console.log(pname+': pool to be checked:')
         console.log(pool)
         console.log('pool name:'+pool.name);
@@ -104,7 +102,7 @@ var timeoutcb= function(){
               instance.checkoutComment='reserved for app pool';
               instance.apppoolRef=parent._id;
               json_client.put('/api/v1/topology/pools/' + parent._id+'/instances/'+instance._id,instance, function(err, res, body) {
-              }
+              });
               pool.available++;
               pool.save();
               client.lrem(pool_id+'-app-processing',1, request , function (err){
@@ -113,24 +111,19 @@ var timeoutcb= function(){
                  return console.error(err);
                  }
               });
+              timer=setTimeout(timeoutcb, 60000);
             }//if(!found && !instance.checkedout)
-          }
+          });//forEach
           if(!found){
             console.log('no available instance found in parent pool!');
             timer=setTimeout(timeoutcb, 2000);
             return;
           }
+          });//json_client.get(
         });//mpool.findById(pool.parentPool
-                
- 
-                timer=setTimeout(timeoutcb, 60000);
-
       });//pool.forEach
     });//mpool.find
-  
-  
 });//client.rpoplpush
-
 }//var timeoutcb=function
 
 timer=setTimeout(timeoutcb, 60000); //every 60 seconds

@@ -137,7 +137,7 @@ var timeoutcb= function(){
                 } 
                 console.log(pname +'environment creation logs:'+ data);
                 var clog = JSON.parse(data); 
-                var env_id= clog.id;
+                var env_id= clog[0].id;
                 console.log(pname +'env_id:'+ env_id);
                 
                 if(env_id === undefined){
