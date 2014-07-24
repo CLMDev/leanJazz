@@ -78,6 +78,7 @@ exports.addViewExecute = function(req, res) {
                         topologyPoolModel.findById(pool.parentPool, function( err, parent)
                           {
                             pool.topologyRef= parent.topologyRef;
+                            pool.parentPoolName=parent.name;
 			    pool.save(function(err) {
 				if (! err) {
 					res.redirect('/topology/pools');
