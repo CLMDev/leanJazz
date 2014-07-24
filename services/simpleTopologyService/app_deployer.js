@@ -29,6 +29,8 @@ client = redis.createClient(6379,'9.42.64.55');
 var mtopology = require('./models/topologymodel');
 var mpool = require('./models/poolmodel');
 var minstance = require('./models/instancemodel');
+var mbuildstream = require('./models/buildstreammodel');
+var mbuild = require('./models/buildmodel');
 process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 //process.env['JAVA_HOME'] = '/usr/java/jre1.7.0_60';
 
@@ -42,6 +44,8 @@ var topologyPort = nconf.get('PORT');
 var json_client = request.newClient('http://localhost:' + topologyPort);
 console.log(pname+': App Deployer process is running! ');
 
+var process_template,process_template_obj, process_template_updated;
+var build_id;
 var pool_id=0;
 
 process.on('message', function(m) {
@@ -111,7 +115,43 @@ var timeoutcb= function(){
                  return console.error(err);
                  }
               });
-              timer=setTimeout(timeoutcb, 60000);
+              process_template=parent.topologyRef.appProcessTemplate;
+              process_template_obj=JSON.parse(process_template);
+              process_template_obj.environment=instance.name;
+              mbuild.find({buildStream:pool.buildStream}, function( err, builds){
+                if(err){
+                  console.log('error get builds for build stream:'+pool.buildStream);
+                  timer=setTimeout(timeoutcb, 60000);
+                  return;
+                }
+                var latest_recommend;
+                builds.forEach(function(build){
+                if(build.isRecommended && build.BUILDID>latest_recommend)
+                   latest_recommend=build.BUILDID;
+                });//forEach()
+                console.log('latest recommended build:'+latest_recommend);
+                process_template_obj.versions[0].version=latest_recommend;
+                process_template_updated=JSON.Stringify(process_template_obj);
+                var dir='/tmp/pool-'+pool._id;
+                if(!fs.existsSync(dir))
+                  fs.mkdirSync(dir );
+                var stream=fs.createWriteStream(dir+'/'+instance.name+ '.json');
+                   stream.end(process_template_updated, function(){
+                     console.log(pname +'::fork background process for instance : '+instance_name);
+                   });
+                   var exec = require('child_process').exec, child;
+                   child = exec('/root/requestProcess.py -v --udclient /root/udclient/udclient ' + dir +'/'+instance_name+ '.json',
+                      function (error, stdout, stderr) {
+                        console.log(pname +' instance creation callback:');
+                        console.log('stdout: ' + stdout);
+                        console.log('stderr: ' + stderr);
+                      });//child=exec
+              
+                
+                
+                timer=setTimeout(timeoutcb, 60000);
+              });//mbuild.find
+              
             }//if(!found && !instance.checkedout)
           });//forEach
           if(!found){
@@ -120,7 +160,7 @@ var timeoutcb= function(){
             return;
           }
           });//json_client.get(
-        });//mpool.findById(pool.parentPool
+        }).populate('topologyRef');//mpool.findById(pool.parentPool
       });//pool.forEach
     });//mpool.find
 });//client.rpoplpush

@@ -66,7 +66,7 @@ if ('development' == app.get('env')) {
 
 var pooler = require('child_process').fork('basicpooler.js');//generate requests for adding instances for all noapp pools 
 var monitor = require('child_process').fork('poolmonitor.js');//monitor pools and fork instance creators for pools
-var pooler = require('child_process').fork('app_basicpooler.js');//generate requests for adding instances for all noapp pools 
+var pooler = require('child_process').fork('app_basicpooler.js');//generate requests for adding instances for all app pools 
 var monitor = require('child_process').fork('app_poolmonitor.js');//monitor pools and fork instance creators for pools
 
 

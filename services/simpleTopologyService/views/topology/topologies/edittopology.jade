@@ -31,6 +31,10 @@ block content
               textarea.span6(name='topology[topologyDocument]', rows=20, class='xlarge') #{topology.topologyDocument}
             div.row
               div.span3 
+                p Process Template
+              textarea.span6(name='topology[appProcessTemplate]', rows=20, class='xlarge') #{topology.appProcessTemplate}
+            div.row
+              div.span3 
                 p referenceURL
               input.span6(name='topology[referenceURL]', class='xlarge', value="#{topology.referenceURL}")
             div.row
