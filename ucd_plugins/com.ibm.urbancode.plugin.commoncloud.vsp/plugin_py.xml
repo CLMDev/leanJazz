@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.urbancode.com/PluginXMLSchema_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<header>
+<identifier id="com.ibm.urbancode.plugin.commoncloud.vsp.externalized" version="1" name="IBM Common Cloud Virtual System Patterns externalized"/>
+<description>This plugin supports publishing, deployment as well as cleanup of virtual system patterns.</description>
+<tag>IBM Common Cloud externalized/Virtual System Pattern</tag>
+</header>
+
+<step-type name="Create_pyautomation_directory">
+<description/>
+<properties>
+<property name="destdir" required="true">
+<property-ui type="textBox" label="destination directory for pyautomation framework"
+description="The destination directory for pyautomation framework."
+default-value="/media/${p:component.name}_${p:version.id}/"/>
+</property>
+</properties>
+<post-processing>
+<![CDATA[
+if (properties.get("exitCode") != 0) {
+properties.put("Status", "Failure");
+}
+else {
+properties.put("Status", "Success");
+properties.put("vsp_dir", properties.get("destdir").toString()+"/files/artifacts/vsysPatterns/");
+}
+]]>
+</post-processing>
+<command program="${GROOVY_HOME}/bin/groovy">
+<arg file="create_pyautomation_directory.groovy"/>
+<arg file="${PLUGIN_INPUT_PROPS}"/>
+<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+</command>
+</step-type>
+
+<step-type name="Load_virtual_image">
+<description/>
+<properties>
+
+<property name="cloudType" required="true">
+     <property-ui
+       type="textBox"
+       label="Type"
+       default-value="${p:environment/type}"
+       description="Specify the type of the cloud provider."/>
+</property>
+
+<property name="cli_home" required="true">
+<property-ui type="textBox" label="Home directory of CLI tool"
+description="Home directory of CLI tool."
+default-value="/media"/>
+</property>
+
+<property name="hostname" required="true">
+<property-ui type="textBox" label="Server name"
+description="hostname of IWD or IPAS server."
+default-value="${p:environment/hostname}"/>
+</property>
+
+<property name="username" required="true">
+<property-ui type="textBox" label="username for cloud"
+description="The username used to publish and deploy the pattern"
+default-value="${p:application/username}"/>
+</property>
+
+<property name="password" required="true">
+<property-ui type="textBox" label="password"
+description="password for the above username."
+default-value="${p:application/password}"/>
+</property>
+
+<property name="acceptlicense" >
+<property-ui type="checkBox" label="acceptlicense"
+description="check it if you would like to accept the license term for the virtual image" />
+</property>
+
+<property name="propertyfile" required="true">
+<property-ui type="textBox" label="property file for the image"
+description="a property file for the image, providing the image name, version, reference id, url, etc."
+/>
+</property>
+
+</properties>
+<post-processing>
+<![CDATA[
+if (properties.get("exitCode") != 0) {
+properties.put("Status", "Failure");
+}
+else {
+properties.put("Status", "Success");
+}
+]]>
+</post-processing>
+<command program="${GROOVY_HOME}/bin/groovy">
+<arg file="load_virtual_image.groovy"/>
+<arg file="${PLUGIN_INPUT_PROPS}"/>
+<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+</command>
+</step-type>
+
+
+<step-type name="Publish_deploy_vsp_cli">
+<description/>
+<properties>
+
+<property name="cloudType" required="true">
+     <property-ui
+       type="textBox"
+       label="Type"
+       default-value="${p:environment/type}"
+       description="Specify the type of the cloud provider."/>
+</property>
+
+<property name="cli_home" required="true">
+<property-ui type="textBox" label="Home directory of CLI tool"
+description="Home directory of CLI tool."
+default-value="/media"/>
+</property>
+
+<property name="property_file" required="true">
+<property-ui type="textBox" label="property file to run the pattern."
+description="The path for the property file to run the pattern."
+default-value="/media/${p:component.name}_${p:version.id}/"/>
+</property>
+
+<property name="envprofilename" required="true">
+<property-ui type="textBox" label="Environment Profile Name"
+description="The Environment profile for the cloud."
+default-value="${p:environment/envprofilename}"/>
+</property>
+
+<property name="cloudgroup" required="true">
+<property-ui type="textBox" label="Cloud Group"
+description="The cloud group for cloud."
+default-value="${p:environment/cloudgroup}"/>
+</property>
+
+<property name="serverhost" required="true">
+<property-ui type="textBox" label="Server name"
+description="hostname of IWD or IPAS server."
+default-value="${p:environment/hostname}"/>
+</property>
+
+<property name="username" required="true">
+<property-ui type="textBox" label="username for cloud"
+description="The username used to publish and deploy the pattern"
+default-value="${p:application/username}"/>
+</property>
+
+<property name="password" required="true">
+<property-ui type="textBox" label="password"
+description="password for the above username."
+default-value="${p:application/password}"/>
+</property>
+
+<property name="publishonly" >
+<property-ui type="checkBox" label="publishonly"
+description="check it if you would like to only publish the pattern but do not deploy the pattern" />
+</property>
+
+<property name="lifetime" required="true">
+<property-ui type="textBox" label="lifetime"
+description="lifetime in seconds for a deployed instance of the pattern."
+default-value="7200"/>
+</property>
+
+</properties>
+<post-processing>
+<![CDATA[
+if (properties.get("exitCode") != 0) {
+properties.put("Status", "Failure");
+}
+else {
+properties.put("Status", "Success");
+}
+]]>
+</post-processing>
+<command program="${GROOVY_HOME}/bin/groovy">
+<arg file="publish_deploy_vsp_cli.groovy"/>
+<arg file="${PLUGIN_INPUT_PROPS}"/>
+<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+</command>
+</step-type>
+
+<step-type name="Publish_deploy_vsp_using_pyautomation">
+<description/>
+<properties>
+
+<property name="cloudType" required="true">
+     <property-ui
+       type="textBox"
+       label="Type"
+       default-value="${p:environment/type}"
+       description="Specify the type of the cloud provider."/>
+</property>
+
+<property name="cli_home" required="true">
+<property-ui type="textBox" label="Home directory of CLI tool"
+description="Home directory of CLI tool."
+default-value="/media"/>
+</property>
+
+<property name="pyautomationdir" required="true">
+<property-ui type="textBox" label="directory of pyautomation framework for this run."
+description="The directory of pyautomation framework for this run."
+default-value="/media/AutoTest/${p:component.name}_${p:version.id}/"/>
+</property>
+
+<property name="envprofilename" required="true">
+<property-ui type="textBox" label="Environment Profile Name"
+description="The Environment profile for the cloud."
+default-value="${p:environment/envprofilename}"/>
+</property>
+
+<property name="cloudgroup" required="true">
+<property-ui type="textBox" label="Cloud Group"
+description="The cloud group for cloud."
+default-value="${p:environment/cloudgroup}"/>
+</property>
+
+<property name="serverhost" required="true">
+<property-ui type="textBox" label="Server name"
+description="hostname of IWD or IPAS server."
+default-value="${p:environment/hostname}"/>
+</property>
+
+<property name="username" required="true">
+<property-ui type="textBox" label="username for cloud"
+description="The username used to publish and deploy the pattern"
+default-value="${p:application/username}"/>
+</property>
+
+<property name="password" required="true">
+<property-ui type="textBox" label="password"
+description="password for the above username."
+default-value="${p:application/password}"/>
+</property>
+
+<property name="publishonly" >
+<property-ui type="checkBox" label="publishonly"
+description="check it if you would like to only publish the pattern but do not deploy the pattern" />
+</property>
+
+<property name="lifetime" required="true">
+<property-ui type="textBox" label="lifetime"
+description="lifetime in seconds for a deployed instance of the pattern."
+default-value="7200"/>
+</property>
+
+</properties>
+<post-processing>
+<![CDATA[
+if (properties.get("exitCode") != 0) {
+properties.put("Status", "Failure");
+}
+else {
+properties.put("Status", "Success");
+}
+]]>
+</post-processing>
+<command program="${GROOVY_HOME}/bin/groovy">
+<arg file="publish_deploy_vsp.groovy"/>
+<arg file="${PLUGIN_INPUT_PROPS}"/>
+<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+</command>
+</step-type>
+
+<step-type name="Patterns Cleanup">
+    <description>Cleanup all the unused or underdeveloped patterns on IPAS1 or IWD</description>
+    <properties>
+	<property name="cloudType" required="true">
+          <property-ui
+          type="textBox"
+          label="Type"
+          default-value="${p:environment/type}"
+          description="Specify the type of the cloud provider."/>
+        </property>
+
+        <property name="cli_home" required="true">
+	  <property-ui type="textBox" label="Home directory of CLI tool"
+            description="Home directory of CLI tool."
+            default-value="/media"/>
+        </property>
+
+ 	  
+ 	  <property name="hostname" required="true">
+ 		<property-ui type="textBox"
+ 					 label="Host Name"
+					 hidden="true"
+ 					 default-value="${p:environment/hostname}"
+ 					 description="Specify the host name of the IPAS1 or IWD environment on which resources need to be cleaned up."/>
+ 	  </property>
+ 	  
+ 	  <property name="username" required="true">
+ 		<property-ui type="textBox"
+ 					 label="User Name"
+					 hidden="true"
+ 					 default-value="${p:application/username}"
+ 					 description="Input your username for IPAS1 or IWD."/>
+ 	  </property>
+ 	  
+ 	  <property name="password" required="true">
+ 		<property-ui type="secureBox"
+ 					 label="Password"
+					 hidden="true"
+ 					 default-value="${p:application/password}"
+ 					 description="Input your password for IPAS1 or IWD."/>
+ 	  </property>
+	  
+	  <property name="method" required="true">
+		<property-ui type="textBox"
+					 label="Method"
+					 hidden="true"
+					 default-value="cleanup_patterns"
+					 description="DO NOT CHANGE. This is used to tell the script which method to run."/>
+	  </property>
+	  
+	  <property name="skip">
+		<property-ui type="checkBox"
+					 label="Skip Patterns"
+					 default-value="false"
+					 description="Skip this step"/>
+	  </property>
+	  
+	  <property name="resourceNames">
+		<property-ui type="textAreaBox"
+					 label="Pattern Names"
+					 description="A comma separated list of pattern names to be cleaned up."/>
+	  </property>
+	  
+	  <property name="excludedResources">
+		<property-ui type="textAreaBox"
+					 label="Excluded Pattern Names"
+					 description="A comma separated list of pattern names to be excluded in the clean up process."/>
+	  </property>
+	  
+	  <property name="resourceOlderThan">
+		<property-ui type="textBox"
+					 label="Patterns Older Than (Days)"
+					 description="Clean up patterns that have been created for longer than the number of specified days."/>
+	  </property>
+    </properties>
+    <post-processing><![CDATA[
+        if (properties.get("exitCode") != 0) {
+            properties.put(new java.lang.String("Status"), new java.lang.String("Failure"));
+        }
+        else {
+            properties.put("Status", "Success");
+        }
+     ]]></post-processing>
+    <command program="${GROOVY_HOME}/bin/groovy">
+	  <arg file="get_properties.groovy"/>
+      <arg file="${PLUGIN_INPUT_PROPS}"/>
+      <arg file="${PLUGIN_OUTPUT_PROPS}"/>
+    </command>
+  </step-type>
+  
+  <step-type name="Script Cleanup">
+    <description>Cleanup all the unused or underdeveloped scripts on IPAS1 or IWD</description>
+    <properties>
+ 	  
+	<property name="cloudType" required="true">
+          <property-ui
+          type="textBox"
+          label="Type"
+          default-value="${p:environment/type}"
+          description="Specify the type of the cloud provider."/>
+        </property>
+
+        <property name="cli_home" required="true">
+	  <property-ui type="textBox" label="Home directory of CLI tool"
+            description="Home directory of CLI tool."
+            default-value="/media"/>
+        </property>
+
+ 	  <property name="hostname" required="true">
+ 		<property-ui type="textBox"
+ 					 label="Host Name"
+					 hidden="true"
+ 					 default-value="${p:environment/hostname}"
+ 					 description="Specify the host name of the IPAS1 or IWD environment on which resources need to be cleaned up."/>
+ 	  </property>
+ 	  
+ 	  <property name="username" required="true">
+ 		<property-ui type="textBox"
+ 					 label="User Name"
+					 hidden="true"
+ 					 default-value="${p:application/username}"
+ 					 description="Input your username for IPAS1 or IWD."/>
+ 	  </property>
+ 	  
+ 	  <property name="password" required="true">
+ 		<property-ui type="secureBox"
+ 					 label="Password"
+					 hidden="true"
+ 					 default-value="${p:application/password}"
+ 					 description="Input your password for IPAS1 or IWD."/>
+ 	  </property>
+	  
+	  <property name="method" required="true">
+		<property-ui type="textBox"
+					 label="Method"
+					 hidden="true"
+					 default-value="cleanup_scripts"
+					 description="DO NOT CHANGE. This is used to tell the script which method to run."/>
+	  </property>
+	  
+	  <property name="skip">
+		<property-ui type="checkBox"
+					 label="Skip Scripts"
+					 default-value="false"
+					 description="Skip this step"/>
+	  </property>
+	  
+	  <property name="resourceNames">
+		<property-ui type="textAreaBox"
+					 label="Script Names"
+					 description="A comma separated list of script names to be cleaned up"/>
+	  </property>
+	  
+	  <property name="excludedResources">
+		<property-ui type="textAreaBox"
+					 label="Excluded Script Names"
+					 description="A comma separated list of script names to be excluded in the clean up process."/>
+	  </property>
+	</properties>
+    <post-processing><![CDATA[
+        if (properties.get("exitCode") != 0) {
+            properties.put(new java.lang.String("Status"), new java.lang.String("Failure"));
+        }
+        else {
+            properties.put("Status", "Success");
+        }
+     ]]></post-processing>
+    <command program="${GROOVY_HOME}/bin/groovy">
+	  <arg file="get_properties.groovy"/>
+      <arg file="${PLUGIN_INPUT_PROPS}"/>
+      <arg file="${PLUGIN_OUTPUT_PROPS}"/>
+    </command>
+  </step-type>
+  
+  <step-type name="Images Cleanup">
+    <description>Cleanup all the unused or underdeveloped images on IPAS1 or IWD</description>
+    <properties>
+ 	  
+	<property name="cloudType" required="true">
+          <property-ui
+          type="textBox"
+          label="Type"
+          default-value="${p:environment/type}"
+          description="Specify the type of the cloud provider."/>
+        </property>
+
+        <property name="cli_home" required="true">
+	  <property-ui type="textBox" label="Home directory of CLI tool"
+            description="Home directory of CLI tool."
+            default-value="/media"/>
+        </property>
+
+ 	  <property name="hostname" required="true">
+ 		<property-ui type="textBox"
+ 					 label="Host Name"
+					 hidden="true"
+ 					 default-value="${p:environment/hostname}"
+ 					 description="Specify the host name of the IPAS1 or IWD environment on which resources need to be cleaned up."/>
+ 	  </property>
+ 	  
+ 	  <property name="username" required="true">
+ 		<property-ui type="textBox"
+ 					 label="User Name"
+					 hidden="true"
+ 					 default-value="${p:application/username}"
+ 					 description="Input your username for IPAS1 or IWD."/>
+ 	  </property>
+ 	  
+ 	  <property name="password" required="true">
+ 		<property-ui type="secureBox"
+ 					 label="Password"
+					 hidden="true"
+ 					 default-value="${p:application/password}"
+ 					 description="Input your password for IPAS1 or IWD."/>
+ 	  </property>
+	  
+	  <property name="skip">
+		<property-ui type="checkBox"
+					 label="Skip Images"
+					 default-value="false"
+					 description="Skip this step"/>
+	  </property>
+	  
+	  <property name="method" required="true">
+		<property-ui type="textBox"
+					 label="Method"
+					 hidden="true"
+					 default-value="cleanup_images"
+					 description="DO NOT CHANGE. This is used to tell the script which method to run."/>
+	  </property>
+	  
+	  <property name="resourceNames">
+		<property-ui type="textAreaBox"
+					 label="Image Names"
+					 description="A comma separated list of image names to be cleaned up"/>
+	  </property>
+	  
+	  <property name="excludedResources">
+		<property-ui type="textAreaBox"
+					 label="Excluded Image Names"
+					 description="A comma separated list of image names to be excluded in the clean up process."/>
+	  </property>
+    </properties>
+    <post-processing><![CDATA[
+        if (properties.get("exitCode") != 0) {
+            properties.put(new java.lang.String("Status"), new java.lang.String("Failure"));
+        }
+        else {
+            properties.put("Status", "Success");
+        }
+     ]]></post-processing>
+    <command program="${GROOVY_HOME}/bin/groovy">
+	  <arg file="get_properties.groovy"/>
+      <arg file="${PLUGIN_INPUT_PROPS}"/>
+      <arg file="${PLUGIN_OUTPUT_PROPS}"/>
+    </command>
+  </step-type>
+</plugin>

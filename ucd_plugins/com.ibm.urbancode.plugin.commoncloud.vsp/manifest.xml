@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pluginInfo>
+  <author>
+    <name>Sam Zhao</name>
+    <email>zjhao@cn.ibm.com</email>
+    <website>http://ibm.com</website>
+  </author>
+  <licenses>
+    <license></license>
+  </licenses>
+  <integrationType>Automation</integrationType>
+  <categories>
+	<category>utility</category>
+	<category>cleanup</category>
+  </categories>
+  <versions>
+    <version name="1">
+	  <releaseNote>
+	   The Cleanup Plugin is an automation based plugin. It can be used before deployment to clean up any unused or underdeveloped patterns, scripts and images in the environment.
+	  </releaseNote>
+    </version>
+  </versions>
+</pluginInfo>

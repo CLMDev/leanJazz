@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.urbancode.com/PluginXMLSchema_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<header>
+		<identifier id="com.ibm.urbancode.plugin.commoncloud.patterntype" version="3" name="IBM Common Cloud Pattern Types" />
+		<description>This plugin supports common task for pattern types.</description>
+		<tag>IBM Common Cloud/Pattern Types</tag>
+	</header>
+	<step-type name="Parse Pattern Type">
+		<description />
+		<properties>
+			<property name="sourceDir" required="true">
+				<property-ui
+						type="textBox"
+						label="Source Dir"
+						description="The source directory for the pattern type file."
+						default-value="/media/${p:component.name}_${p:version.id}/files/artifacts/ptypes/"
+					/>
+			</property>
+		</properties>
+		<post-processing>
+			<![CDATA[
+				if (properties.get("exitCode") != 0) {
+					properties.put("Status", "Failure");
+				} else {
+					properties.put("Status", "Success");
+				}
+			]]>
+		</post-processing>
+		<command program="${GROOVY_HOME}/bin/groovy">
+			<arg file="scripts.groovy/patterntype.parse.groovy"/>
+			<arg file="${PLUGIN_INPUT_PROPS}"/>
+			<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+		</command>
+	</step-type>
+	<step-type name="Import Pattern Type">
+		<description />
+		<properties>
+			<property name="ptypeFile" required="true">
+				<property-ui
+						type="textBox"
+						label="Pattern Type File"
+						description="The source pattern type file."
+						default-value="${p:parse_patterntype/ptypeFile}"
+					/>
+			</property>
+			<property name="cliHome" required="true">
+				<property-ui
+						type="textBox"
+						label="CLI Home"
+						description="The home directory for CLI."
+						default-value="${p:cli_configure/cliHome}"
+					/>
+			</property>
+		 	<property name="cloudHost" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Host Name"
+	 					default-value="${p:cli_configure/cloudHost}"
+	 					description="Specify the host name of the cloud provider."/>
+	 		</property>
+		 	<property name="cloudType" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Type"
+	 					default-value="${p:cli_configure/cloudType}"
+	 					description="Specify the type of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudUser" required="true">
+		 		<property-ui
+						type="textBox"
+	 					label="User Name"
+	 					default-value="${p:application/username}"
+	 					description="Input your username of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudPass" required="true">
+		 		<property-ui
+						type="secureBox"
+	 					label="Password"
+	 					default-value="${p:application/password}"
+	 					description="Input your password of the cloud provider."/>
+	 		</property>
+		</properties>
+		<post-processing>
+			<![CDATA[
+				if (properties.get("exitCode") != 0) {
+					properties.put("Status", "Failure");
+				} else {
+					properties.put("Status", "Success");
+				}
+			]]>
+		</post-processing>
+		<command program="${GROOVY_HOME}/bin/groovy">
+			<arg file="scripts.groovy/patterntype.import.groovy"/>
+			<arg file="${PLUGIN_INPUT_PROPS}"/>
+			<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+		</command>
+	</step-type>
+	<step-type name="Accept Licenses of Pattern Type">
+		<description />
+		<properties>
+			<property name="ptypeName" required="true">
+				<property-ui
+						type="textBox"
+						label="Pattern Type Name"
+						description="The name of pattern type."
+						default-value="${p:parse_patterntype/ptypeName}"
+					/>
+			</property>
+			<property name="ptypeVersion" required="true">
+				<property-ui
+						type="textBox"
+						label="Pattern Type Version"
+						description="The version of pattern type."
+						default-value="${p:parse_patterntype/ptypeVersion}"
+					/>
+			</property>
+			<property name="cliHome" required="true">
+				<property-ui
+						type="textBox"
+						label="CLI Home"
+						description="The home directory for CLI."
+						default-value="${p:cli_configure/cliHome}"
+					/>
+			</property>
+		 	<property name="cloudHost" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Host Name"
+	 					default-value="${p:cli_configure/cloudHost}"
+	 					description="Specify the host name of the cloud provider."/>
+	 		</property>
+		 	<property name="cloudType" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Type"
+	 					default-value="${p:cli_configure/cloudType}"
+	 					description="Specify the type of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudUser" required="true">
+		 		<property-ui
+						type="textBox"
+	 					label="User Name"
+	 					default-value="${p:application/username}"
+	 					description="Input your username of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudPass" required="true">
+		 		<property-ui
+						type="secureBox"
+	 					label="Password"
+	 					default-value="${p:application/password}"
+	 					description="Input your password of the cloud provider."/>
+	 		</property>
+		</properties>
+		<post-processing>
+			<![CDATA[
+				if (properties.get("exitCode") != 0) {
+					properties.put("Status", "Failure");
+				} else {
+					properties.put("Status", "Success");
+				}
+			]]>
+		</post-processing>
+		<command program="${GROOVY_HOME}/bin/groovy">
+			<arg file="scripts.groovy/patterntype.acceptlicense.groovy"/>
+			<arg file="${PLUGIN_INPUT_PROPS}"/>
+			<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+		</command>
+	</step-type>
+	<step-type name="Enable Pattern Type">
+		<description />
+		<properties>
+			<property name="ptypeName" required="true">
+				<property-ui
+						type="textBox"
+						label="Pattern Type Name"
+						description="The name of pattern type."
+						default-value="${p:parse_patterntype/ptypeName}"
+					/>
+			</property>
+			<property name="ptypeVersion" required="true">
+				<property-ui
+						type="textBox"
+						label="Pattern Type Version"
+						description="The version of pattern type."
+						default-value="${p:parse_patterntype/ptypeVersion}"
+					/>
+			</property>
+			<property name="cliHome" required="true">
+				<property-ui
+						type="textBox"
+						label="CLI Home"
+						description="The home directory for CLI."
+						default-value="${p:cli_configure/cliHome}"
+					/>
+			</property>
+		 	<property name="cloudHost" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Host Name"
+	 					default-value="${p:cli_configure/cloudHost}"
+	 					description="Specify the host name of the cloud provider."/>
+	 		</property>
+		 	<property name="cloudType" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Type"
+	 					default-value="${p:cli_configure/cloudType}"
+	 					description="Specify the type of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudUser" required="true">
+		 		<property-ui
+						type="textBox"
+	 					label="User Name"
+	 					default-value="${p:application/username}"
+	 					description="Input your username of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudPass" required="true">
+		 		<property-ui
+						type="secureBox"
+	 					label="Password"
+	 					default-value="${p:application/password}"
+	 					description="Input your password of the cloud provider."/>
+	 		</property>
+		</properties>
+		<post-processing>
+			<![CDATA[
+				if (properties.get("exitCode") != 0) {
+					properties.put("Status", "Failure");
+				} else {
+					properties.put("Status", "Success");
+				}
+			]]>
+		</post-processing>
+		<command program="${GROOVY_HOME}/bin/groovy">
+			<arg file="scripts.groovy/patterntype.enable.groovy"/>
+			<arg file="${PLUGIN_INPUT_PROPS}"/>
+			<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+		</command>
+	</step-type>
+	<step-type name="Delete Pattern Type">
+		<description />
+		<properties>
+			<property name="ptypeName" required="true">
+				<property-ui
+						type="textBox"
+						label="Pattern Type Name"
+						description="The name of pattern type."
+						default-value="${p:parse_patterntype/ptypeName}"
+					/>
+			</property>
+			<property name="ptypeVersion" required="true">
+				<property-ui
+						type="textBox"
+						label="Pattern Type Version"
+						description="The version of pattern type."
+						default-value="${p:parse_patterntype/ptypeVersion}"
+					/>
+			</property>
+			<property name="cliHome" required="true">
+				<property-ui
+						type="textBox"
+						label="CLI Home"
+						description="The home directory for CLI."
+						default-value="${p:cli_configure/cliHome}"
+					/>
+			</property>
+		 	<property name="cloudHost" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Host Name"
+	 					default-value="${p:cli_configure/cloudHost}"
+	 					description="Specify the host name of the cloud provider."/>
+	 		</property>
+		 	<property name="cloudType" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Type"
+	 					default-value="${p:cli_configure/cloudType}"
+	 					description="Specify the type of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudUser" required="true">
+		 		<property-ui
+						type="textBox"
+	 					label="User Name"
+	 					default-value="${p:application/username}"
+	 					description="Input your username of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudPass" required="true">
+		 		<property-ui
+						type="secureBox"
+	 					label="Password"
+	 					default-value="${p:application/password}"
+	 					description="Input your password of the cloud provider."/>
+	 		</property>
+		</properties>
+		<post-processing>
+			<![CDATA[
+				if (properties.get("exitCode") != 0) {
+					properties.put("Status", "Failure");
+				} else {
+					properties.put("Status", "Success");
+				}
+			]]>
+		</post-processing>
+		<command program="${GROOVY_HOME}/bin/groovy">
+			<arg file="scripts.groovy/patterntype.delete.groovy"/>
+			<arg file="${PLUGIN_INPUT_PROPS}"/>
+			<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+		</command>
+	</step-type>
+	<step-type name="Deploy Shared Service">
+		<description />
+		<properties>
+			<property name="sharedServiceName" required="true">
+				<property-ui
+						type="textBox"
+						label="Shared Service Name"
+						description="The name of shared service."
+						default-value="${p:parse_patterntype/sharedServiceName}"
+					/>
+			</property>
+			<property name="sharedServiceVersion" required="true">
+				<property-ui
+						type="textBox"
+						label="Shared Service Version"
+						description="The version of shared service."
+						default-value="${p:parse_patterntype/sharedServiceVersion}"
+					/>
+			</property>
+			<property name="publickey" required="false">
+				<property-ui
+						type="textAreaBox"
+						label="Public Key"
+						description="The public key to SSH to the deployed shared service instances or nodes."
+						default-value=""
+					/>
+			</property>
+			<property name="deploymentParameterFile" required="false">
+				<property-ui
+						type="textBox"
+						label="Deployment Parameters"
+						description="The parameters which will be used to deploy shared service."
+						default-value=""
+					/>
+			</property>
+			<property name="cliHome" required="true">
+				<property-ui
+						type="textBox"
+						label="CLI Home"
+						description="The home directory for CLI."
+						default-value="${p:cli_configure/cliHome}"
+					/>
+			</property>
+		 	<property name="cloudHost" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Host Name"
+	 					default-value="${p:cli_configure/cloudHost}"
+	 					description="Specify the host name of the cloud provider."/>
+	 		</property>
+		 	<property name="cloudType" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Type"
+	 					default-value="${p:cli_configure/cloudType}"
+	 					description="Specify the type of the cloud provider."/>
+	 		</property>
+		 	<property name="cloudEnvProfile" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Environment Profile"
+	 					default-value="${p:environment/default_environment_profile}"
+	 					description="Specify which environment profile will be used to deploy shared service."/>
+	 		</property>
+		 	<property name="cloudIpGroup" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="IP Group"
+	 					default-value="${p:environment/default_ip_group}"
+	 					description="Specify which IP group will be used to deploy shared service."/>
+	 		</property>
+		 	<property name="cloudGroup" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Cloud Group"
+	 					default-value="${p:environment/default_cloud_group}"
+	 					description="Specify which cloud group will be used to deploy shared service."/>
+	 		</property>
+	 		<property name="cloudUser" required="true">
+		 		<property-ui
+						type="textBox"
+	 					label="User Name"
+	 					default-value="${p:application/username}"
+	 					description="Input your username of the cloud provider."/>
+	 		</property>
+	 		<property name="cloudPass" required="true">
+		 		<property-ui
+						type="secureBox"
+	 					label="Password"
+	 					default-value="${p:application/password}"
+	 					description="Input your password of the cloud provider."/>
+	 		</property>
+		</properties>
+		<post-processing>
+			<![CDATA[
+				if (properties.get("exitCode") != 0) {
+					properties.put("Status", "Failure");
+				} else {
+					properties.put("Status", "Success");
+				}
+			]]>
+		</post-processing>
+		<command program="${GROOVY_HOME}/bin/groovy">
+			<arg file="scripts.groovy/sharedservice.deploy.groovy"/>
+			<arg file="${PLUGIN_INPUT_PROPS}"/>
+			<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+		</command>
+	</step-type>
+</plugin>

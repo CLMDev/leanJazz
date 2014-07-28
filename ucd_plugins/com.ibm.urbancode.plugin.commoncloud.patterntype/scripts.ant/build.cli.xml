@@ -1,0 +1,240 @@
+<project name="build.cli" basedir="."> 
+
+	<dirname file="${ant.file}" property="scripts.ant.dir" />
+		
+	<property name="cloud.port" value="443" />
+	<property name="cloud.cli.url" value="https://${cloud.host}:${cloud.port}/downloads/cli/" />
+	
+<!--
+   	<property name="dir.cli.download" value="${basedir}/cli_${cloud.host}" />
+    <property name="dir.cli.extrascripts" value="${basedir}/build/cli.scripts" />
+-->
+	<target name="import.cert">
+<!--
+	    <property name="icct.cert.file" value="${icct.host}.crt" />
+		<exec executable="openssl">
+			<redirector output="${https.output}" />
+			<arg line="s_client -connect ${cloud.host}:${cloud.port}" />
+		</exec>
+		<exec executable="sed">
+			<redirector output="${icct.cert.file}" />
+			<arg line="-ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' ${https.output}" />
+		</exec>
+		<delete file="${https.output}" />
+		
+		<echo message="keystore: ${javax.net.ssl.trustStore}"/>
+		<exec executable="keytool">
+			<arg line="-import -trustcacerts -noprompt -alias ${icct.host}" />
+			<arg line="-keystore ${javax.net.ssl.trustStore}" />
+			<arg line="-storepass ${javax.net.ssl.trustStorePassword}" />
+			<arg line="-file ${icct.cert.file}" />
+		</exec>
+		<delete file="${icct.cert.file}" />
+ -->
+ 	</target>	
+	
+	<target name="cli.downloaded.check">
+		<condition property="cli.downloaded">
+			<available file="${dir.cli.download}" type="dir" />
+		</condition>
+	</target>
+  
+	<target name="init-tasks">
+		<path id="anttaskcl">
+			<fileset dir="${scripts.ant.dir}/lib-build">
+				<include name="ws-ant.jar"/>
+			</fileset>
+			<pathelement location="${scripts.ant.dir}/lib-build/ant-contrib.jar" />
+		</path>
+		<taskdef name="if" classname="net.sf.antcontrib.logic.IfTask" classpathref="anttaskcl"/>
+		<taskdef name="for" classname="net.sf.antcontrib.logic.For" classpathref="anttaskcl"/>
+	    	<taskdef name="foreach" classname="net.sf.antcontrib.logic.ForEach" classpathref="anttaskcl"/>
+		<path id="cp.jsonparse">
+			<fileset dir="${scripts.ant.dir}/lib-build">
+				<include name="com.ibm.json_*.jar"/>
+			</fileset>
+			<pathelement location="${scripts.ant.dir}/lib-build/ws-ant.jar" />
+		</path>
+        	<typedef name="jsonproperty" classname="com.ibm.ws.ant.buildtasks.JsonParse" classpathref="cp.jsonparse"/>
+	</target>
+
+	<target name="download.cli" depends="cli.downloaded.check" unless="cli.downloaded">
+		<delete dir="${dir.cli.download}"/>
+		<mkdir dir="${dir.cli.download}"/>
+		
+		<antcall target="import.cert" />
+		
+		<!-- <get src="${cli.url}" dest="${dir.cli.download}" /> -->
+		<exec executable="wget" dir="${dir.cli.download}">
+			<arg value="${cloud.cli.url}" />
+			<arg value="--no-check-certificate" />
+			<arg value="--http-user=${cloud.user}" />
+			<arg value="--http-password=${cloud.pass}" />
+		</exec>
+		<unzip dest="${dir.cli.download}" src="${dir.cli.download}/index.html" />
+		<delete file="${dir.cli.download}/index.html" />
+		<chmod perm="ugo+rx">
+			<fileset dir="${dir.cli.download}" />
+		</chmod>
+	</target>
+
+	<target name="getclidir" depends="init-tasks,download.cli">
+		<property name="dir.cli.root" value="${dir.cli.download}"/>
+		<if>
+			<equals arg1="${cloud.type}" arg2="ipas" />
+			<then>
+				<property name="dir.cli" value="${dir.cli.root}/pure.cli"/>
+				<condition property="cmd.cli" value="${dir.cli}/bin/pure.bat">
+					<os family="windows" />
+				</condition>
+				<condition property="cmd.cli" value="${dir.cli}/bin/pure">
+					<os family="unix" />
+				</condition>
+			</then>
+			<elseif>
+				<equals arg1="${cloud.type}" arg2="iwd" />
+				<then>
+					<property name="dir.cli" value="${dir.cli.root}/deployer.cli"/>
+					<condition property="cmd.cli" value="${dir.cli}/bin/deployer.bat">
+						<os family="windows" />
+					</condition>
+					<condition property="cmd.cli" value="${dir.cli}/bin/deployer">
+						<os family="unix" />
+					</condition>
+				</then>
+			</elseif>
+			<elseif>
+				<equals arg1="${cloud.type}" arg2="icct" />
+				<then>
+					<property name="dir.cli" value="${dir.cli.root}/icct.cli"/>
+					<condition property="cmd.cli" value="${dir.cli}/bin/icct.bat">
+						<os family="windows" />
+					</condition>
+					<condition property="cmd.cli" value="${dir.cli}/bin/icct">
+						<os family="unix" />
+					</condition>
+				</then>
+			</elseif>
+			<else>
+			    <fail message="Invalid cloud type ${cloud.type}" />
+			</else>
+		</if>
+		<echo message="setting dir.cli to ${dir.cli}"/>
+		<echo message="setting cmd.cli to ${cmd.cli}"/>
+	</target>
+
+	<target name="pattern.import" depends="getclidir" unless="skip.pattern.import">
+		<echo message="Importing pattern file ${pattern.load.file}"/>
+		<property name="cmd.cli.parameters" value="-f ${dir.cli}/samples/importPatterns.py -s ${pattern.load.file}"/>
+		<echo message="Command line parameters: ${cmd.cli.parameters}" />
+		<exec executable="${cmd.cli}" searchpath="true" errorproperty="error">
+			<arg line="-h ${cloud.host} -u ${cloud.user} -p ${cloud.pass} --acceptcert ${cmd.cli.parameters}"/>
+		</exec>
+		<fail message="Error while executing command: ${error}">
+			<condition>
+				<not>
+					<equals arg1="${error}" arg2="" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="patterntype.import" depends="getclidir" unless="skip.patterntype.import">
+		<echo message="Importing pattern type file ${patterntype.load.file}"/>
+		<property name="cmd.cli.parameters" value="-f ${dir.cli.extrascripts}/importPatterntype.py -s ${patterntype.load.file}"/>
+		<echo message="Command line parameters: ${cmd.cli.parameters}" />
+		<exec executable="${cmd.cli}" searchpath="true" errorproperty="error">
+			<arg line="-h ${cloud.host} -u ${cloud.user} -p ${cloud.pass} --acceptcert ${cmd.cli.parameters}"/>
+		</exec>
+		<fail message="Error while executing command: ${error}">
+			<condition>
+				<not>
+					<equals arg1="${error}" arg2="" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="patterntype.acceptLicense" depends="getclidir" unless="skip.patterntype.acceptLicense">
+		<echo message="Accepting license of pattern type ${patterntype.name} version ${patterntype.version}"/>
+		<property name="cmd.cli.parameters" value="-f ${dir.cli.extrascripts}/acceptPatterntypeLicense.py -n ${patterntype.name} -v ${patterntype.version}"/>
+		<echo message="Command line parameters: ${cmd.cli.parameters}" />
+		<exec executable="${cmd.cli}" searchpath="true" errorproperty="error">
+			<arg line="-h ${cloud.host} -u ${cloud.user} -p ${cloud.pass} --acceptcert ${cmd.cli.parameters}"/>
+		</exec>
+		<fail message="Error while executing command: ${error}">
+			<condition>
+				<not>
+					<equals arg1="${error}" arg2="" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="patterntype.enable" depends="getclidir" unless="skip.patterntype.enable">
+		<echo message="Enabling pattern type ${patterntype.name} version ${patterntype.version}"/>
+		<property name="cmd.cli.parameters" value="-f ${dir.cli.extrascripts}/enablePatterntype.py -n ${patterntype.name} -v ${patterntype.version}"/>
+		<echo message="Command line parameters: ${cmd.cli.parameters}" />
+		<exec executable="${cmd.cli}" searchpath="true" errorproperty="error">
+			<arg line="-h ${cloud.host} -u ${cloud.user} -p ${cloud.pass} --acceptcert ${cmd.cli.parameters}"/>
+		</exec>
+		<fail message="Error while executing command: ${error}">
+			<condition>
+				<not>
+					<equals arg1="${error}" arg2="" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="patterntype.delete" depends="getclidir" if="force.patterntype.delete">
+		<echo message="Deleting pattern type ${patterntype.name} version ${patterntype.version}"/>
+		<property name="cmd.cli.parameters" value="-f ${dir.cli.extrascripts}/deletePatterntype.py -n ${patterntype.name} -v ${patterntype.version}"/>
+		<echo message="Command line parameters: ${cmd.cli.parameters}" />
+		<exec executable="${cmd.cli}" searchpath="true" errorproperty="error">
+			<arg line="-h ${cloud.host} -u ${cloud.user} -p ${cloud.pass} --acceptcert ${cmd.cli.parameters}"/>
+		</exec>
+		<fail message="Error while executing command: ${error}">
+			<condition>
+				<not>
+					<equals arg1="${error}" arg2="" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="sharedservice.deploy" depends="init-tasks,getclidir" unless="skip.sharedservice.deploy">
+		<echo message="Deploying shared service ${sharedservice.name} version ${sharedservice.version}" />
+		<property name="cmd.cli.parameters" value="-h ${cloud.host} -u ${cloud.user} -p ${cloud.pass} -f ${dir.cli.extrascripts}/deploySharedService.py -n ${sharedservice.name} -v ${sharedservice.version} -p ${cloud.environment.profile} -i ${cloud.ip.group} -c ${cloud.group}" />
+        <if>
+            <isset property="public.key.file"/>
+            <then>
+    			<property name="cmd.cli.parameters" value="${cmd.cli.parameters} -k ${public.key.file}" />
+            </then> 
+        </if>
+        <if>
+            <isset property="deployment.parameter.file"/>
+            <then>
+    			<property name="cmd.cli.parameters" value="${cmd.cli.parameters} -d ${deployment.parameter.file}" />
+            </then> 
+        </if>
+		<exec executable="${cmd.cli}" searchpath="true" errorproperty="error">
+			<arg line="${cmd.cli.parameters}" />
+		</exec>
+		<fail message="Error while deploying shared service: ${error}">
+			<condition>
+				<not>
+					<equals arg1="${error}" arg2="" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+
+	<target name="workloadstandard.import" unless="skip.workloadstandard.import">
+		<echo message="Importing database workload standard ${workloadstandard.name} version ${workloadstandard.version} from file ${workloadstandard.file}"/>
+		<antcall target="cli.exec">
+			<param name="cmd.cli.parameters" value="-f ${dir.cli.extrascripts}/importDbWorkloadStandard.py -n '${workloadstandard.name}' -d '${workloadstandard.desc}' -v ${workloadstandard.version} -s ${workloadstandard.file}"/>
+		</antcall>
+	</target>
+
+</project>
