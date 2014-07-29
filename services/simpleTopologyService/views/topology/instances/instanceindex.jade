@@ -35,10 +35,10 @@ block content
              $.ajax({
                url: btn_obj.value,
                data: {
-                 appcheckedout: true,
-                 appcheckoutUser: "default user",
-                 appcheckoutDate: today.toLocaleDateString(), 
-                 appcheckoutComment: $('input').val() 
+                 checkedout: true,
+                 checkoutUser: "default user",
+                 checkoutDate: today.toLocaleDateString(), 
+                 checkoutComment: $('input').val() 
                },
                type: "PUT",
                dataType : "json",
@@ -142,13 +142,13 @@ block content
           each instance in docs
             tr
               td 
-                a(href="#{instance.ucdURI}") #{instance.name}
+                a(href="#{instance.ucdURI}" target="_blank") #{instance.name}
               td #{instance.type}
               td #{instance.creationDate}
               td #{instance.checkoutUser}
               td #{instance.checkoutComment}
               td
-                if !instance.appcheckedout
+                if !instance.checkedout
                   button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
               td
                 button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete

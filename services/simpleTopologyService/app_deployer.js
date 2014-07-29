@@ -132,6 +132,7 @@ var timeoutcb= function(){
                 found=true;
                 instance.checkedout=true;
                 instance.type='app';
+                instance.buildid=latest_recommend;
                 instance.checkoutUser='APP Pooler';
                 instance.checkoutDate=today;
                 instance.checkoutComment='reserved for app pool';
