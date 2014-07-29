@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.urbancode.com/PluginXMLSchema_v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<header>
+		<identifier id="com.ibm.urbancode.plugin.commoncloud.utilities.externalized" version="1" name="IBM Common Cloud Utilities externalized" />
+		<description>This plugin helps to configure the CLI of cloud provider.</description>
+		<tag>IBM Common Cloud/Utilities</tag>
+	</header>
+	<step-type name="Configure Cloud Provider CLI">
+		<description/>
+		<properties>
+			<property name="cliBase" required="true">
+				<property-ui
+						type="textBox"
+						label="CLI Base"
+						description="The base directory for CLI."
+						default-value="/media"/>
+			</property>
+		 	<property name="cloudHost" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Host Name"
+	 					default-value="${p:environment/hostname}"
+	 					description="Specify the host name of the cloud provider."/>
+	 		</property>
+		 	<property name="cloudType" required="true">
+	 			<property-ui
+						type="textBox"
+	 					label="Type"
+	 					default-value="${p:environment/type}"
+	 					description="Specify the type of the cloud provider."/>
+	 		</property>
+		</properties>
+		<post-processing>
+			<![CDATA[
+				if (properties.get("exitCode") != 0) {
+					properties.put("Status", "Failure");
+				} else {
+					properties.put("cliHome", properties.get("cliHome").toString());
+					properties.put("Status", "Success");
+				}
+			]]>
+		</post-processing>
+		<command program="${GROOVY_HOME}/bin/groovy">
+			<arg file="scripts.groovy/cloud.configure.groovy"/>
+			<arg file="${PLUGIN_INPUT_PROPS}"/>
+			<arg file="${PLUGIN_OUTPUT_PROPS}"/>
+		</command>
+	</step-type>
+</plugin>
