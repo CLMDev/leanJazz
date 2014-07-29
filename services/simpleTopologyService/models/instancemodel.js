@@ -49,7 +49,7 @@ var TopologyInstanceSchema = new Schema({
         appcheckoutUser: String,
         appcheckoutComment: String,
 	    appcheckedout: {type: Boolean, default: false },
-	    appdeployed: {type: Boolean, default: false },
+	    appdeploymentStatus:{type: String, default: 'N/A' }
 	},{strict: 'throw'}
 );
 

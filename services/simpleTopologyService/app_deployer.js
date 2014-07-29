@@ -153,6 +153,7 @@ var timeoutcb= function(){
                 });
                 process_template_obj.environment=instance.name;
                 process_template_obj.versions[0].version=latest_recommend;
+                process_template_obj.post-deploy-put-url='http://liuzc-rh.rtp.raleigh.ibm.com:3001//api/v1/topology/pools/'+pool._id+'/instances/'+instance._id;
                 process_template_updated=JSON.stringify(process_template_obj);
                 var dir='/tmp/pool-'+pool._id;
                 if(!fs.existsSync(dir))

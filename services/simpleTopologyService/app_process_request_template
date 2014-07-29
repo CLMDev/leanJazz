@@ -38,6 +38,8 @@
       "version": "20140526-0151",
       "component": "ConfigureIHS"
     }
-  ]
+  ],
+"post-deploy-put-url":"seudo-url",
+"post-deploy-message":"{\"appdeploymentStatus\":${p:finalStatus}}"
 }
 
