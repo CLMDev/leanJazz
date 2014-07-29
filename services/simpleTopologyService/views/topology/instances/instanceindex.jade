@@ -35,10 +35,10 @@ block content
              $.ajax({
                url: btn_obj.value,
                data: {
-                 checkedout: true,
-                 checkoutUser: "default user",
-                 checkoutDate: today.toLocaleDateString(), 
-                 checkoutComment: $('input').val() 
+                 appcheckedout: true,
+                 appcheckoutUser: "default user",
+                 appcheckoutDate: today.toLocaleDateString(), 
+                 appcheckoutComment: $('input').val() 
                },
                type: "PUT",
                dataType : "json",
@@ -141,16 +141,17 @@ block content
       tbody
           each instance in docs
             tr
-              td #{instance.name}
+              td 
+                a(href="#{ucdURI}") #{instance.name}
               td #{instance.type}
               td #{instance.creationDate}
               td #{instance.checkoutUser}
               td #{instance.checkoutComment}
               td
-                if !instance.checkedout
-                  button.btn(type='submit',value='/api/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
+                if !instance.appcheckedout
+                  button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
               td
-                button.btn(type='submit',value='/api/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
+                button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
   - else
     p No available instances
   
