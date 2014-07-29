@@ -85,7 +85,7 @@ var timeoutcb= function(){
         console.log(pname+': pool to be checked:')
         console.log(pool)
         console.log('pool name:'+pool.name);
-        console.log('parent pool:'+pool.parentPoll);
+        console.log('parent pool:'+pool.parentPool);
         console.log('sttached stream:'+pool.attachedStream);
         
         mpool.findById(pool.parentPool, function(err, parent) {
@@ -94,63 +94,81 @@ var timeoutcb= function(){
             timer=setTimeout(timeoutcb, 2000);
             return;
           }
-          json_client.get('/api/v1/topology/pools/' + parent._id+'/instances', function(err, res, body) {
-          var found=false;
-          body.forEach(function(instance){
-            if(!found && !instance.checkedout){
-              var today = Date.now();            
-              found=true;
-              instance.checkedout=true;
-              instance.checkoutUser='APP Pooler';
-              instance.checkoutDate=today;
-              instance.checkoutComment='reserved for app pool';
-              instance.apppoolRef=parent._id;
-              json_client.put('/api/v1/topology/pools/' + parent._id+'/instances/'+instance._id,instance, function(err, res, body) {
-              });
-              pool.available++;
-              pool.save();
-              client.lrem(pool_id+'-app-processing',1, request , function (err){
-                 if (err) {
-                 timer=setTimeout(timeoutcb, 60000);
-                 return console.error(err);
-                 }
-              });
-              process_template=parent.topologyRef.appProcessTemplate;
-              process_template_obj=JSON.parse(process_template);
-              process_template_obj.environment=instance.name;
-              mbuild.find({buildStream:pool.buildStream}, function( err, builds){
-                if(err){
-                  console.log('error get builds for build stream:'+pool.buildStream);
+          try{
+                process_template=parent.topologyRef.appProcessTemplate;
+                process_template_obj=JSON.parse(process_template);
+          } catch (err){
+                console.log(err);
+                console.log('please check process template of pool:'+parent.name);
+                console.log('process template:');
+                console.log(process_template);
+                timer=setTimeout(timeoutcb, 60000);
+                return console.error(err);
+          }
+          console.log('lookup buildstream:'+pool.attachedStream);
+          mbuild.find({buildStream:pool.attachedStream}, function( err, builds){
+            if(err){
+                  console.log('error get builds for build stream:'+pool.attachedStream);
                   timer=setTimeout(timeoutcb, 60000);
                   return;
-                }
-                var latest_recommend;
-                builds.forEach(function(build){
-                if(build.isRecommended && build.BUILDID>latest_recommend)
+            }
+            console.log('builds available:'+builds);
+            var latest_recommend='';
+            builds.forEach(function(build){
+              if(build.isRecommended && build.BUILDID>latest_recommend)
                    latest_recommend=build.BUILDID;
-                });//forEach()
-                console.log('latest recommended build:'+latest_recommend);
+            });//forEach()
+            console.log('latest recommended build:'+latest_recommend);
+            if(latest_recommend==undefined){
+                  console.log('latest recommended undefined, returning!');
+                  timer=setTimeout(timeoutcb, 60000);
+                  return;
+            }
+            json_client.get('/api/v1/topology/pools/' + parent._id+'/instances', function(err, res, body) {
+            var found=false;
+            body.forEach(function(instance){
+              if(!found && !instance.checkedout){
+                var today = Date.now();            
+                found=true;
+                instance.checkedout=true;
+                instance.type='app';
+                instance.checkoutUser='APP Pooler';
+                instance.checkoutDate=today;
+                instance.checkoutComment='reserved for app pool';
+                instance.apppoolRef=pool._id;
+                json_client.put('/api/v1/topology/pools/' + parent._id+'/instances/'+instance._id,instance, function(err, res, body) {
+                if (res.statusCode!=200) {
+                  console.log('checkout from parent pool failed!');
+                  timer=setTimeout(timeoutcb, 60000);
+                  return; 
+                }
+                pool.available++;
+                pool.save();
+                client.lrem(pool_id+'-app-processing',1, request , function (err){
+                  if (err) {
+                  timer=setTimeout(timeoutcb, 60000);
+                  return console.error(err);
+                  }
+                });
+                process_template_obj.environment=instance.name;
                 process_template_obj.versions[0].version=latest_recommend;
-                process_template_updated=JSON.Stringify(process_template_obj);
+                process_template_updated=JSON.stringify(process_template_obj);
                 var dir='/tmp/pool-'+pool._id;
                 if(!fs.existsSync(dir))
                   fs.mkdirSync(dir );
                 var stream=fs.createWriteStream(dir+'/'+instance.name+ '.json');
                    stream.end(process_template_updated, function(){
-                     console.log(pname +'::fork background process for instance : '+instance_name);
+                     console.log(pname +'::fork background process for instance : '+instance.name);
                    });
                    var exec = require('child_process').exec, child;
-                   child = exec('/root/requestProcess.py -v --udclient /root/udclient/udclient ' + dir +'/'+instance_name+ '.json',
+                   child = exec('/root/requestProcess.py -v --udclient /root/udclient/udclient ' + dir +'/'+instance.name+ '.json',
                       function (error, stdout, stderr) {
                         console.log(pname +' instance creation callback:');
                         console.log('stdout: ' + stdout);
                         console.log('stderr: ' + stderr);
                       });//child=exec
-              
-                
-                
                 timer=setTimeout(timeoutcb, 60000);
-              });//mbuild.find
+                });//jsonclient.put
               
             }//if(!found && !instance.checkedout)
           });//forEach
@@ -160,6 +178,7 @@ var timeoutcb= function(){
             return;
           }
           });//json_client.get(
+          });//mbuild.find
         }).populate('topologyRef');//mpool.findById(pool.parentPool
       });//pool.forEach
     });//mpool.find

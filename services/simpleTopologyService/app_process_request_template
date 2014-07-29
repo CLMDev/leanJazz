@@ -7,6 +7,10 @@
   },
   "versions": [
     {
+      "version": "CALM501-I20140724-0020",
+      "component": "clm"
+    },
+    {
       "version": "20140526-0154",
       "component": "RAT_DB2_CreateDB"
     },
@@ -33,11 +37,7 @@
     {
       "version": "20140526-0151",
       "component": "ConfigureIHS"
-    },
-    {
-      "version": "CALM501-I20140724-0020",
-      "component": "clm"
     }
-  ],
+  ]
 }
 

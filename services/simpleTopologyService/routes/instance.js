@@ -28,7 +28,7 @@ exports.findAllView = function(req, res) {
        console.log ( 'pool not found');
        return;
      }
-     if (pool.type='noapp'){
+     if (pool.type=='noapp'){
        minstance.find({poolRef:req.params.id}, function(err, instances) {
          res.render('topology/instances/instanceindex', {
             title: 'Associated Instances',
@@ -36,7 +36,10 @@ exports.findAllView = function(req, res) {
           });
        });
      } else {//pool.type=='app'
+       console.log('processing app pool');
        minstance.find({apppoolRef:req.params.id}, function(err, instances) {
+       //  console.log('app pool instances:');
+       //  console.log(instances);
          res.render('topology/instances/appinstanceindex', {
             title: 'Associated Instances',
             docs: instances
@@ -171,7 +174,7 @@ exports.update = function(req, res) {
            try {
 			console.log('found document, attempting to update');
 			for (var param in updateDoc) {
-			    if (param =='_id'||param =='name'||param =='type'||param=='topologyRef'||param=='poolRef')
+			    if (param =='_id'||param =='name'||param=='topologyRef'||param=='poolRef')
                               {
 				console.log('omitting ' + param );
                              
