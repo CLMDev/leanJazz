@@ -36,6 +36,7 @@ var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
 
 console.log(pname+': monitoring process is running! ');
+
 var timer;
 var request_no=0;
 var timeoutcb= function(){

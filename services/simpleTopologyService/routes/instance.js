@@ -134,8 +134,11 @@ exports.delete = function(req, res) {
               console.log('stdout: ' + stdout);
               console.log('stderr: ' + stderr);
               instance.remove(function() {
-                topologyPoolModel.findById(instance.poolRef,  function(err, doc) {                
-                  doc.available--;
+                topologyPoolModel.findById(instance.poolRef,  function(err, doc) {
+                  if(instance.checkedout) 
+                    doc.checkedout--;
+                  else                
+                    doc.available--;
                   console.log('available instances for noapp pool:'+doc.available);
                   doc.save (function(err) {
                     if (err) {
@@ -144,7 +147,10 @@ exports.delete = function(req, res) {
                     }
                     if(doc.type=='app'){
                       topologyPoolModel.findById(instance.apppoolRef,  function(err, apppool) {
-                        apppool.available--;
+                        if(instance.appcheckedout) 
+                          apppool.checkedout--;
+                        else
+                          apppool.available--;
                         console.log('available instances for apppool:'+apppool.available);
                         apppool.save (function(err) {});
                       })
