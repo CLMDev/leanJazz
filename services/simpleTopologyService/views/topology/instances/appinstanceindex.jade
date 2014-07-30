@@ -46,9 +46,9 @@ block content
                   console.log( "btn_obj.id:"+btn_obj.id );
                   var btn=$('#'+btn_obj.id);
                   var comment=btn.parent().prev();
-                  comment.text(json.checkoutComment);
+                  comment.text(json.appcheckoutComment);
                   var user=comment.prev();
-                  user.text(json.checkoutUser);
+                  user.text(json.appcheckoutUser);
                   btn.remove();
                   
                },
