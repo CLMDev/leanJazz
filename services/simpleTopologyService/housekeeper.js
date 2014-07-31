@@ -90,7 +90,7 @@ client.keys('*app-processing', function (err, keys){
 console.log(pname+': Housekeeper process is scanning app instances');
 minstance.find({type:'app'}, function(err, instances){
   instances.forEach(function(instance){
-    if(instance.appdeploymentStatus!='N/A'){
+    if(instance.appdeploymentStatus=='N/A'){
       console.log(pname+': check app deployment status for '+instance.name);
       var exec = require('child_process').exec, child;
                    child = exec('/root/getRequestStatus.py -v --udclient /root/udclient/udclient ' +instance.apprequestId,
@@ -98,8 +98,11 @@ minstance.find({type:'app'}, function(err, instances){
                         console.log(pname +' instance creation callback:');
                         console.log('stdout: ' + stdout);
                         console.log('stderr: ' + stderr);
-                        if(stdout.indexOf('success')>-1){
-                           instance.appdeploymentStatus='success';
+                        var index=stdout.indexOf('{');
+                        var json_string=stdout.substring(index);
+                        var json=JSON.parse(json_string);
+                        if(json.result!='NONE'){
+                           instance.appdeploymentStatus=json.result;
                            instance.save();
                         }
                       });//child=exec

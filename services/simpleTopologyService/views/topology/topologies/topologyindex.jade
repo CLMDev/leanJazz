@@ -24,12 +24,15 @@ block content
           th Topology Name
           th Reference URL
           th Description
+          th Details
       tbody
           each topology in docs
             tr
               td #{topology.name}
               td #{topology.referenceURL}
               td #{topology.description}
+              td 
+                a(href="/api/v1/topology/topologies/#{topology.id}" ) json 
               td
                 a.btn(href="/topology/topologies/#{topology.id}/edit") Edit
               td

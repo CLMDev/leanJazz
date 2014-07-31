@@ -169,7 +169,9 @@ var timeoutcb= function(){
                         console.log(pname +' instance creation callback:');
                         console.log('stdout: ' + stdout);
                         console.log('stderr: ' + stderr);
-                        var request_json=JSON.parse(stdout);
+                        var bracket_index=stdout.indexOf('{');
+                        var json_string=stdout.substring(bracket_index);
+                        var request_json=JSON.parse(json_string);
                         
                         minstance.findById(instance._id, function(err, instance_to_be_updated){
                           instance_to_be_updated.apprequestId=request_json.requestId;

@@ -62,16 +62,36 @@ block content
          console.log('setting button obj'+btn_obj);
          $('#deletedialog').dialog('open');
         });      
+      console.log(  $(':button:contains("Recommend")') );
+        $(':button:contains("Recommend")')
+        .click(function() {
+         btn_obj=this;
+         console.log('setting button obj'+btn_obj);
+             $.ajax({
+               url: btn_obj.value,
+               data: {
+                 isRecommended: true
+               },
+               type: "PUT",
+               dataType : "json",
+               success: function( json ) {
+                  console.log( "btn_obj.id:"+btn_obj.id );
+                  var btn=$('#'+btn_obj.id);
+                  var recommended=btn.parent().prev();
+                  recommended.text('true');
+                  btn.remove();
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+        });      
       });//ready
     
   p The following is a list of the instances
   - if(docs.length) 
-    div(id="checkoutdialog", title="checkout comments")
-     p
-      label
-       please input comments
-      input( type="text" id="comments_input") 
-
     div(id="deletedialog", title="Delete Confirmation")
      p
       label
@@ -82,14 +102,16 @@ block content
         tr
           th BuildID
           th Build Stream
-          th Reference URL
+          th Details 
           th Recommended?          
       tbody
           each build in docs
             tr
-              td #{build.BUILDID}
+              td
+               a(href="#{build.refURL}" target="_blank") #{build.BUILDID} 
               td #{build.buildStream}
-              td #{build.refURL}
+              td 
+               a(href="/api/v1/builds/#{build.BUILDID}" ) json 
               td #{build.isRecommended}
               td
                 if !build.isRecommended
