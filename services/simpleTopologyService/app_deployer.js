@@ -154,7 +154,7 @@ var timeoutcb= function(){
                 });
                 process_template_obj.environment=instance.name;
                 process_template_obj.versions[0].version=latest_recommend;
-                process_template_obj["post-deploy-put-url"]='http://liuzc-rh.rtp.raleigh.ibm.com:3001/api/v1/topology/pools/'+pool._id+'/instances/'+instance._id;
+                //process_template_obj["post-deploy-put-url"]='http://liuzc-rh.rtp.raleigh.ibm.com:3001/api/v1/topology/pools/'+pool._id+'/instances/'+instance._id;
                 process_template_updated=JSON.stringify(process_template_obj);
                 var dir='/tmp/pool-'+pool._id;
                 if(!fs.existsSync(dir))
@@ -169,6 +169,13 @@ var timeoutcb= function(){
                         console.log(pname +' instance creation callback:');
                         console.log('stdout: ' + stdout);
                         console.log('stderr: ' + stderr);
+                        var request_json=JSON.parse(stdout);
+                        
+                        minstance.findById(instance._id, function(err, instance_to_be_updated){
+                          instance_to_be_updated.apprequestId=request_json.requestId;
+                          instance_to_be_updated.save();
+                        })//findById
+                          
                       });//child=exec
                 timer=setTimeout(timeoutcb, 60000);
                 });//jsonclient.put

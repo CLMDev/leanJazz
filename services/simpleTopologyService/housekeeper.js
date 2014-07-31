@@ -32,6 +32,7 @@ var minstance = require('./models/instancemodel');
 var mbuildstream = require('./models/buildstreammodel');
 var mbuild = require('./models/buildmodel');
 
+process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 
 //setup properties file
 var fs = require('fs');
@@ -85,6 +86,26 @@ client.keys('*app-processing', function (err, keys){
     });//client.lrange
   });//forEach key
 });//client.keys
+
+console.log(pname+': Housekeeper process is scanning app instances');
+minstance.find({type:'app'}, function(err, instances){
+  instances.forEach(function(instance){
+    if(instance.appdeploymentStatus!='N/A'){
+      console.log(pname+': check app deployment status for '+instance.name);
+      var exec = require('child_process').exec, child;
+                   child = exec('/root/getRequestStatus.py -v --udclient /root/udclient/udclient ' +instance.apprequestId,
+                      function (error, stdout, stderr) {
+                        console.log(pname +' instance creation callback:');
+                        console.log('stdout: ' + stdout);
+                        console.log('stderr: ' + stderr);
+                        if(stdout.indexOf('success')>-1){
+                           instance.appdeploymentStatus='success';
+                           instance.save();
+                        }
+                      });//child=exec
+    }
+  });//instances.forEach()
+});//minstance.find()
 
 timer=setTimeout(timeoutcb, 60000); //every 60 seconds
 }//var timeoutcb=function
