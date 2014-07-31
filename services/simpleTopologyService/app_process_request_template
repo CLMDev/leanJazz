@@ -31,15 +31,16 @@
       "component": "JTSSetup"
     },
     {
-      "version": "20140627-0032",
+      "version": "20140725-1600",
       "component": "ConfigureCLM"
     },
     {
-      "version": "20140526-0151",
+      "version": "20140526-0150",
       "component": "ConfigureIHS"
     }
   ],
 "post-deploy-put-url":"seudo-url",
-"post-deploy-message":"{\"appdeploymentStatus\":${p:finalStatus}}"
+"post-deploy-message":"{appdeploymentStatus:${p:finalStatus}}"
 }
+
 

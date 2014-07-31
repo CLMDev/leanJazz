@@ -50,8 +50,11 @@ client.keys('*', function (err, keys){
   console.log('keys:');
   console.log(keys);
   keys.forEach(function(key){     
-    client.del(key, function (err){
+    client.del(key, function (err, number){
+     if(err||number!=1){
      console.log('error deleting key:'+ key);
+     console.log(err);
+     }
     });//client.del
   });//forEach
 });//client.keys
@@ -63,15 +66,19 @@ client.keys('*app-processing', function (err, keys){
   console.log('app processing keys:');
   console.log(keys);
   keys.forEach(function(key){     
-    client.lrange(key, 0, -1, funciton(err, list){
-     list.forEach(functions(item){
+    client.lrange(key, 0, -1, function(err, list){
+     list.forEach(function(item){
      console.log('queue item:'+ item);
      var json=JSON.parse(item);
      var now=Date.now();
      var diff=now-json.date;
      console.log('request time:'+ json.date);
      console.log('now:'+ now);
-     console.log('diff:'+ now);
+     console.log('diff:'+ diff);
+     if(key.indexOf('noapp-')>-1){
+        if(diff/1000/60>120)
+          client.lrem(key,0, item, function(err){});
+     } else
      if(diff/1000/60>5)
       client.lrem(key,0, item, function(err){});
      })//forEach item
@@ -79,6 +86,7 @@ client.keys('*app-processing', function (err, keys){
   });//forEach key
 });//client.keys
 
+timer=setTimeout(timeoutcb, 60000); //every 60 seconds
 }//var timeoutcb=function
 
 timer=setTimeout(timeoutcb, 60000); //every 60 seconds
