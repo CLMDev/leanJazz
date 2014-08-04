@@ -138,6 +138,7 @@ block content
           th Creation Date
           th BUILD ID
           th App Deployment Status
+          th Details
           th APP Checkout User
           th APP Checkout Comment
       tbody
@@ -149,6 +150,8 @@ block content
               td #{instance.creationDate}
               td #{instance.buildid}
               td #{instance.appdeploymentStatus}
+              td 
+                a(href="/api/v1/topology/pools/#{instance.apppoolRef}/instances/#{instance.id}" ) json
               td #{instance.appcheckoutUser}
               td #{instance.appcheckoutComment}
               td

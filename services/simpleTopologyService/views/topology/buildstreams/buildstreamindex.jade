@@ -75,14 +75,16 @@ block content
       thead
         tr
           th Build Stream
-          th Reference URL
-          th Description         
+          th Description
+          th Details         
       tbody
           each buildstream in docs
             tr
-              td #{buildstream.buildStream}
-              td #{buildstream.refURL}
+              td 
+                a(href="#{buildstream.refURL}" target="_blank") #{buildstream.buildStream}
               td #{buildstream.description}
+              td 
+                a(href="/api/v1/buildstreams/#{buildstream.buildStream}" ) json
               td
                 button.btn(type='submit',value='/api/v1/buildstreams/' + buildstream.buildStream, id='delete_'+ buildstream.buildStream, title='Delete '+buildstream.buildStream+' ?') Delete
   - else

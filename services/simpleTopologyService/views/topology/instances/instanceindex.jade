@@ -136,6 +136,7 @@ block content
           th Instance Name
           th Instance Type
           th Creation Date
+          th Details
           th Checkout User
           th Checkout Comment
       tbody
@@ -145,6 +146,8 @@ block content
                 a(href="#{instance.ucdURI}" target="_blank") #{instance.name}
               td #{instance.type}
               td #{instance.creationDate}
+              td 
+                a(href="/api/v1/topology/pools/#{instance.poolRef}/instances/#{instance.id}" ) json
               td #{instance.checkoutUser}
               td #{instance.checkoutComment}
               td

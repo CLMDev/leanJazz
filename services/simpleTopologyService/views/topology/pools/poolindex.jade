@@ -27,6 +27,7 @@ block content
           th Parent 
           th Build Stream 
           th Description
+          th Details
       tbody
           each pool in docs
             tr
@@ -37,6 +38,8 @@ block content
               td #{pool.parentPoolName}
               td #{pool.attachedStream}
               td #{pool.description}
+              td 
+                a(href="/api/v1/topology/pools/#{pool._id}") json
               td
                 a.btn(href="/topology/pools/#{pool._id}/edit") Edit
               td
