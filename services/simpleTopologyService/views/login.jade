@@ -12,7 +12,7 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-extends ../../layout
+extends ./layout
 
 block content
   #login-container
@@ -20,9 +20,9 @@ block content
       h1 Hello!
       p.subheading Please Login To Your Account
       label Username
-      input(type="text", name="user", id='user-tf').span4.required
+      input(type="text", name="username", id='user-tf').span4.required
       label Password
-      input(type="password", name="pass", id='pass-tf').span4.required
+      input(type="password", name="password", id='pass-tf').span4.required
       button(type="submit")#btn-login.btn.btn-primary
         i.icon-lock.icon-white
         | Sign in

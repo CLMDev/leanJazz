@@ -181,15 +181,16 @@ app.get('/login', function(req, res){
 // which, in this example, will redirect the user to the home page.
 //
 // curl -v -d "username=bob&password=secret" http://127.0.0.1:3000/login
-app.post('/login',
-  passport.authenticate('local', { failureRedirect: '/login', failureFlash: true }),
+
+
+app.post('/login', 
+  passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
-  });
-  
+});
 app.get('/logout', function(req, res){
   req.logout();
-  res.redirect('/');
+  res.redirect('/login');
 });
 
 function ensureAuthenticated(req, res, next) {
@@ -199,64 +200,64 @@ function ensureAuthenticated(req, res, next) {
 
 // setup routes for topologies web interface
 
-app.get('/topology/topologies', topology.findAllView);
-app.get('/topology/topologies/new', topology.addViewSetup);
-app.post('/topology/topologies', topology.addViewExecute);
-app.get('/topology/topologies/:id/edit', topology.editViewSetup);
-app.put('/topology/topologies/:id', topology.editViewExecute);
-app.del('/topology/topologies/:id', topology.deleteView);
+app.get('/topology/topologies', ensureAuthenticated, topology.findAllView);
+app.get('/topology/topologies/new', ensureAuthenticated,topology.addViewSetup);
+app.post('/topology/topologies', ensureAuthenticated, topology.addViewExecute);
+app.get('/topology/topologies/:id/edit',ensureAuthenticated, topology.editViewSetup);
+app.put('/topology/topologies/:id', ensureAuthenticated,topology.editViewExecute);
+app.del('/topology/topologies/:id', ensureAuthenticated,topology.deleteView);
 
 
-app.get('/topology/pools', topologyPool.findAllView);
-app.get('/topology/pools/new', topologyPool.addViewSetup);
-app.post('/topology/pools', topologyPool.addViewExecute);
-app.get('/topology/pools/:id/edit', topologyPool.editViewSetup);
-app.put('/topology/pools/:id', topologyPool.editViewExecute);
-app.del('/topology/pools/:id', topologyPool.deleteView);
-app.get('/topology/pools/:id/instances', topologyInstance.findAllView);
-app.del('/topology/pools/:pid/instances/:id', topologyInstance.deleteView);
+app.get('/topology/pools', ensureAuthenticated, topologyPool.findAllView);
+app.get('/topology/pools/new', ensureAuthenticated, topologyPool.addViewSetup);
+app.post('/topology/pools', ensureAuthenticated, topologyPool.addViewExecute);
+app.get('/topology/pools/:id/edit', ensureAuthenticated, topologyPool.editViewSetup);
+app.put('/topology/pools/:id', ensureAuthenticated, topologyPool.editViewExecute);
+app.del('/topology/pools/:id', ensureAuthenticated, topologyPool.deleteView);
+app.get('/topology/pools/:id/instances', ensureAuthenticated,topologyInstance.findAllView);
+app.del('/topology/pools/:pid/instances/:id', ensureAuthenticated, topologyInstance.deleteView);
 
 //setup routes for the topologies API
-app.get('/api/v1/topology/topologies', topology.findAll);
-app.post('/api/v1/topology/topologies', topology.add);
-app.get('/api/v1/topology/topologies/:id', topology.find);
-app.del('/api/v1/topology/topologies/:id', topology.delete);
-app.put('/api/v1/topology/topologies/:id', topology.update);
+app.get('/api/v1/topology/topologies', ensureAuthenticated,topology.findAll);
+app.post('/api/v1/topology/topologies', ensureAuthenticated,topology.add);
+app.get('/api/v1/topology/topologies/:id', ensureAuthenticated,topology.find);
+app.del('/api/v1/topology/topologies/:id', ensureAuthenticated,topology.delete);
+app.put('/api/v1/topology/topologies/:id', ensureAuthenticated,topology.update);
 
-app.get('/api/v1/topology/pools', topologyPool.findAll);
-app.post('/api/v1/topology/pools', topologyPool.create);
-app.get('/api/v1/topology/pools/:id', topologyPool.find);
-app.del('/api/v1/topology/pools/:id', topologyPool.delete);
-//app.put('/api/v1/topology/pools/:id', topologyPool.update);
+app.get('/api/v1/topology/pools', ensureAuthenticated,topologyPool.findAll);
+app.post('/api/v1/topology/pools', ensureAuthenticated,topologyPool.create);
+app.get('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.find);
+app.del('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.delete);
+//app.put('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.update);
 
-app.get('/api/v1/topology/pools/:id/instances', topologyInstance.findAll);
-app.get('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.find);
-app.del('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.delete);
-app.put('/api/v1/topology/pools/:pid/instances/:id', topologyInstance.update);
+app.get('/api/v1/topology/pools/:id/instances', ensureAuthenticated,topologyInstance.findAll);
+app.get('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.find);
+app.del('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.delete);
+app.put('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.update);
 
-app.get('/buildstreams', buildstream.findAllView);
-app.get('/buildstreams/new', buildstream.addViewSetup);
-app.post('/buildstreams', buildstream.addViewExecute);
-app.get('/buildstreams/:id/edit', buildstream.editViewSetup);
-app.put('/buildstreams/:id', buildstream.editViewExecute);
+app.get('/buildstreams',ensureAuthenticated, buildstream.findAllView);
+app.get('/buildstreams/new',ensureAuthenticated, buildstream.addViewSetup);
+app.post('/buildstreams', ensureAuthenticated,buildstream.addViewExecute);
+app.get('/buildstreams/:id/edit', ensureAuthenticated,buildstream.editViewSetup);
+app.put('/buildstreams/:id', ensureAuthenticated,buildstream.editViewExecute);
 
-app.get('/api/v1/buildstreams', buildstream.findAll);
-app.post('/api/v1/buildstreams', buildstream.create);
-app.get('/api/v1/buildstreams/:id', buildstream.find);
-app.del('/api/v1/buildstreams/:id', buildstream.delete);
-app.put('/api/v1/buildstreams/:id', buildstream.update);
+app.get('/api/v1/buildstreams', ensureAuthenticated, buildstream.findAll);
+app.post('/api/v1/buildstreams',ensureAuthenticated, buildstream.create);
+app.get('/api/v1/buildstreams/:id', ensureAuthenticated, buildstream.find);
+app.del('/api/v1/buildstreams/:id', ensureAuthenticated, buildstream.delete);
+app.put('/api/v1/buildstreams/:id', ensureAuthenticated, buildstream.update);
 
-app.get('/builds', build.findAllView);
-app.get('/builds/new', build.addViewSetup);
-app.post('/builds', build.addViewExecute);
-app.get('/builds/:id/edit', build.editViewSetup);
-app.put('/builds/:id', build.editViewExecute);
+app.get('/builds', ensureAuthenticated,build.findAllView);
+app.get('/builds/new', ensureAuthenticated,build.addViewSetup);
+app.post('/builds', ensureAuthenticated,build.addViewExecute);
+app.get('/builds/:id/edit', ensureAuthenticated,build.editViewSetup);
+app.put('/builds/:id', ensureAuthenticated,build.editViewExecute);
 
-app.get('/api/v1/builds', build.findAll);
-app.post('/api/v1/builds', build.create);
-app.get('/api/v1/builds/:id', build.find);
-app.del('/api/v1/builds/:id', build.delete);
-app.put('/api/v1/builds/:id', build.update);
+app.get('/api/v1/builds', ensureAuthenticated,build.findAll);
+app.post('/api/v1/builds', ensureAuthenticated,build.create);
+app.get('/api/v1/builds/:id', ensureAuthenticated,build.find);
+app.del('/api/v1/builds/:id', ensureAuthenticated,build.delete);
+app.put('/api/v1/builds/:id', ensureAuthenticated,build.update);
 
 
 
