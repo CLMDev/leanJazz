@@ -15,6 +15,7 @@
     "validator": "*",
     "jquery":"*",
     "request-json":"*",
+    "redis":"*",
     "passport":"*",
     "passport-local":"*"
   }
