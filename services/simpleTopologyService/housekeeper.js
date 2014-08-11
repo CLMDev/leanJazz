@@ -16,8 +16,11 @@
 
 var pname='Housekeeper';
 
+var nconf = require('nconf');
+nconf.argv().env().file({ file: './config.json'});
+var redis_host=nconf.get('REDIS_HOST');
 var redis = require("redis"),
-client = redis.createClient(6379,'9.42.64.55');
+client = redis.createClient(6379,redis_host);
 
     // if you'd like to select database 3, instead of 0 (default), call
     // client.select(3, function() { /* ... */ });
@@ -36,8 +39,7 @@ process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 
 //setup properties file
 var fs = require('fs');
-var nconf = require('nconf');
-nconf.argv().env().file({ file: './config.json'});
+
 var http = require('http');
 var request = require('request-json');
 var topologyPort = nconf.get('PORT');

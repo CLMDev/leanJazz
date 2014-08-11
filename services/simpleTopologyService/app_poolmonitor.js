@@ -16,8 +16,12 @@
 var monitor = require('child_process').fork('app_deployer.js');//monitor pools and fork instance creators for pools
 var pname='apppool_monitor';
 var num_deployer_per_pool=2
+
+var nconf = require('nconf');
+nconf.argv().env().file({ file: './config.json'});
+var redis_host=nconf.get('REDIS_HOST');
 var redis = require("redis"),
-client = redis.createClient(6379,'9.42.64.55');
+client = redis.createClient(6379,redis_host);
 
     // if you'd like to select database 3, instead of 0 (default), call
     // client.select(3, function() { /* ... */ });
@@ -32,8 +36,7 @@ var minstance = require('./models/instancemodel');
 
 //setup properties file
 var fs = require('fs');
-var nconf = require('nconf');
-nconf.argv().env().file({ file: './config.json'});
+
 
 console.log(pname+': monitoring process is running! ');
 
