@@ -21,6 +21,7 @@ nconf.argv().env().file({ file: './config.json'});
 var redis_host=nconf.get('REDIS_HOST');
 var redis = require("redis"),
 client = redis.createClient(6379,redis_host);
+var instance_prefix=nconf.get('STS_INSTANCE_PREFIX');
 
     // if you'd like to select database 3, instead of 0 (default), call
     // client.select(3, function() { /* ... */ });
@@ -114,7 +115,7 @@ var timeoutcb= function(){
           else mm=''+min;
         var creation_date=''+year+MM+dd+hh+mm;
         var request_obj=JSON.parse(request)
-        var instance_name='pool-'+pool_id_short+'-'+creation_date+'-No'+request_obj.request_no;
+        var instance_name=instance_prefix+'pool-'+pool_id_short+'-'+creation_date+'-No'+request_obj.request_no;
         console.log(pname+'instance name:'+instance_name);
         tdoc_object.name=instance_name;
         var json=JSON.stringify(tdoc_object);
