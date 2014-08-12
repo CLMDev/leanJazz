@@ -14,7 +14,40 @@
 
 extends ../.././layout
 
+
+       
 block content
+script(type='text/javascript').
+    $( document ).ready(function() {
+      console.log( "ready!" );
+      
+      var  btn_obj;
+      $('#createaccountdialog').dialog({
+        modal: true,
+        autoOpen: false,
+        buttons: [
+          {
+           text: 'OK',
+           click: function() {
+             $( this ).dialog( "close" );
+                        }
+          }
+        ]
+      });//checkout dialog
+      
+      console.log(  $(':button:contains("Create Account")') );
+        $(':button:contains("Create Account")')
+        .click(function() {
+         btn_obj=this;
+         console.log('setting button obj'+btn_obj);
+         $('#createaccountdialog').dialog('open');
+        });      
+        
+    });//ready
+  div(id="createaccountdialog", title="Create Account")
+     p
+      label
+       please check your mail and activate your account.
   #login-container
     form( method="post")#login-form.well.span4
       h1 Hello!
