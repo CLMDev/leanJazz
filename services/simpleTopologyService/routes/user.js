@@ -14,6 +14,36 @@
 *   limitations under the License.
 */
 
+var mongoose = require('mongoose');
+var nconf = require('nconf');
+
+nconf.argv()
+        .env()
+        .file({ file: './config.json'});
+
+var User = require ('../models/usermodel');
+
+
+// setup routes for topologies and apis
+exports.findAllView = function(req, res) {
+  User.find({},function(err, docs) {
+    if (!docs) {
+      console.log('no users found');
+      docs = [];
+    }
+    res.render('topology/users/userindex', {
+      title: 'Available Users',
+      docs: docs
+    });
+  });
+};
+
+exports.signup = function(req, res) {
+  
+    res.render('topology/users/signup');
+  
+};
+
 exports.list = function(req, res){
   res.send("respond with a resource");
 };

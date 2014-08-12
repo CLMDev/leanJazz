@@ -171,7 +171,7 @@ app.get('/account', ensureAuthenticated, function(req, res){
 });
 
 app.get('/login', function(req, res){
-  res.render('login', { user: req.user, message: req.flash('error') });
+  res.render('topology/users/login', { user: req.user, message: req.flash('error') });
 });
 
 // POST /login
@@ -192,6 +192,8 @@ app.get('/logout', function(req, res){
   req.logout();
   res.redirect('/login');
 });
+
+app.get('/signup', user.signup);
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
