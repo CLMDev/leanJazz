@@ -1,0 +1,26 @@
+/**
+*  Copyright 2014 IBM
+*
+*   Licensed under the Apache License, Version 2.0 (the "License");
+*   you may not use this file except in compliance with the License.
+*   You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License.
+*/
+
+IBM common cloud plugins for UrbanCode Deploy
+
+IBM common cloud plugins is a set of plugins that can support development and management for IBM common cloud products like 
+IBM Workload Deployer and IBM PureApplicaiton system with UrbanCode Deployer. It embodies components that support virtual system
+pattern development, shared service development, as well as cloud catalog management.
+
+How to use the plugins
+1. Download the IWD/IPAS CLI tool to directory com.ibm.urbancode.plugin.commoncloud.utilities/cli
+2. Make a zip of the source
+3. As an administrator, go to settings->Automation plugins, and load the plugin to UCD.
