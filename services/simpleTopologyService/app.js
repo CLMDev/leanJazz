@@ -110,10 +110,10 @@ var buildstream = require('./routes/buildstream');
 var build = require('./routes/build');
 
 var user = require('./routes/user');
-var http = require('http');
+var https = require('https');
 var path = require('path');
 var app = express();
-http.globalAgent.maxSockets = 100;
+https.globalAgent.maxSockets = 100;
 
 //var pool = require('./models/poolmodel');
 //setup properties file
@@ -259,9 +259,12 @@ app.get('/api/v1/builds/:id', ensureAuthenticated,build.find);
 app.del('/api/v1/builds/:id', ensureAuthenticated,build.delete);
 app.put('/api/v1/builds/:id', ensureAuthenticated,build.update);
 
+var options = {
+  key: fs.readFileSync('https/key.pem'),
+  cert: fs.readFileSync('https/cert.pem')
+};
 
-
-http.createServer(app).listen(app.get('port'), function() {
+https.createServer(options, app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
