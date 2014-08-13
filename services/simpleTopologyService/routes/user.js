@@ -60,7 +60,7 @@ exports.createAccount = function(req, res) {
   if(req.body.mail.indexOf('.ibm.com')==-1)
     res.render('topology/users/signup', { message: 'Use IBM intranet ID, please'});
   else {
-    res.send(200);
+    res.render('topology/users/signup_2');
     // send mail with defined transport object
     transporter.sendMail(mailOptions, function(error, info){
     if(error){
