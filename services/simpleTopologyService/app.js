@@ -194,6 +194,7 @@ app.get('/logout', function(req, res){
 });
 
 app.get('/signup', user.signup);
+app.post('/signup', user.createAccount);
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }

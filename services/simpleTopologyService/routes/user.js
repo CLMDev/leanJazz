@@ -23,7 +23,18 @@ nconf.argv()
 
 var User = require ('../models/usermodel');
 
+var nodemailer = require('nodemailer');
 
+// create reusable transporter object using SMTP transport
+var transporter = nodemailer.createTransport(); 
+
+// setup e-mail data with unicode symbols
+var mailOptions = {
+    from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
+    to: 'liuzc@cn.ibm.com', // list of receivers
+    subject: 'Activate your account for STS', // Subject line
+    text: 'DO *NOT* ACTIVATE THIS ACCOUNT, UNLESS YOU CREATE AND INTEND TO USE IT. To activate, click on this link, https://liuzc-rh.rtp.raleigh.ibm.com/users/' // html body
+};
 // setup routes for topologies and apis
 exports.findAllView = function(req, res) {
   User.find({},function(err, docs) {
@@ -39,9 +50,27 @@ exports.findAllView = function(req, res) {
 };
 
 exports.signup = function(req, res) {
-  
-    res.render('topology/users/signup');
-  
+    res.render('topology/users/signup', { message: ''});
+};
+
+
+
+
+exports.createAccount = function(req, res) {
+  if(req.body.mail.indexOf('.ibm.com')==-1)
+    res.render('topology/users/signup', { message: 'Use IBM intranet ID, please'});
+  else {
+    res.send(200);
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+        console.log('error: sending mail!');
+        console.log(error);
+    }else{
+        console.log('Message sent: ' + info);
+    }
+    });
+  }
 };
 
 exports.list = function(req, res){
