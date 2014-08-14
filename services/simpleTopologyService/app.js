@@ -19,7 +19,6 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var crypto=require('crypto')
-var sha = crypto.createHash('sha1');
 
 mongoose.connect('mongodb://localhost/leanJazz',
   function(err) {
@@ -45,7 +44,7 @@ function findById(id, fn) {
     if(docs.length)
       fn(null,docs[0]);
     else
-      fn(new Error('User:'+id+' does not exist'));
+      fn(null,null);
   });
 }
 
@@ -95,16 +94,12 @@ passport.use(new LocalStrategy(
       // authenticated `user`.
       findByMail(username, function(err, user) {
         console.log('In findById callback!');
-        console.log('user:'+user);
-        console.log('user.isRegistered:'+user.isRegistered);
-        console.log('user._id:'+user._id);
-        console.log('user.mail:'+user.mail);
-        console.log('user.isActive:'+user.isActive);
         if (err) { return done(err); }
         if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
         console.log('User found!');
         if (!user.isRegistered) {console.log('not activiated.'); return done(null, false, { message: 'Not activiated: ' + username }); }
         if (!user.isActive) { console.log('disabled');return done(null, false, { message: 'Disabled: ' + username }); }
+        var sha = crypto.createHash('sha1');
         sha.update(password+user._salt);
         if (user.passwordHash!= sha.digest('hex')) {console.log('invalid password'); return done(null, false, { message: 'Invalid password' }); }
         console.log('valid password!');
