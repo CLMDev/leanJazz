@@ -18,6 +18,9 @@
 'use strict';
 var express = require('express');
 var mongoose = require('mongoose');
+var crypto=require('crypto')
+var sha = crypto.createHash('sha1');
+
 mongoose.connect('mongodb://localhost/leanJazz',
   function(err) {
     if (!err) {
@@ -27,6 +30,7 @@ mongoose.connect('mongodb://localhost/leanJazz',
     }
 });
 
+var User = require ('./models/usermodel');
 var 
     flash = require('connect-flash')
   , passport = require('passport')
@@ -34,30 +38,28 @@ var
   , LocalStrategy = require('passport-local').Strategy;
   
 
-var users = [
-    { id: 1, username: 'bob', password: 'secret', email: 'bob@example.com' }
-  , { id: 2, username: 'joe', password: 'birthday', email: 'joe@example.com' }
-];
-
 function findById(id, fn) {
-  var idx = id - 1;
-  if (users[idx]) {
-    fn(null, users[idx]);
-  } else {
-    fn(new Error('User ' + id + ' does not exist'));
-  }
+  User.find({_id:id}, function(err,docs){
+    console.log('docs:'+docs);
+    console.log('docs.length:'+docs.length);
+    if(docs.length)
+      fn(null,docs[0]);
+    else
+      fn(new Error('User:'+id+' does not exist'));
+  });
 }
 
-function findByUsername(username, fn) {
-  for (var i = 0, len = users.length; i < len; i++) {
-    var user = users[i];
-    if (user.username === username) {
-      return fn(null, user);
-    }
-  }
-  return fn(null, null);
-}
 
+function findByMail(usermail, fn) {
+  User.find({mail:usermail}, function(err,docs){
+    console.log('docs:'+docs);
+    console.log('docs.length:'+docs.length);
+    if(docs.length)
+      fn(null,docs[0]);
+    else
+      fn(null,null);
+  });
+}
 
 // Passport session setup.
 // To support persistent login sessions, Passport needs to be able to
@@ -82,6 +84,8 @@ passport.deserializeUser(function(id, done) {
 // however, in this example we are using a baked-in set of users.
 passport.use(new LocalStrategy(
   function(username, password, done) {
+    console.log('In LocalStrategy callback:');
+    console.log('username:'+username);
     // asynchronous verification, for effect...
     process.nextTick(function () {
       
@@ -89,18 +93,26 @@ passport.use(new LocalStrategy(
       // username, or the password is not correct, set the user to `false` to
       // indicate failure and set a flash message. Otherwise, return the
       // authenticated `user`.
-      findByUsername(username, function(err, user) {
+      findByMail(username, function(err, user) {
+        console.log('In findById callback!');
+        console.log('user:'+user);
+        console.log('user.isRegistered:'+user.isRegistered);
+        console.log('user._id:'+user._id);
+        console.log('user.mail:'+user.mail);
+        console.log('user.isActive:'+user.isActive);
         if (err) { return done(err); }
         if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
-        if (user.password != password) { return done(null, false, { message: 'Invalid password' }); }
+        console.log('User found!');
+        if (!user.isRegistered) {console.log('not activiated.'); return done(null, false, { message: 'Not activiated: ' + username }); }
+        if (!user.isActive) { console.log('disabled');return done(null, false, { message: 'Disabled: ' + username }); }
+        sha.update(password+user._salt);
+        if (user.passwordHash!= sha.digest('hex')) {console.log('invalid password'); return done(null, false, { message: 'Invalid password' }); }
+        console.log('valid password!');
         return done(null, user);
       })
     });
   }
 ));
-
-
-
 
 var routes = require('./routes');
 var topology = require('./routes/topology');
@@ -151,23 +163,8 @@ var apppooler = require('child_process').fork('app_basicpooler.js');//generate r
 var appmonitor = require('child_process').fork('app_poolmonitor.js');//monitor pools and fork instance creators for pools
 var housekeeper = require('child_process').fork('housekeeper.js');//for housekeeping, redis queque, etc.
 
-
-
-
-app.get('/', routes.index);
-
-app.post('/login', 
-  passport.authenticate('local', { failureRedirect: '/login' }),
-  function(req, res) {
-    res.redirect('/');
-});
-
 app.get('/', function(req, res){
-  res.render('index', { user: req.user });
-});
-
-app.get('/account', ensureAuthenticated, function(req, res){
-  res.render('account', { user: req.user });
+  res.redirect('/login');
 });
 
 app.get('/login', function(req, res){
@@ -186,7 +183,7 @@ app.get('/login', function(req, res){
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
+    res.redirect('/topology/topologies/');
 });
 app.get('/logout', function(req, res){
   req.logout();
@@ -195,6 +192,7 @@ app.get('/logout', function(req, res){
 
 app.get('/signup', user.signup);
 app.post('/signup', user.createAccount);
+app.get('/activate/:id', user.activate);
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
