@@ -25,7 +25,6 @@ var User = require ('../models/usermodel');
 var crypto=require('crypto')
 //var hashes = crypto.getHashes();
 //console.log(hashes); // ['sha', 'sha1', 'sha1WithRSAEncryption', ...]
-var sha = crypto.createHash('sha1');
 
 var nodemailer = require('nodemailer');
 
@@ -154,6 +153,7 @@ exports.createAccount = function(req, res) {
       var hashes = crypto.getHashes();
       var newUser=new User();
       newUser.mail=req.body.mail;
+      var sha = crypto.createHash('sha1');
       sha.update(req.body.password+newUser._salt);
 
       newUser.passwordHash=sha.digest('hex');
