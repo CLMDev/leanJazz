@@ -43,7 +43,7 @@ var mailOptions = {
 var resetmailOptions = {
     from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
     to: 'liuzc@cn.ibm.com', // list of receivers
-    subject: 'Activate your account for STS', // Subject line
+    subject: 'Reset Your Password for STS', // Subject line
     text: 'DO *NOT* CLICK THE LINK, UNLESS YOU WOULD LIKE TO RESET YOUR PASSWORD. To reset your password, click on this link, ' 
 };
 
@@ -88,21 +88,21 @@ exports.reset = function(req, res) {
 
 exports.resetMail = function(req, res) {
   if(req.body.mail.indexOf('.ibm.com')==-1)
-    res.render('topology/users/reset', { message: 'Use IBM intranet ID, please'});
+    res.render('topology/users/password_reset', { message: 'Use IBM intranet ID, please'});
   else {
     User.find({mail: req.body.mail},function( err, docs){
       console.log('docs.length:'+docs.length);
       if(docs.length==0){
         console.log('user not exist!');
-        res.render('topology/users/reset', { message: 'Account does not exist, sign up first!'});
+        res.render('topology/users/password_reset', { message: 'Account does not exist, sign up first!'});
         return;
       }
       
-      res.render('topology/users/reset', { message: 'Mail sent, please follow the link to reset your password'});
+      res.render('topology/users/password_reset', { message: 'Mail sent, please follow the link to reset your password'});
       // send mail with defined transport object
       resetmailOptions.to=docs[0].mail;
-      resetmailOptions.text=mailOptions.text+'https://'+nconf.get('HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt;
-      transporter.sendMail(mailOptions, function(error, info){
+      resetmailOptions.text=resetmailOptions.text+'https://'+nconf.get('HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt;
+      transporter.sendMail(resetmailOptions, function(error, info){
       if(error){
         console.log('error: sending mail!');
         console.log(error);
@@ -132,9 +132,10 @@ exports.resetStep3 = function(req, res) {
       res.render('topology/users/password_reset', { message: 'User does not exist!'});
       return;
     }
-    var hashes = crypto.getHashes();
-    sha.update(req.body.password+doc[0]._salt);
+    var sha = crypto.createHash('sha1');
+    sha.update(req.body.password+docs[0]._salt);
     docs[0].passwordHash=sha.digest('hex');
+    docs[0].save();
     res.redirect('/login');
   });
 };
@@ -150,7 +151,6 @@ exports.createAccount = function(req, res) {
         res.render('topology/users/signup', { message: 'Account already exist!'});
         return;
       }
-      var hashes = crypto.getHashes();
       var newUser=new User();
       newUser.mail=req.body.mail;
       var sha = crypto.createHash('sha1');
