@@ -193,6 +193,10 @@ app.get('/logout', function(req, res){
 app.get('/signup', user.signup);
 app.post('/signup', user.createAccount);
 app.get('/activate/:id', user.activate);
+app.get('/reset', user.reset);
+app.post('/reset', user.resetMail);
+app.get('/reset/:id', user.resetStep2);
+app.post('/reset/:id', user.resetStep3);
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }

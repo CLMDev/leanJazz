@@ -17,6 +17,8 @@
     "request-json":"*",
     "redis":"*",
     "passport":"*",
-    "passport-local":"*"
+    "passport-local":"*",
+    "nodemailer":"*",
+    "crypto":"*"
   }
 }

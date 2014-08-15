@@ -38,9 +38,17 @@ var mailOptions = {
     from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
     to: 'liuzc@cn.ibm.com', // list of receivers
     subject: 'Activate your account for STS', // Subject line
-    text: 'DO *NOT* ACTIVATE THIS ACCOUNT, UNLESS YOU CREATE AND INTEND TO USE IT. To activate, click on this link, https://liuzc-rh.rtp.raleigh.ibm.com:3001/activate' // html body
+    text: 'DO *NOT* ACTIVATE THIS ACCOUNT, UNLESS YOU CREATE AND INTEND TO USE IT. To activate, click on this link, ' 
 };
-// setup routes for topologies and apis
+
+var resetmailOptions = {
+    from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
+    to: 'liuzc@cn.ibm.com', // list of receivers
+    subject: 'Activate your account for STS', // Subject line
+    text: 'DO *NOT* CLICK THE LINK, UNLESS YOU WOULD LIKE TO RESET YOUR PASSWORD. To reset your password, click on this link, ' 
+};
+
+
 exports.findAllView = function(req, res) {
   User.find({},function(err, docs) {
     if (!docs) {
@@ -59,6 +67,8 @@ exports.signup = function(req, res) {
 };
 
 
+
+
 exports.activate = function(req, res) {
   User.find({_salt:req.params.id},function(err, docs) {
     if (!docs.length) {
@@ -73,6 +83,62 @@ exports.activate = function(req, res) {
   });
 };
 
+exports.reset = function(req, res) {
+    res.render('topology/users/password_reset', { message: ''});
+};
+
+exports.resetMail = function(req, res) {
+  if(req.body.mail.indexOf('.ibm.com')==-1)
+    res.render('topology/users/reset', { message: 'Use IBM intranet ID, please'});
+  else {
+    User.find({mail: req.body.mail},function( err, docs){
+      console.log('docs.length:'+docs.length);
+      if(docs.length==0){
+        console.log('user not exist!');
+        res.render('topology/users/reset', { message: 'Account does not exist, sign up first!'});
+        return;
+      }
+      
+      res.render('topology/users/reset', { message: 'Mail sent, please follow the link to reset your password'});
+      // send mail with defined transport object
+      resetmailOptions.to=docs[0].mail;
+      resetmailOptions.text=mailOptions.text+'https://'+nconf.get('HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt;
+      transporter.sendMail(mailOptions, function(error, info){
+      if(error){
+        console.log('error: sending mail!');
+        console.log(error);
+      }else{
+        console.log('Message sent: ' + info);
+      }
+      });
+   });
+  }
+};
+
+exports.resetStep2 = function(req, res) {
+  User.find({_salt:req.params.id},function(err, docs) {
+    if (!docs.length) {
+      console.log('no users found');
+      res.render('topology/users/password_reset', { message: 'User does not exist!'});
+      return;
+    }
+    res.render('topology/users/password_reset_2', { message: ''});
+  });
+};
+
+exports.resetStep3 = function(req, res) {
+  User.find({_salt:req.params.id},function(err, docs) {
+    if (!docs.length) {
+      console.log('no users found');
+      res.render('topology/users/password_reset', { message: 'User does not exist!'});
+      return;
+    }
+    var hashes = crypto.getHashes();
+    sha.update(req.body.password+doc[0]._salt);
+    docs[0].passwordHash=sha.digest('hex');
+    res.redirect('/login');
+  });
+};
 
 exports.createAccount = function(req, res) {
   if(req.body.mail.indexOf('.ibm.com')==-1)
@@ -93,9 +159,11 @@ exports.createAccount = function(req, res) {
       newUser.passwordHash=sha.digest('hex');
       console.log('new User:'+newUser);
       newUser.save();
+      
       res.render('topology/users/signup', { message: 'Account created! Please check your mail and activate it.'});
       // send mail with defined transport object
-      mailOptions.text=mailOptions.text+'/'+newUser._salt;
+      mailOptions.to=newUser.mail;
+      mailOptions.text=mailOptions.text+'https://'+nconf.get('HOSTNAME')+':'+nconf.get('PORT')+'/activate/'+newUser._salt;
       transporter.sendMail(mailOptions, function(error, info){
       if(error){
         console.log('error: sending mail!');
