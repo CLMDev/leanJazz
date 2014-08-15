@@ -199,6 +199,8 @@ function ensureAuthenticated(req, res, next) {
 } 
 
 // setup routes for topologies web interface
+app.get('/users', ensureAuthenticated, user.findAllView);
+app.put('/users/:id', ensureAuthenticated, user.update);
 
 app.get('/topology/topologies', ensureAuthenticated, topology.findAllView);
 app.get('/topology/topologies/new', ensureAuthenticated,topology.addViewSetup);

@@ -61,6 +61,19 @@ exports.findAllView = function(req, res) {
   });
 };
 
+exports.update = function(req, res) {
+  User.findById(req.params.id, function(err, doc) {
+    if (!doc) {
+      console.log('no users found');
+      res.send(400);
+      return;
+    }
+    doc.isActive=req.body.isActive;
+    doc.save();
+    res.send(200);
+  });
+};
+
 exports.signup = function(req, res) {
     res.render('topology/users/signup', { message: ''});
 };
@@ -176,6 +189,4 @@ exports.createAccount = function(req, res) {
   }
 };
 
-exports.list = function(req, res){
-  res.send("respond with a resource");
-};
+

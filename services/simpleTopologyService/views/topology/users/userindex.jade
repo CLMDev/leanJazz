@@ -1,0 +1,68 @@
+//  Copyright 2014 IBM
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+
+extends ../../layout
+
+block content
+  h1= title
+  script(type='text/javascript').
+    $( document ).ready(function() {
+      console.log( "ready!" );      
+      var  btn_obj;
+      console.log(  $(':radio') );
+        $(':radio')
+        .click(function() {
+         btn_obj=this;
+         console.log('setting button obj'+btn_obj);
+         var btn=$('#'+btn_obj.id);
+         $.ajax({
+               url: btn_obj.value,
+               data: {
+                 isActive: btn.is(':checked')
+               },
+               type: "PUT",
+               dataType : "json",
+               success: function( json ) {
+                  
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+        }); 
+      });//ready
+    
+  p The following is a list of the instances
+  - if(docs.length) 
+      table.table.table-striped
+      thead
+        tr
+          th Intranet ID
+          th Active User?
+          th Registered User?      
+      tbody
+          each user in docs
+            tr
+              td #{user.mail} 
+              td 
+                 button.btn(type='radio',value='/users/'+ user._id, id='isActive_'+user._id) 
+              td #{user.isRegistered}
+              
+  - else
+    p No available instances
+  p
+    a(href='/builds/new', class='btn primary') Add a new build
+  
