@@ -70,7 +70,7 @@ exports.update = function(req, res) {
     }
     doc.isActive=req.body.isActive;
     doc.save();
-    res.send(200);
+    res.send(doc);
   });
 };
 

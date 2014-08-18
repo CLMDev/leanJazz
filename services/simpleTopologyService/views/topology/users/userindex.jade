@@ -26,43 +26,45 @@ block content
          btn_obj=this;
          console.log('setting button obj'+btn_obj);
          var btn=$('#'+btn_obj.id);
-         $.ajax({
-               url: btn_obj.value,
-               data: {
-                 isActive: btn.is(':checked')
-               },
-               type: "PUT",
-               dataType : "json",
-               success: function( json ) {
-                  
-               },
-               error: function( xhr, status, errorThrown ) {
-                 alert( "Sorry, there was a problem!" );
-                 console.log( "Error: " + errorThrown );
-                 console.log( "Status: " + status );
-               }
-             });//ajax
+         console.log('ischecked?'+btn.prop('checked'));
+         //$.ajax({
+          //     url: btn_obj.value,
+          //     data: {
+          //       isActive: !btn.prop('checked')
+           //    },
+            //   type: "PUT",
+             //  dataType : "json",
+           //    success: function( json ) {
+           //      //btn.prop("checked", json.isActive);
+           //    },
+           //    error: function( xhr, status, errorThrown ) {
+           //      alert( "Sorry, there was a problem!" );
+           //      console.log( "Error: " + errorThrown );
+           //      console.log( "Status: " + status );
+           //    }
+           //  });//ajax
         }); 
       });//ready
     
   p The following is a list of the instances
   - if(docs.length) 
       table.table.table-striped
-      thead
-        tr
-          th Intranet ID
-          th Active User?
-          th Registered User?      
-      tbody
+        thead
+          tr
+            th Intranet ID
+            th Active User
+            th Registered User      
+        tbody
           each user in docs
             tr
               td #{user.mail} 
-              td 
-                 button.btn(type='radio',value='/users/'+ user._id, id='isActive_'+user._id) 
+              td #{user.isActive}
+              //td 
+              //  -if( user.isActive) 
+              //    input(type='radio',value='/users/'+ user._id, id='isActive_'+user._id, checked=true) 
+              //  -else 
+              //    input(type='radio',value='/users/'+ user._id, id='isActive_'+user._id, checked=false) 
               td #{user.isRegistered}
               
   - else
     p No available instances
-  p
-    a(href='/builds/new', class='btn primary') Add a new build
-  
