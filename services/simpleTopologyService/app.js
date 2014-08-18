@@ -178,7 +178,10 @@ app.get('/login', function(req, res){
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/topology/topologies/');
+    if(!req.session.returnTo)
+      res.redirect('/topology/topologies/');
+    else
+      res.redirect(req.session.returnTo);
 });
 app.get('/logout', function(req, res){
   req.logout();
@@ -195,6 +198,7 @@ app.post('/reset/:id', user.resetStep3);
 
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
+  req.session.returnTo = req.path;
   res.redirect('/login');
 } 
 
