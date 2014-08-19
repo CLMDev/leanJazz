@@ -118,7 +118,7 @@ exports.resetMail = function(req, res) {
         console.log('error: sending mail!');
         console.log(error);
       }else{
-        console.log('Message sent: ' + resetmailOptions.text);
+      //  console.log('Message sent: ' + resetmailOptions.text);
       }
       });
    });
@@ -180,8 +180,8 @@ exports.createAccount = function(req, res) {
         console.log('error: sending mail!');
         console.log(error);
       }else{
-        console.log('STS_HOSTNAME:'+nconf.get('STS_HOSTNAME'));
-        console.log('Message sent: ' + mailOptions.text);
+//        console.log('STS_HOSTNAME:'+nconf.get('STS_HOSTNAME'));
+//        console.log('Message sent: ' + mailOptions.text);
       }
       });
    });

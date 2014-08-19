@@ -188,7 +188,7 @@ exports.update = function(req, res) {
            try {
 			console.log('found document, attempting to update');
 			for (var param in updateDoc) {
-			    if (param =='_id'||param =='name'||param=='topologyRef'||param=='poolRef')
+			    if (param =='_id'||param =='name'||param=='topologyRef'||param=='poolRef'||param=='checkoutUser'||param=='appcheckoutUser')
                               {
 				console.log('omitting ' + param );
                              
@@ -198,6 +198,7 @@ exports.update = function(req, res) {
                               if(updateDoc[param]== false)
                                 continue;//checkout only, no checkin support
                               else {
+                                instance['checkoutUser']=req.session.userid;
                                 topologyPoolModel.findById(instance.poolRef, function(err, npool){
                                 npool.available=npool.available-1;
                                 npool.checkedout=npool.checkedout+1;
@@ -209,6 +210,7 @@ exports.update = function(req, res) {
                               if(updateDoc[param]== false)
                                 continue;//checkout only, no checkin support
                               else {
+                                instance['appcheckoutUser']=req.session.userid;
                                 topologyPoolModel.findById(instance.apppoolRef, function(err, apppool){
                                 apppool.available=apppool.available-1;
                                 apppool.checkedout=apppool.checkedout+1;
