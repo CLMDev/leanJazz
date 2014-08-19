@@ -178,6 +178,8 @@ app.get('/login', function(req, res){
 app.post('/login', 
   passport.authenticate('local', { failureRedirect: '/login' }),
   function(req, res) {
+    req.session.userid = req.body.username;
+    console.log('login user:'+req.session.userid);
     if(!req.session.returnTo)
       res.redirect('/topology/topologies/');
     else

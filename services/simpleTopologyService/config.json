@@ -1,6 +1,6 @@
 {
 	"PORT" : 3001,
-	"HOSTNAME" : "liuzc.rtp.raleigh.ibm.com",
+	"STS_HOSTNAME" : "liuzc.rtp.raleigh.ibm.com",
 	"REDIS_HOST": "localhost",
 	"STS_INSTANCE_PREFIX": "p-",
 	"REMOVE-TEST-DATA" : "true", 
