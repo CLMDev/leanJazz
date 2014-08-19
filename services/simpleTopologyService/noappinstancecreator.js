@@ -161,11 +161,9 @@ var timeoutcb= function(){
                 instance.ucdEnvDesc=data;
                 instance.ucdURI='https://udeploy04.rtp.raleigh.ibm.com:8443/#environment/'+env_id;
                 instance.creationDate=date;
-                instance.iwdStatus=clog.status;
-                if(clog.status == 'Failed'){
-                  console.log(pname +'instance creation failed, please check if iwd have reource for the request.');
-                  timer=setTimeout(timeoutcb, 60000);
-                  return;
+                instance.iwdStatus=clog.IWDstatus;
+                if(clog.IWDstatus == 'Failed'){
+                  console.log(pname +'instance creation failed, please check if iwd have reource for the request.');                  
                 }
                 instance.save (function(err) {
                 if (err) {
