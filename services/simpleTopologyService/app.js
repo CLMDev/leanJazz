@@ -19,8 +19,10 @@
 var express = require('express');
 var mongoose = require('mongoose');
 var crypto=require('crypto')
+var nconf = require('nconf');
+nconf.argv().env().file({ file: './config.json'});
 
-mongoose.connect('mongodb://localhost/leanJazz',
+mongoose.connect(nconf.get('MONGO_URI'),
   function(err) {
     if (!err) {
       console.log('connected');
@@ -125,8 +127,7 @@ https.globalAgent.maxSockets = 100;
 //var pool = require('./models/poolmodel');
 //setup properties file
 var fs = require('fs');
-var nconf = require('nconf');
-nconf.argv().env().file({ file: './config.json'});
+
 
 console.log('printing out port ' + nconf.get('PORT'));
 // all environments

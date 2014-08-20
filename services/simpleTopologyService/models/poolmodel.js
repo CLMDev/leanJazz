@@ -23,7 +23,10 @@ TODO:
 	how to require that topologyRef is set as a part of the constructor
 */
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/leanJazz',
+var nconf = require('nconf');
+nconf.argv().env().file({ file: '../config.json'});
+
+mongoose.connect(nconf.get('MONGO_URI'),
   function(err) {
     if (!err) {
       console.log('mongoose connected');
