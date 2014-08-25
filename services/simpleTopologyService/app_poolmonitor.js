@@ -13,7 +13,7 @@
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-var monitor = require('child_process').fork('app_deployer.js');//monitor pools and fork instance creators for pools
+//var doployer= require('child_process').fork('app_deployer.js');//monitor pools and fork instance creators for pools
 var pname='apppool_monitor';
 var num_deployer_per_pool=2
 
@@ -36,10 +36,13 @@ var minstance = require('./models/instancemodel');
 
 //setup properties file
 var fs = require('fs');
-
+var api_password;
 
 console.log(pname+': monitoring process is running! ');
 
+process.on('message', function(m) {
+  api_password=m.password;
+});
 var timer;
 var request_no=0;
 var timeoutcb= function(){
@@ -60,6 +63,9 @@ mpool.find({type:'app'},function(err, pools){
       console.log(pname+': number of deployers for app pool:'+ card);
       if(card<num_deployer_per_pool){//slow start, gradually increase the number of deployer process
       var deployer = require('child_process').fork('app_deployer.js');//fork process to deploy app
+      console.log('step3: app monitor to app deployer');
+      console.log('api_password:'+api_password);
+      deployer.send({password:api_password});
       
       console.log(pname+'sending message to App_Deployer');
       deployer.send({pool_id: pool._id});

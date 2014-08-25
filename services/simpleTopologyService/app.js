@@ -37,7 +37,8 @@ var
   , passport = require('passport')
   , util = require('util')
   , LocalStrategy = require('passport-local').Strategy;
-  
+
+
 
 function findById(id, fn) {
   User.find({_id:id}, function(err,docs){
@@ -191,6 +192,16 @@ app.get('/logout', function(req, res){
   res.redirect('/login');
 });
 
+app.get('/api/v1/login', function(req, res){
+  res.send(200);
+});
+app.post('/api/v1/login', 
+  passport.authenticate('local', { failureRedirect: '/api/v1/login' }),
+  function(req, res) {
+    req.session.userid = req.body.username;
+    console.log('login user:'+req.session.userid);
+    res.send(200);
+});
 app.get('/signup', user.signup);
 app.post('/signup', user.createAccount);
 app.get('/activate/:id', user.activate);
@@ -200,11 +211,15 @@ app.get('/reset/:id', user.resetStep2);
 app.post('/reset/:id', user.resetStep3);
 
 function ensureAuthenticated(req, res, next) {
+  console.log('req.headers.host'+req.headers.host);
   if (req.isAuthenticated()) { return next(); }
   req.session.returnTo = req.path;
   res.redirect('/login');
 } 
 
+var api_password=user.createAPIUser();
+
+appmonitor.send({password:api_password});
 // setup routes for topologies web interface
 app.get('/users', ensureAuthenticated, user.findAllView);
 app.put('/users/:id', ensureAuthenticated, user.update);

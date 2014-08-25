@@ -26,6 +26,8 @@ var crypto=require('crypto')
 
 var nodemailer = require('nodemailer');
 
+var uuid = require('node-uuid');
+
 
 // create reusable transporter object using SMTP transport
 var transporter = nodemailer.createTransport(); 
@@ -45,6 +47,39 @@ var resetmailOptions = {
     text: 'DO *NOT* CLICK THE LINK, UNLESS YOU WOULD LIKE TO RESET YOUR PASSWORD. To reset your password, click on this link, ' 
 };
 
+var apiuser;
+var random=uuid.v4();
+exports.createAPIUser= function(){
+  User.find({mail:'apiuser@ibm.com'}, function(err, docs){
+   if(docs.length==1){
+   docs[0].remove(function(){
+       apiuser=new User();
+       apiuser.mail='apiuser@ibm.com';
+       var sha = crypto.createHash('sha1');
+       sha.update(random+apiuser._salt);
+       apiuser.passwordHash=sha.digest('hex');
+       apiuser.isRegistered=true;
+       apiuser.save();
+   });
+   }
+
+   if(docs.length==0){
+   apiuser=new User();
+   apiuser.mail='apiuser@ibm.com';
+   var sha = crypto.createHash('sha1');
+   sha.update(random+apiuser._salt);
+   apiuser.passwordHash=sha.digest('hex');
+   apiuser.isRegistered=true;
+   apiuser.save();
+   }
+  });
+  return random;
+}
+
+
+exports.getAPIUserPassword= function(){
+  return random;
+}
 
 exports.findAllView = function(req, res) {
   User.find({},function(err, docs) {
@@ -167,6 +202,7 @@ exports.createAccount = function(req, res) {
       var sha = crypto.createHash('sha1');
       sha.update(req.body.password+newUser._salt);
 
+      newUser.isRegistered=false;
       newUser.passwordHash=sha.digest('hex');
       //console.log('new User:'+newUser);
       newUser.save();
