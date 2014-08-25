@@ -36,24 +36,38 @@ var mbuildstream = require('./models/buildstreammodel');
 var mbuild = require('./models/buildmodel');
 process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 //process.env['JAVA_HOME'] = '/usr/java/jre1.7.0_60';
-
+var api_password;
 //setup properties file
 var fs = require('fs');
 
-var http = require('http');
-var request = require('request-json');
+var https = require('https');
+var request_json= require('request-json');
 var topologyPort = nconf.get('PORT');
-var json_client = request.newClient('http://localhost:' + topologyPort);
+var options = {
+  rejectUnauthorized: false,
+  headers: {cookie:''}
+};
+var json_client = request_json.newClient('https://localhost:' + topologyPort, options);
 console.log(pname+': App Deployer process is running! ');
+ 
+
 
 var process_template,process_template_obj, process_template_updated;
 var build_id;
 var pool_id=0;
+ 
+var user=require('./routes/user');
 
 process.on('message', function(m) {
-    pool_id=m.pool_id;
-    pname+='_for_pool_'+ pool_id;
-    console.log(pname+'pool_id:', pool_id);
+    console.log('step4:APP Deployer got message:');
+    if(m.pool_id!=undefined){
+      pool_id=m.pool_id;
+      pname+='_for_pool_'+ pool_id;
+      console.log(pname+'pool_id:', pool_id);
+    }
+    if(m.password!=undefined){
+      api_password=m.password; 
+    }
 });
 
 var timer;
@@ -127,9 +141,23 @@ var timeoutcb= function(){
                   timer=setTimeout(timeoutcb, 60000);
                   return;
             }
-            json_client.get('/api/v1/topology/pools/' + parent._id+'/instances', function(err, res, body) {
-            var found=false;
-            body.forEach(function(instance){
+            var login={ 
+              username: 'apiuser@ibm.com',
+              password: ''
+            }
+            login.password=api_password;
+            console.log('api user password:'+login.password);
+            json_client.post('/api/v1/login',login , function(err, res, body) {
+
+              console.log('res.headers:'+JSON.stringify(res.headers));
+              var cookie= res.headers['set-cookie'];
+              console.log('cookie:'+cookie);
+              options.headers.cookie=cookie;
+              json_client = request_json.newClient('https://localhost:' + topologyPort, options);
+
+              json_client.get('/api/v1/topology/pools/' + parent._id+'/instances', function(err, res, body) {
+              var found=false;
+              body.forEach(function(instance){
               if(!found && !instance.checkedout){
                 var today = Date.now();            
                 found=true;
@@ -192,6 +220,7 @@ var timeoutcb= function(){
             return;
           }
           });//json_client.get(
+          });//longin
           });//mbuild.find
         }).populate('topologyRef');//mpool.findById(pool.parentPool
       });//pool.forEach

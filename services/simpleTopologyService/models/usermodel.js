@@ -32,7 +32,7 @@ var UserSchema = new Schema({
 	mail: {type: String, unique: true},
 	userName: {type: String},
 	passwordHash:{type: String},
-	isRegistered: {type: Boolean, default: false },	
+	isRegistered: {type: Boolean},	
 	isActive: {type: Boolean, default: true },	
 	},{strict: 'throw'}
 );
