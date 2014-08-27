@@ -45,13 +45,10 @@ var timeoutcb= function(){
 console.log(pname+': inside callback');
 mpool.find({type:'noapp'},function(err, pools){
 
-    console.log(pname+': inside mpool.find callback');
-    console.log(pools)
   if (err) {
     console.log('got error:'+err);
     return console.error(err);
   }
-    console.log(pools)
   pools.forEach(function( pool){
     console.log(pname+': pool to be checked:')
     //console.log(pool)

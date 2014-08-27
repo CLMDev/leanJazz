@@ -59,8 +59,6 @@ var timeoutcb= function(){
   }
   console.log(pname+': noapp_C callback');
 
-
-
   console.log(pname+'get a new request:');
   client.rpoplpush(pool_id+'-noapp-request',pool_id+'-noapp-processing', function (err, request){
     if (err) {
@@ -81,8 +79,6 @@ var timeoutcb= function(){
       }     
       pools.forEach(function( pool){
     
-        console.log(pname+': pool to be checked:')
-    //    console.log(pool)
         console.log('pool name:'+pool.name);
         console.log('pool id:'+pool._id);
         console.log('topology name:'+pool.topologyRef.name);
@@ -161,8 +157,8 @@ var timeoutcb= function(){
                 instance.ucdEnvDesc=data;
                 instance.ucdURI='https://udeploy04.rtp.raleigh.ibm.com:8443/#environment/'+env_id;
                 instance.creationDate=date;
-                instance.iwdStatus=clog.IWDstatus;
-                if(clog.IWDstatus == 'Failed'){
+                instance.iwdStatus=clog[0].IWDstatus;
+                if(clog[0].IWDstatus == 'Failed'){
                   console.log(pname +'instance creation failed, please check if iwd have reource for the request.');                  
                 }
                 instance.save (function(err) {

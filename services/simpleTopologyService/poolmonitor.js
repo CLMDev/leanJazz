@@ -45,10 +45,8 @@ var timeoutcb= function(){
 mpool.find({type:'noapp'},function(err, pools){
 
   if (err) return console.error(err);
-    //console.log(pools)
   pools.forEach(function( pool){
     console.log(pname+': pool to be checked:')
-    //console.log(pool)
     console.log('pool name:'+pool.name);
     console.log('pool id:'+pool._id);
     console.log('topology name:'+pool.topologyRef.name);
