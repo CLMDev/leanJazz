@@ -17,7 +17,7 @@
 var mongoose = require('mongoose');
 var nconf = require('nconf');
 
-nconf.file({ file: '../config.json'});
+nconf.file({ file: './config.json'});
 
 var User = require ('../models/usermodel');
 var crypto=require('crypto')

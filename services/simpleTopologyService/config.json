@@ -1,12 +1,11 @@
 {
 	"PORT" : 3001,
-	"STS_HOSTNAME" : "liuzc.rtp.raleigh.ibm.com",
+	"STS_HOSTNAME" : "liuzc-rh.rtp.raleigh.ibm.com",
 	"REDIS_HOST": "localhost",
 	"STS_INSTANCE_PREFIX": "p-",
 	"REMOVE-TEST-DATA" : "true", 
 	"DEFAULT_PROVIDER_URL": "yourudeploy.rtp.raleigh.ibm.com", 
 	"DEFAULT_PROVIDER_USERNAME" : "yourusername", 
 	"DEFAULT_PROVIDER_PASSWORD" : "yourpassword",
-	"NOAPP_POOL_ID": "53bcc06c83a1fa9e3d37be6f",
-	"MONGO_URI":"mongodb://IbmCloud_c5hlldp6_8t0cmpvi_emgmeadj:ZJRUp02XRnGVxuQ9OzULpvFysrCd9vxZ@ds033509.mongolab.com:33509/IbmCloud_c5hlldp6_8t0cmpvi"
+	"MONGO_URI":"mongodb://localhost/leanJazz"
 }

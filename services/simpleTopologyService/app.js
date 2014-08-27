@@ -130,6 +130,9 @@ https.globalAgent.maxSockets = 100;
 var fs = require('fs');
 
 
+console.log('PORT:'+ nconf.get('PORT'));
+console.log('MONGO_URI:'+ nconf.get('MONGO_URI'));
+console.log('STS_HOSTNAME:'+ nconf.get('STS_HOSTNAME'));
 console.log('printing out port ' + nconf.get('PORT'));
 // all environments
 app.set('port', nconf.get('PORT'));

@@ -57,7 +57,7 @@ var timeoutcb= function(){
   timer=setTimeout(timeoutcb, 2000);
   return;
   }
-  console.log(pname+': noapp_C process is creating instance');
+  console.log(pname+': noapp_C callback');
 
 
 
@@ -82,7 +82,7 @@ var timeoutcb= function(){
       pools.forEach(function( pool){
     
         console.log(pname+': pool to be checked:')
-        console.log(pool)
+    //    console.log(pool)
         console.log('pool name:'+pool.name);
         console.log('pool id:'+pool._id);
         console.log('topology name:'+pool.topologyRef.name);
@@ -147,8 +147,8 @@ var timeoutcb= function(){
                   console.log('env_id:undefined');
                   //UCD cli hit errors, we should not create instance here; instead, we should remove the request from processing queue.
                   client.lrem(pool_id+'-noapp-processing',1, request , function (err){                   
-                    timer=setTimeout(timeoutcb, 60000);
                   });
+                  timer=setTimeout(timeoutcb, 60000);
                   return;
                 }
  
