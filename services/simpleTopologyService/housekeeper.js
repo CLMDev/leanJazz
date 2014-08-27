@@ -112,6 +112,45 @@ minstance.find({type:'app'}, function(err, instances){
   });//instances.forEach()
 });//minstance.find()
 
+console.log(pname+': Housekeeper process is recalculating available/checkedout instances for pools');
+mpool.find({type:'noapp'}, function(err, pools){
+    pools.forEach(function(pool){
+        minstance.find({poolRef:pool._id}, function(err, instances){
+            var num_checkedout=0;
+            var num_available=0;
+            instances.forEach(function(instance){
+                
+                if(instance.checkedout)
+                   num_checkedout++;
+                else
+                   num_available++;
+            });//instance.forEach
+            pool.available=num_available;
+            pool.checkedout=num_available;
+            pool.save();
+        });//minstance.find
+    });//pools.forEach
+});//mpool.find
+
+mpool.find({type:'app'}, function(err, pools){
+    pools.forEach(function(pool){
+        minstance.find({apppoolRef:pool._id}, function(err, instances){
+            var num_checkedout=0;
+            var num_available=0;
+            instances.forEach(function(instance){
+                
+                if(instance.appcheckedout)
+                   num_checkedout++;
+                else
+                   num_available++;
+            });//instance.forEach
+            pool.available=num_available;
+            pool.checkedout=num_available;
+            pool.save();
+        });//minstance.find
+    });//pools.forEach
+});//mpool.find
+
 timer=setTimeout(timeoutcb, 60000); //every 60 seconds
 }//var timeoutcb=function
 
