@@ -133,8 +133,8 @@ exports.reset = function(req, res) {
 };
 
 exports.resetMail = function(req, res) {
-  if(req.body.mail.indexOf('.ibm.com')==-1)
-    res.render('topology/users/password_reset', { message: 'Use IBM intranet ID, please'});
+  if(nconf.get('MAIL_PROVIDER')!='' && req.body.mail.indexOf(nconf.get('MAIL_PROVIDER'))==-1)
+    res.render('topology/users/password_reset', { message: nconf.get('MAIL_MESSAGE_PROVIDER')});
   else {
     User.find({mail: req.body.mail},function( err, docs){
       console.log('docs.length:'+docs.length);
@@ -187,8 +187,8 @@ exports.resetStep3 = function(req, res) {
 };
 
 exports.createAccount = function(req, res) {
-  if(req.body.mail.indexOf('.ibm.com')==-1)
-    res.render('topology/users/signup', { message: 'Use IBM intranet ID, please'});
+  if(nconf.get('MAIL_PROVIDER')!='' && req.body.mail.indexOf(nconf.get('MAIL_PROVIDER'))==-1)
+    res.render('topology/users/signup', { message: nconf.get('MAIL_MESSAGE_PROVIDER')});
   else {
     User.find({mail: req.body.mail},function( err, docs){
       console.log('docs.length:'+docs.length);
