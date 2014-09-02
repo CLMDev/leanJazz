@@ -113,6 +113,7 @@ passport.use(new LocalStrategy(
 ));
 
 var routes = require('./routes');
+var provider = require('./routes/provider');
 var topology = require('./routes/topology');
 var topologyPool = require('./routes/pool');
 var topologyInstance = require('./routes/instance');
@@ -226,6 +227,18 @@ appmonitor.send({password:api_password});
 // setup routes for topologies web interface
 app.get('/users', ensureAuthenticated, user.findAllView);
 app.put('/users/:id', ensureAuthenticated, user.update);
+
+app.get('/providers',ensureAuthenticated, provider.findAllView);
+app.get('/providers/new',ensureAuthenticated, provider.addViewSetup);
+app.post('/providers', ensureAuthenticated, provider.addViewExecute);
+app.get('/providers/:id/edit', ensureAuthenticated, provider.editViewSetup);
+app.put('/providers/:id', ensureAuthenticated, provider.editViewExecute);
+
+app.get('/api/v1/providers', ensureAuthenticated, provider.findAll);
+app.post('/api/v1/providers',ensureAuthenticated, provider.create);
+app.get('/api/v1/providers/:id', ensureAuthenticated, provider.find);
+app.del('/api/v1/providers/:id', ensureAuthenticated, provider.delete);
+app.put('/api/v1/providers/:id', ensureAuthenticated, provider.update);
 
 app.get('/topology/topologies', ensureAuthenticated, topology.findAllView);
 app.get('/topology/topologies/new', ensureAuthenticated,topology.addViewSetup);

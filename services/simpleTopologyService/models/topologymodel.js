@@ -78,7 +78,6 @@ var validateProviders = function(providers) {
 	}
 };
 Topology.path('referenceURL').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
-Topology.path('providers').validate(validateProviders, 'validation of `{PATH}` failed with value `{VALUE}` failed');
 
 
 Topology.path('name').set(function(v) {

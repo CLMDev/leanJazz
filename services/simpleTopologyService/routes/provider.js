@@ -34,7 +34,6 @@ exports.addViewSetup = function(req, res) {
     res.render('topology/providers/newprovider.jade', {
                 title: 'Create new provider'
     });
-  });
 };
 
 var validator = require('validator');
@@ -51,11 +50,11 @@ var validateProvider = function(doc, next) {
 
 
 exports.addViewExecute = function(req, res) {
-	validatePool(req.body.provider, function(err) {
+	validateProvider(req.body.provider, function(err) {
 		if (! err) {
-			var pool = new Provider(req.body.provider);
+			var provider = new Provider(req.body.provider);
                         
-			  pool.save(function(err) {
+			  provider.save(function(err) {
 				if (! err) {
 					res.redirect('/providers/');
 				}else {
