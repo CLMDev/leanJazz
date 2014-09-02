@@ -33,9 +33,7 @@ var Topology = new Schema({
 	appProcessTemplate:String,
 	referenceURL: String,
 	pools: [],
-	providers: {type: [], default: [{type: "UCD", url: nconf.get('DEFAULT_PROVIDER_URL'), passwordProperty: 'DEFAULT_PROVIDER_PASSWORD',usernameProperty:"DEFAULT_PROVIDER_USERNAME"}]}, 
-	deployParameters: [],
-	validationParam: []
+	providerRef: {type: String, ref:'Provider'},	
 	},{strict: 'throw'}
 );
 var validator = require('validator');
