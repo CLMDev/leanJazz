@@ -25,7 +25,6 @@ block content
           th UCD webURL
           th IWD host
           th Description
-          th Details
       tbody
           each provider in docs
             tr
@@ -33,8 +32,6 @@ block content
               td #{provider.UCD_webURL}
               td #{provider.IWD_host}
               td #{provider.description}
-              td 
-                a(href="/api/v1/providers/#{provider._id}") json
               td
                 a.btn(href="/providers/#{provider._id}/edit") Edit
               td

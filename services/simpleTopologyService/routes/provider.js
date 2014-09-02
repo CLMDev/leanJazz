@@ -40,12 +40,8 @@ var validator = require('validator');
 var validateProvider = function(doc, next) {
 	console.log("validating Provider document");
 	console.log(doc);
-    if (validator.isURL(doc.UCD_webURL)) {
-		next(new Error('not valid URL for UCD_webURL'));
-    } else {
-		console.log('validated json');
-		next(null);
-	}
+        console.log('validated json');
+	next(null);
 };
 
 
@@ -87,7 +83,7 @@ exports.findAll = function(req, res) {
 
 exports.editViewSetup = function(req, res) {
   Provider.findById(req.params.id, function(err, doc) {
-    res.render('topology/providers/editpool', {
+    res.render('topology/providers/editprovider', {
       title: 'Edit Provider',
       provider: doc
     });
@@ -132,10 +128,10 @@ exports.deleteView = function(req, res) {
 	Provider.findById(req.params.id, function(err, doc) {
 		if (!doc) {
 			console.log('could not remove document using ID ' + req.params.id);
-			res.redirect('/topology/providers');
+			res.redirect('/providers');
 		}else {
 			doc.remove(function() {
-				res.redirect('/topology/providers/');
+				res.redirect('/providers');
 			});
 		}
 	});

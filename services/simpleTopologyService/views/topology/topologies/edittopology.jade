@@ -15,6 +15,30 @@
 extends ../../layout
 block content
   h1 Edit topology view
+  script(type='text/javascript').
+    $( document ).ready(function() {
+      console.log( "ready!" );
+      $('#div_provider').show();
+               $.ajax({
+               url: "/api/v1/providers/",
+               type: "GET",
+               success: function( json ) {
+                 var option_string='';
+                 json.forEach( function(provider){
+                 option_string=option_string+'<option value="' +provider._id+'">'+provider.name+'</option>';
+                 });
+                 if(option_string=='')
+                     alert( "please define the topology providers first!" );
+                 $('#div_provider select').html(option_string);
+               },
+               error: function( xhr, status, errorThrown ) {
+                 alert( "Sorry, there was a problem to get providers!" );
+                 console.log( "Error: " + errorThrown );
+                 console.log( "Status: " + status );
+               }
+             });//ajax
+    });//ready
+
   form(method='post', action='/topology/topologies/' + topology.id)
     input(name='_method', value='PUT', type='hidden')
     fieldset
@@ -25,6 +49,11 @@ block content
               div.span3 
                 p Name
               input.span3(name='topology[name]', class='xlarge', value="#{topology.name}")
+            div.row(id="div_provider")
+              div.span3
+                p Provider
+              div
+                select(name='topology[providerRef]')
             div.row
               div.span3 
                 p TopologyDocument

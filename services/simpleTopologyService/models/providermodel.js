@@ -39,8 +39,6 @@ var Provider = new Schema({
 );
 var validator = require('validator');
 
-Provider.path('UCD_webURL').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
-
 var Provider = mongoose.model('Provider', Provider);
 
 module.exports =Provider;

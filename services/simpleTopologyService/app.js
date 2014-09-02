@@ -233,12 +233,14 @@ app.get('/providers/new',ensureAuthenticated, provider.addViewSetup);
 app.post('/providers', ensureAuthenticated, provider.addViewExecute);
 app.get('/providers/:id/edit', ensureAuthenticated, provider.editViewSetup);
 app.put('/providers/:id', ensureAuthenticated, provider.editViewExecute);
+app.del('/providers/:id', ensureAuthenticated, provider.deleteView);
 
 app.get('/api/v1/providers', ensureAuthenticated, provider.findAll);
 app.post('/api/v1/providers',ensureAuthenticated, provider.create);
 app.get('/api/v1/providers/:id', ensureAuthenticated, provider.find);
 app.del('/api/v1/providers/:id', ensureAuthenticated, provider.delete);
 app.put('/api/v1/providers/:id', ensureAuthenticated, provider.update);
+app.del('/api/v1/providers/:id', ensureAuthenticated, provider.delete);
 
 app.get('/topology/topologies', ensureAuthenticated, topology.findAllView);
 app.get('/topology/topologies/new', ensureAuthenticated,topology.addViewSetup);
