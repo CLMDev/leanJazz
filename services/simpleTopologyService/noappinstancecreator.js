@@ -38,6 +38,8 @@ process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 
 //setup properties file
 var fs = require('fs');
+var mprovider = require('./models/providermodel');
+var pool_provider;
 
 
 console.log(pname+': noapp_C process is running! ');
@@ -48,12 +50,18 @@ process.on('message', function(m) {
     pool_id=m.pool_id;
     pname+='_for_pool_'+ pool_id;
     console.log(pname+'pool_id:', pool_id);
+    mpool.findById(pool_id ,function(err, pool){
+      mprovider.findById(pool.topologyRef.providerRef ,function(err, provider){
+      pool_provider=provider;
+      console.log(pname+'pool_provider:', JSON.stringify(pool_provider));
+      });
+    }).populate('topologyRef');
 });
 
 var timer;
 var timeoutcb= function(){
 
-  if (pool_id==0) {
+  if (pool_id==0 || pool_provider==undefined) {
   timer=setTimeout(timeoutcb, 2000);
   return;
   }
@@ -120,7 +128,9 @@ var timeoutcb= function(){
           console.log(pname +'::fork background process for instance : '+instance_name);
         
           var exec = require('child_process').exec, child;
-          child = exec('/root/createEnv.py -v --udclient /root/udclient/udclient --iwdcli /root/deployer.cli/bin/deployer --outputFile '
+          child = exec('/root/createEnv.py -v --udclient /root/udclient/udclient --weburl ' + pool_provider.UCD_webURL + ' --iwdcli /root/deployer.cli/bin/deployer ' +
+          ' --authtoken ' + pool_provider.UCD_authtoken + ' --iwdhost ' + pool_provider.IWD_host + ' --iwduser ' + pool_provider.IWD_username +
+          ' --iwdpassword '+ pool_provider.IWD_password + ' --outputFile '
             +dir+'/'+instance_name+ '.log ' + dir +'/'+instance_name+ '.json',
             function (error, stdout, stderr) {
               console.log(pname +' instance creation callback:');
