@@ -102,12 +102,14 @@ var timeoutcb= function(){
     }
     console.log(pname+'request:');
     console.log(request);
-    mpool.find({type:'app', id:request.pool_id},function(err, pools){
+    var request_obj=JSON.parse(request);
+    console.log('pool id:' + request_obj.pool_id);
+    mpool.findById(request_obj.pool_id ,function(err, pool){
       if (err) {
       timer=setTimeout(timeoutcb, 60000); 
       return console.error(err);
       }     
-      pools.forEach(function( pool){
+      
         console.log(pname+': pool to be checked:')
         console.log(pool)
         console.log('pool name:'+pool.name);
@@ -234,7 +236,7 @@ var timeoutcb= function(){
           });//longin
           });//mbuild.find
         }).populate('topologyRef');//mpool.findById(pool.parentPool
-      });//pool.forEach
+
     });//mpool.find
 });//client.rpoplpush
 }//var timeoutcb=function
