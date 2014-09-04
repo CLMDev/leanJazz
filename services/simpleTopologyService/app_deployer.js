@@ -40,6 +40,7 @@ var api_password;
 //setup properties file
 var fs = require('fs');
 
+var mprovider = require('./models/providermodel');
 var https = require('https');
 var request_json= require('request-json');
 var topologyPort = nconf.get('PORT');

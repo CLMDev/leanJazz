@@ -16,6 +16,7 @@
 
 var pname='noapp_C';
 
+
 var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
 var redis_host=nconf.get('REDIS_HOST');
@@ -80,13 +81,13 @@ var timeoutcb= function(){
     }
     console.log(pname+'request:');
     console.log(request);
-    mpool.find({type:'noapp', id:request.pool_id},function(err, pools){
+    var request_obj=JSON.parse(request);
+    console.log('pool id:' + request_obj.pool_id);
+    mpool.findById(request_obj.pool_id ,function(err, pool){
       if (err) {
       timer=setTimeout(timeoutcb, 60000); 
       return console.error(err);
       }     
-      pools.forEach(function( pool){
-    
         console.log('pool name:'+pool.name);
         console.log('pool id:'+pool._id);
         console.log('topology name:'+pool.topologyRef.name);
@@ -201,13 +202,12 @@ var timeoutcb= function(){
               }); //fs.readFile
            });//child=exec
         });//stream.end
-      });//pool.forEach
-    }).populate('topologyRef');//mpool.find
+    }).populate('topologyRef');//mpool.findById
   
   
 });//client.rpoplpush
 
 }//var timeoutcb=function
 
-timer=setTimeout(timeoutcb, 60000); //every 60 seconds
+timer=setTimeout(timeoutcb, 60000+60000*Math.random()); //every 60 seconds
 
