@@ -1,0 +1,79 @@
+
+#********************************************************************************
+# Licensed Materials - Property of IBM
+# (c) Copyright IBM Corporation 2012. All Rights Reserved.
+#  
+# U.S. Government Users Restricted Rights:
+# Use, duplication or disclosure restricted by GSA ADP Schedule
+# Contract with IBM Corp.
+#********************************************************************************#
+# script for starting the X virtual frame buffer (Xvfb).
+#
+# chkconfig: 2345 97 55
+# description: Xvfb
+#
+
+### BEGIN INIT INFO
+# Provides:     Xvfb
+# Required-Start:
+# Should-Start:
+# Required-Stop:
+# Default-Start:       2 3 4 5
+# Default-Stop:
+# Description:   Xvfb service needed for RRC converter app
+### END INIT INFO
+
+
+stop(){
+        xpid=`pgrep Xvfb`
+        if [ ! -z "$xpid" ]; then
+                echo "Killing Xvfb process at $xpid"
+                `kill -9 $xpid`
+        else
+                echo "Xvfb not running"
+        fi
+
+}
+
+start() {
+        stop
+        DISPLAY=localhost:3.0 Xvfb :3 -screen 0 800x600x24 -fp /usr/share/X11/fonts/misc/ &
+        echo "new Xvfb process at " `pgrep Xvfb`
+}
+
+
+
+
+
+if [ -f /etc/rc.status ]; then
+  . /etc/rc.status
+  rc_reset
+fi
+
+case "$1" in
+    start|restart)
+        start
+        test -f /etc/rc.status && rc_status -v
+        ;;
+    stop)
+        stop
+        test -f /etc/rc.status && rc_status -v
+        ;;
+    status)
+        echo "Checking for Xvfb process "
+        xpid=`pgrep Xvfb`
+        if [ ! -z "$xpid" ]; then
+                echo "Xvfb running at process id $xpid"
+        else
+                echo "Xvfb not running"
+        fi
+        test -f /etc/rc.status && rc_status -v
+        ;;
+    *)
+        #if no parameters are given, print which are avaiable.
+        echo "Usage: $0 {start|stop|status|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0

@@ -1,0 +1,2170 @@
+[
+   {
+      "advanced_options": [
+      ],
+      "description": "Base pattern for UCD including CLM nodes only (with 1 IHS + 4 WAS + 1 DB2)",
+      "name": "Open Source - 6 Nodes Base Topology v1.0.0.0",
+      "parts": [
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "value": "35"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "value": "\/db2inst1"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "DB2_ESE_C",
+            "concreteKey": "DB2_ESE",
+            "configurations": [
+            ],
+            "name": "DB2 AWSE",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "8192"
+               },
+               {
+                  "key": "db2inst1_group",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2iadm1"
+               },
+               {
+                  "key": "db2inst1_username",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2inst1"
+               },
+               {
+                  "key": "db2inst1_password",
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "db2fenc1_group",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2fadm1"
+               },
+               {
+                  "key": "db2fenc1_username",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2fenc1"
+               },
+               {
+                  "key": "db2fenc1_password",
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "dasusr1_group",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "dasadm1"
+               },
+               {
+                  "key": "dasusr1_username",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "dasusr1"
+               },
+               {
+                  "key": "dasusr1_password",
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "service_port",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "50001"
+               },
+               {
+                  "key": "db_action",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "Do-nothing"
+               },
+               {
+                  "key": "db_name_new",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "SAMPLE"
+               },
+               {
+                  "key": "database_codeset",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "UTF-8"
+               },
+               {
+                  "key": "database_territory",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "US"
+               },
+               {
+                  "key": "database_collate",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "SYSTEM"
+               },
+               {
+                  "key": "database_collate_other",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "database_pagesize",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "4096"
+               },
+               {
+                  "key": "db2_compatibility",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "Default"
+               },
+               {
+                  "key": "config_raw_disks",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "NO"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "locked": true,
+                  "pclass": "ConfigPWD_USER",
+                  "value": "virtuser"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "DB2_ESE",
+            "virtual_image_ref": 0
+         },
+         {
+            "add_ons": [
+            ],
+            "conceptualKey": "IHSGroupPart",
+            "concreteKey": "IHSPart",
+            "configurations": [
+            ],
+            "count": 1,
+            "name": "IBM HTTP Server",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               },
+               {
+                  "key": "dmgr_federate",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "dmgr_host",
+                  "pclass": "canBeFederated",
+                  "value": ""
+               },
+               {
+                  "key": "dmgr_conntype",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "SOAP"
+               },
+               {
+                  "key": "dmgr_jmxport",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "8879"
+               },
+               {
+                  "key": "dmgr_user",
+                  "pclass": "canBeFederated",
+                  "value": ""
+               },
+               {
+                  "key": "dmgr_pass",
+                  "pclass": "canBeFederated",
+                  "value": ""
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "IHS Only Node",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart2",
+            "concreteKey": "StandalonePart",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart3",
+            "concreteKey": "StandalonePart4",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart5",
+            "concreteKey": "StandalonePart6",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart7",
+            "concreteKey": "StandalonePart8",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         }
+      ],
+      "references": {
+         "add_ons": [
+            {
+               "command": "sh \/tmp\/defaultadddisk\/adddisk",
+               "commandargs": "",
+               "environment": {
+                  "DISK_SIZE_GB": "10",
+                  "FILESYSTEM_TYPE": "ext3",
+                  "MOUNT_POINT": ""
+               },
+               "file": "add_ons\/defaultadddisk.zip",
+               "location": "\/tmp\/defaultadddisk",
+               "log": "\/tmp\/defaultadddisk",
+               "name": "Default add disk",
+               "read_only": true,
+               "timeout": 1800000,
+               "type": "ADDON_DISK"
+            }
+         ],
+         "script_packages": [
+            {
+               "command": "\/bin\/sh",
+               "commandargs": "\/tmp\/install_ucd_agent\/install_agent.sh",
+               "environment": {
+                  "UCD_Agent_Name": "ibm-ucdagent",
+                  "UCD_Hostname": "",
+                  "UCD_Port": "7918",
+                  "JAVA_HOME": "/opt/IBM/ibm-java-i386-60"
+               },
+               "execmode": 0,
+               "file": "script_packages\/ibm-ucd-agent-script-package-6101.zip",
+               "location": "\/tmp\/install_ucd_agent",
+               "log": "\/tmp\/install_ucd_agent",
+               "name": "UCDeploy Agent Install V6.1",
+               "read_only": false,
+               "timeout": 0
+            }
+         ],
+         "virtual_images": [
+            {
+               "advancedoptionsaccepted": "F",
+               "build": "51",
+               "name": "DB2 AWSE 10.5.0.2",
+               "version": "10.5.0.2"
+            },
+            {
+               "advancedoptionsaccepted": "F",
+               "build": "R3_o8551_1341.07",
+               "name": "WebSphere Application Server 8.5.5.1 64-bit RHEL 6 x86-64 (VMWare)",
+               "version": "8.5.5.1"
+            }
+         ]
+      }
+   },
+   {
+      "advanced_options": [
+      ],
+      "description": " 	Base pattern for UCD including CLM nodes only (with 1 IHS + 6 WAS + 1 DB2)",
+      "name": "Open Source - 8 Nodes Base Topology v1.0.0.0",
+      "parts": [
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "value": "50"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "value": "\/db2inst1"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "DB2_ESE_C",
+            "concreteKey": "DB2_ESE",
+            "configurations": [
+            ],
+            "name": "DB2 AWSE",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "8192"
+               },
+               {
+                  "key": "db2inst1_group",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2iadm1"
+               },
+               {
+                  "key": "db2inst1_username",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2inst1"
+               },
+               {
+                  "key": "db2inst1_password",
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "db2fenc1_group",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2fadm1"
+               },
+               {
+                  "key": "db2fenc1_username",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "db2fenc1"
+               },
+               {
+                  "key": "db2fenc1_password",
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "dasusr1_group",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "dasadm1"
+               },
+               {
+                  "key": "dasusr1_username",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "dasusr1"
+               },
+               {
+                  "key": "dasusr1_password",
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "service_port",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "50001"
+               },
+               {
+                  "key": "db_action",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "Do-nothing"
+               },
+               {
+                  "key": "db_name_new",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "SAMPLE"
+               },
+               {
+                  "key": "database_codeset",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "UTF-8"
+               },
+               {
+                  "key": "database_territory",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "US"
+               },
+               {
+                  "key": "database_collate",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "SYSTEM"
+               },
+               {
+                  "key": "database_collate_other",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": ""
+               },
+               {
+                  "key": "database_pagesize",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "4096"
+               },
+               {
+                  "key": "db2_compatibility",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "Default"
+               },
+               {
+                  "key": "config_raw_disks",
+                  "locked": true,
+                  "pclass": "ConfigDB2",
+                  "value": "NO"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "locked": true,
+                  "pclass": "ConfigPWD_USER",
+                  "value": "virtuser"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "DB2_ESE",
+            "virtual_image_ref": 0
+         },
+         {
+            "add_ons": [
+            ],
+            "conceptualKey": "IHSGroupPart",
+            "concreteKey": "IHSPart",
+            "configurations": [
+            ],
+            "count": 1,
+            "name": "IBM HTTP Server",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               },
+               {
+                  "key": "dmgr_federate",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "dmgr_host",
+                  "pclass": "canBeFederated",
+                  "value": ""
+               },
+               {
+                  "key": "dmgr_conntype",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "SOAP"
+               },
+               {
+                  "key": "dmgr_jmxport",
+                  "locked": true,
+                  "pclass": "canBeFederated",
+                  "value": "8879"
+               },
+               {
+                  "key": "dmgr_user",
+                  "pclass": "canBeFederated",
+                  "value": ""
+               },
+               {
+                  "key": "dmgr_pass",
+                  "pclass": "canBeFederated",
+                  "value": ""
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "IHS Only Node",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart2",
+            "concreteKey": "StandalonePart",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart3",
+            "concreteKey": "StandalonePart4",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart5",
+            "concreteKey": "StandalonePart6",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart7",
+            "concreteKey": "StandalonePart8",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart9",
+            "concreteKey": "StandalonePart10",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         },
+         {
+            "add_ons": [
+               {
+                  "add_on_ref": 0,
+                  "parameters": [
+                     {
+                        "key": "DISK_SIZE_GB",
+                        "locked": true,
+                        "value": "12"
+                     },
+                     {
+                        "key": "FILESYSTEM_TYPE",
+                        "locked": true,
+                        "value": "ext3"
+                     },
+                     {
+                        "key": "MOUNT_POINT",
+                        "locked": true,
+                        "value": "\/JazzTeamServer"
+                     }
+                  ]
+               }
+            ],
+            "conceptualKey": "StandalonePart11",
+            "concreteKey": "StandalonePart12",
+            "configurations": [
+            ],
+            "name": "\u72ec\u7acb\u670d\u52a1\u5668",
+            "properties": [
+               {
+                  "key": "numvcpus",
+                  "pclass": "HWAttributes",
+                  "value": "2"
+               },
+               {
+                  "key": "memsize",
+                  "pclass": "HWAttributes",
+                  "value": "4096"
+               },
+               {
+                  "key": "physcpures",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "physmemres",
+                  "locked": true,
+                  "pclass": "HWAttributes",
+                  "value": "false"
+               },
+               {
+                  "key": "cell_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstCell"
+               },
+               {
+                  "key": "node_name",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": "CloudBurstNode"
+               },
+               {
+                  "key": "augment_list",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": [
+                     "none"
+                  ]
+               },
+               {
+                  "key": "was_im_repo_location",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_user",
+                  "locked": true,
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "was_im_repo_pass",
+                  "pclass": "ConfigWAS",
+                  "value": ""
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_ROOT",
+                  "value": ""
+               },
+               {
+                  "key": "username",
+                  "pclass": "ConfigPWD_USER",
+                  "value": "clmadmin"
+               },
+               {
+                  "key": "password",
+                  "pclass": "ConfigPWD_USER",
+                  "value": ""
+               },
+               {
+                  "key": "enabled",
+                  "locked": true,
+                  "pclass": "ConfigVNC",
+                  "value": "true"
+               }
+            ],
+            "script_packages": [
+               {
+                  "parameters": [
+                     {
+                        "key": "UCD_Agent_Name",
+                        "value": "ibm-ucdagent"
+                     },
+                     {
+                        "key": "UCD_Hostname",
+                        "value": ""
+                     },
+                     {
+                        "key": "UCD_Port",
+                        "value": "7918"
+                     },
+                     {
+                        "key": "JAVA_HOME",
+                        "value": "/opt/IBM/ibm-java-i386-60"
+                     }
+                  ],
+                  "script_package_ref": 0
+               }
+            ],
+            "type": "Standalone",
+            "virtual_image_ref": 1
+         }
+      ],
+      "references": {
+         "add_ons": [
+            {
+               "command": "sh \/tmp\/defaultadddisk\/adddisk",
+               "commandargs": "",
+               "environment": {
+                  "DISK_SIZE_GB": "10",
+                  "FILESYSTEM_TYPE": "ext3",
+                  "MOUNT_POINT": ""
+               },
+               "file": "add_ons\/defaultadddisk.zip",
+               "location": "\/tmp\/defaultadddisk",
+               "log": "\/tmp\/defaultadddisk",
+               "name": "Default add disk",
+               "read_only": true,
+               "timeout": 1800000,
+               "type": "ADDON_DISK"
+            }
+         ],
+         "script_packages": [
+            {
+               "command": "\/bin\/sh",
+               "commandargs": "\/tmp\/install_ucd_agent\/install_agent.sh",
+               "environment": {
+                  "UCD_Agent_Name": "ibm-ucdagent",
+                  "UCD_Hostname": "",
+                  "UCD_Port": "7918",
+                  "JAVA_HOME": "/opt/IBM/ibm-java-i386-60"
+               },
+               "execmode": 0,
+               "file": "script_packages\/ibm-ucd-agent-script-package-6101.zip",
+               "location": "\/tmp\/install_ucd_agent",
+               "log": "\/tmp\/install_ucd_agent",
+               "name": "UCDeploy Agent Install V6.1",
+               "read_only": false,
+               "timeout": 0
+            }
+         ],
+         "virtual_images": [
+            {
+               "advancedoptionsaccepted": "F",
+               "build": "51",
+               "name": "DB2 AWSE 10.5.0.2",
+               "version": "10.5.0.2"
+            },
+            {
+               "advancedoptionsaccepted": "F",
+               "build": "R3_o8551_1341.07",
+               "name": "WebSphere Application Server 8.5.5.1 64-bit RHEL 6 x86-64 (VMWare)",
+               "version": "8.5.5.1"
+            }
+         ]
+      }
+   }
+]
