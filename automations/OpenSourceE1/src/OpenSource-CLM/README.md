@@ -11,11 +11,11 @@
 <ul>
 <li>
 	<h4>CLM_REPO</h4>
-	<p>The software repository that will be used to install CLM related applications the default value is <i>https://jazz.net/downloads/clm/5.0/5.0/install-repository/clm-offerings/repository/repository.config<i>, it's a repository on jazz.net, if your instances can access the public Internet, you can use this repository directly.</p>
+	<p>The software repository that will be used to install CLM related applications the default value is <i>https://jazz.net/downloads/clm/5.0/5.0/install-repository/clm-offerings/repository/repository.config<i>, it's a repository on <a title="jazz.net" href="http://jazz.net">http://jazz.net</a>, if your instances can access the public Internet, you can use this repository directly.</p>
 </li>
 <li>
 	<h4>CLM_REPO_USERNAME</h4>
-	<p>If your repository is secured with user authentication mechanism, you need to specify the username who has the access right here, DO provide your jazz.net id if your didn't change the value of CLM_REPO, and leave it empty(the default value) if your own repository don't have such mechanism.</p>
+	<p>If your repository is secured with user authentication mechanism, you need to specify the username who has the access right here, DO provide your <a title="jazz.net" href="http://jazz.net">jazz.net</a> id if your didn't change the value of CLM_REPO, and leave it empty(the default value) if your own repository don't have such mechanism.</p>
 </li>
 <li>
 	<h4>CLM_REPO_PASSWORD</h4>

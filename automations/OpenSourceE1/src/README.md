@@ -31,7 +31,7 @@
 	<h4>OpenSource-JTS / OpenSource-CCM / OpenSource-QM / OpenSource-RM</h4>
 	<p>These are the components for CLM applications, map to the resource(s) which you want to have the application install on. We only support one JTS node in one single application, so just map OpenSource-JTS to one resource, and you can map the rest to several resources.</p>
 </li>
-<ul>
+</ul>
 
 <h3>Processes</h3>
 <ul>
@@ -43,7 +43,7 @@
 	<h4>Grant access to user in IWD</h4>
 	<p>This process is used to grant access permission of the instance(s) in IWD to a specified user.</p>
 </li>
-<ul>
+</ul>
 
 <h3>How to use</h3>
 <ol>
@@ -67,17 +67,15 @@
 	<p>Go to <strong>Applications</strong>, find <strong>Open Source - CLM E1 Distributed</strong> and go into it, switch to <strong>Blueprints</strong> tab, click <strong>Create New Blueprints</strong> and select the resource template you just created.</p>
 	<p>Blueprint is basically a mapping relationship between UCD components and resources, it tells UCD Server which component need to be deployed on which resource, in our case one resource represent one virtual machine.</p>
 	<p>If you read the previous Components section carefully, you will know which component should be map to which resource.</p>
-	<p>
-		For example:
-		<ul>
+	<p>For example:</p>
+	<ul>
 		<li>Map OpenSource-RationalAutomationPrep / OpenSource-DB2 to db2_awse</li>
 		<li>Map OpenSource-RationalAutomationPrep / OpenSource-IHS to ibm_http_servers</li>
 		<li>Map OpenSource-RationalAutomationPrep / OpenSource-WAS / OpenSource-IM / OpenSource-JTS to standalone_server</li>
 		<li>Map OpenSource-RationalAutomationPrep / OpenSource-WAS / OpenSource-IM / OpenSource-CCM to standalone_server_0</li>
 		<li>Map OpenSource-RationalAutomationPrep / OpenSource-WAS / OpenSource-IM / OpenSource-QM to standalone_server_0_1</li>
 		<li>Map OpenSource-RationalAutomationPrep / OpenSource-WAS / OpenSource-IM / OpenSource-RM to standalone_server_0_1_2</li>
-		</ul>
-	</p>
+	</ul>
 </li>
 <li>
 	<h4>Create environment and configure properties for deployment</h4>
