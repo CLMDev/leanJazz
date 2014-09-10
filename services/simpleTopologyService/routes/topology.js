@@ -123,6 +123,7 @@ exports.editViewExecute = function(req, res) {
     
     doc.updated_at = new Date();
     doc.name = req.body.topology.name;
+    doc.providerRef = req.body.topology.providerRef;
     doc.referenceURL = req.body.topology.referenceURL;
     doc.description = req.body.topology.description;
     doc.topologyDocument=req.body.topology.topologyDocument;

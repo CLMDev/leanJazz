@@ -33,9 +33,7 @@ var Topology = new Schema({
 	appProcessTemplate:String,
 	referenceURL: String,
 	pools: [],
-	providers: {type: [], default: [{type: "UCD", url: nconf.get('DEFAULT_PROVIDER_URL'), passwordProperty: 'DEFAULT_PROVIDER_PASSWORD',usernameProperty:"DEFAULT_PROVIDER_USERNAME"}]}, 
-	deployParameters: [],
-	validationParam: []
+	providerRef: {type: String, ref:'Provider'},	
 	},{strict: 'throw'}
 );
 var validator = require('validator');
@@ -80,7 +78,6 @@ var validateProviders = function(providers) {
 	}
 };
 Topology.path('referenceURL').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
-Topology.path('providers').validate(validateProviders, 'validation of `{PATH}` failed with value `{VALUE}` failed');
 
 
 Topology.path('name').set(function(v) {

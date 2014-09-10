@@ -1,0 +1,66 @@
+//  Copyright 2014 IBM
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+
+extends ../../layout
+block content
+  h1 Create a new provider
+     
+  form.form-horizontal(method='post', action='/providers')
+    fieldset
+      legend Create a topology provider
+      div.clearfix
+        div.input 
+          div.row 
+            div.span3
+              p name 
+            div
+              input.span3(name='provider[name]')
+          div.row
+            div.span3
+              p description
+            div
+              input.span6(name='provider[description]')
+          div.row
+            div.span3
+              p UCD_webURL
+            div
+              input.span6(name='provider[UCD_webURL]')
+          div.row
+            div.span3
+              p UCD_authtoken
+            div
+              input.span6(name='provider[UCD_authtoken]')
+          div.row
+            div.span3
+              p IWD_host
+            div
+              input.span3(name='provider[IWD_host]')
+          div.row
+            div.span3
+              p IWD_username
+            div
+              input.span3(name='provider[IWD_username]')
+          div.row
+            div.span3
+              p IWD_password
+            div
+              input.span3(name='provider[IWD_password]')
+          
+
+        div.actions 
+          div.row
+            input.offset3(type='submit', value='Save', class='btn primary')
+            button.offset1(type='reset', class='btn') Cancel
+
+

@@ -40,6 +40,7 @@ var api_password;
 //setup properties file
 var fs = require('fs');
 
+var mprovider = require('./models/providermodel');
 var https = require('https');
 var request_json= require('request-json');
 var topologyPort = nconf.get('PORT');
@@ -49,8 +50,8 @@ var options = {
 };
 var json_client = request_json.newClient('https://localhost:' + topologyPort, options);
 console.log(pname+': App Deployer process is running! ');
- 
 
+var pool_provider;
 
 var process_template,process_template_obj, process_template_updated;
 var build_id;
@@ -64,16 +65,25 @@ process.on('message', function(m) {
       pool_id=m.pool_id;
       pname+='_for_pool_'+ pool_id;
       console.log(pname+'pool_id:', pool_id);
+      mpool.findById(pool_id ,function(err, pool){
+        mpool.findById(pool.parentPool ,function(err, parentpool){
+          mprovider.findById(parentpool.topologyRef.providerRef ,function(err, provider){
+            pool_provider=provider;
+            console.log(pname+'pool_provider:', JSON.stringify(pool_provider));
+          });
+        }).populate('topologyRef');
+      });
     }
     if(m.password!=undefined){
       api_password=m.password; 
     }
+    
 });
 
 var timer;
 var timeoutcb= function(){
 
-  if (pool_id==0) {
+  if (pool_id==0 || pool_provider==undefined) {
   timer=setTimeout(timeoutcb, 2000);
   return;
   }
@@ -92,12 +102,14 @@ var timeoutcb= function(){
     }
     console.log(pname+'request:');
     console.log(request);
-    mpool.find({type:'app', id:request.pool_id},function(err, pools){
+    var request_obj=JSON.parse(request);
+    console.log('pool id:' + request_obj.pool_id);
+    mpool.findById(request_obj.pool_id ,function(err, pool){
       if (err) {
       timer=setTimeout(timeoutcb, 60000); 
       return console.error(err);
       }     
-      pools.forEach(function( pool){
+      
         console.log(pname+': pool to be checked:')
         console.log(pool)
         console.log('pool name:'+pool.name);
@@ -194,7 +206,8 @@ var timeoutcb= function(){
                      console.log(pname +'::fork background process for instance : '+instance.name);
                    });
                    var exec = require('child_process').exec, child;
-                   child = exec('/root/requestProcess.py -v --udclient /root/udclient/udclient ' + dir +'/'+instance.name+ '.json',
+                   child = exec('/root/requestProcess.py -v --udclient /root/udclient/udclient --weburl ' + pool_provider.UCD_webURL + 
+                   ' --authtoken ' + pool_provider.UCD_authtoken +' '+ dir +'/'+instance.name+ '.json',
                       function (error, stdout, stderr) {
                         console.log(pname +' instance creation callback:');
                         console.log('stdout: ' + stdout);
@@ -223,7 +236,7 @@ var timeoutcb= function(){
           });//longin
           });//mbuild.find
         }).populate('topologyRef');//mpool.findById(pool.parentPool
-      });//pool.forEach
+
     });//mpool.find
 });//client.rpoplpush
 }//var timeoutcb=function
