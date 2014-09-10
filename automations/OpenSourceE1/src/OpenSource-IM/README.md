@@ -10,9 +10,9 @@
 <ul>
 <li>
 	<h4>IM_REPO</h4>
-	<p>You can leave **IM_REPO** empty(the default value) if your instance(s) have public network access and able to visit IBM service repository, use it if you want to upgrade IBM Installation Manager to the latest version.</p>
-	<p>You can also setup your own repository if you want to upgrade to a specified version, please read instructions from [IBM Support Portal](http://www-01.ibm.com/support/docview.wss?uid=swg24037254) and download the latest update package(with **Update** in the name, like *1.7.3.0-IBMIM-Multiplatform-Update-20140521_1925*) from Fix Central.</p>
-	<p>You will receive a zip file, extract the content into a folder under your web server's document root like */var/www/example.com/im_update*, then you will be possible to access http://www.example.com/im_update/repository.config, use this full URL as the value.</p>
+	<p>You can leave <strong>IM_REPO</strong> empty(the default value) if your instance(s) have public network access and able to visit IBM service repository, use it if you want to upgrade IBM Installation Manager to the latest version.</p>
+	<p>You can also setup your own repository if you want to upgrade to a specified version, please read instructions from <a title="IBM Support Portal" href="http://www-01.ibm.com/support/docview.wss?uid=swg24037254">IBM Support Portal</a> and download the latest update package(with <strong>Update</strong> in the name, like <i>1.7.3.0-IBMIM-Multiplatform-Update-20140521_1925</i>) from Fix Central.</p>
+	<p>You will receive a zip file, extract the content into a folder under your web server's document root like <i>/var/www/example.com/im_update</i>, then you will be possible to access http://www.example.com/im_update/repository.config, use this full URL as the value.</p>
 </li>
 <li>
 	<h4>IM_REPO_USERNAME</h4>
@@ -32,8 +32,8 @@
 <ul>
 <li>
 	<h4>Install IBM IM Administrative Scripts</h4>
-	<p>This process is used to download and install the administrative scripts from uDeploy to your instance(s), and also design to verify existing IBM Installation Manager(not implemented yet), variable **IM_HOME** will be registered to the environment.</p>
-	<p>If you IBM Installation Manager is not installed in the default folder /opt/IBM/InstallationManager, you can change it in the Component Process Properties in uDeploy.</p>
+	<p>This process is used to download and install the administrative scripts from uDeploy to your instance(s), and also design to verify existing IBM Installation Manager(not implemented yet), variable <strong>IM_HOME</strong> will be registered to the environment.</p>
+	<p>If you IBM Installation Manager is not installed in the default folder <i>/opt/IBM/InstallationManager</i>, you can change it in the Component Process Properties in uDeploy.</p>
 </li>
 <li>
 	<h4>Upgrade Existing IBM IM</h4>
