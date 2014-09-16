@@ -64,12 +64,13 @@ process.on('message', function(m) {
     if(m.pool_id!=undefined){
       pool_id=m.pool_id;
       pname+='_for_pool_'+ pool_id;
+      pname='[ '+pname+' ] ';
       console.log(pname+'pool_id:', pool_id);
       mpool.findById(pool_id ,function(err, pool){
         mpool.findById(pool.parentPool ,function(err, parentpool){
           mprovider.findById(parentpool.topologyRef.providerRef ,function(err, provider){
             pool_provider=provider;
-            console.log(pname+'pool_provider:', JSON.stringify(pool_provider));
+            //console.log(pname+'pool_provider:', JSON.stringify(pool_provider));
           });
         }).populate('topologyRef');
       });
