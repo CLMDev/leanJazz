@@ -42,8 +42,6 @@ var
 
 function findById(id, fn) {
   User.find({_id:id}, function(err,docs){
-    console.log('docs:'+docs);
-    console.log('docs.length:'+docs.length);
     if(docs.length)
       fn(null,docs[0]);
     else
@@ -54,8 +52,6 @@ function findById(id, fn) {
 
 function findByMail(usermail, fn) {
   User.find({mail:usermail}, function(err,docs){
-    console.log('docs:'+docs);
-    console.log('docs.length:'+docs.length);
     if(docs.length)
       fn(null,docs[0]);
     else
@@ -96,7 +92,6 @@ passport.use(new LocalStrategy(
       // indicate failure and set a flash message. Otherwise, return the
       // authenticated `user`.
       findByMail(username, function(err, user) {
-        console.log('In findById callback!');
         if (err) { return done(err); }
         if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
         console.log('User found!');
@@ -270,7 +265,8 @@ app.get('/api/v1/topology/pools', ensureAuthenticated,topologyPool.findAll);
 app.post('/api/v1/topology/pools', ensureAuthenticated,topologyPool.create);
 app.get('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.find);
 app.del('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.delete);
-//app.put('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.update);
+app.put('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.update);
+app.post('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.checkoutInstance);
 
 app.get('/api/v1/topology/pools/:id/instances', ensureAuthenticated,topologyInstance.findAll);
 app.get('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.find);

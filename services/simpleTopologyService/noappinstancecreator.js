@@ -50,11 +50,12 @@ var pool_id=0;
 process.on('message', function(m) {
     pool_id=m.pool_id;
     pname+='_for_pool_'+ pool_id;
+    pname='[ '+pname+' ] ';
     console.log(pname+'pool_id:', pool_id);
     mpool.findById(pool_id ,function(err, pool){
       mprovider.findById(pool.topologyRef.providerRef ,function(err, provider){
       pool_provider=provider;
-      console.log(pname+'pool_provider:', JSON.stringify(pool_provider));
+      //console.log(pname+'pool_provider:', JSON.stringify(pool_provider));
       });
     }).populate('topologyRef');
 });
@@ -159,6 +160,15 @@ var timeoutcb= function(){
                   return;
                 }
  
+               /* var ucdjson_0=JSON.stringify(clog[0]);
+                console.log(pname +'ucdjson_0:'+ ucdjson_0);
+                var ucdjson_1=ucdjson_0.substring(1,ucdjson_0.length-1);
+                console.log(pname +'ucdjson_1:'+ ucdjson_1);
+                var ucdjson_2=ucdjson_1.replace(/\\/g, '');;
+                console.log(pname +'ucdjson_2:'+ ucdjson_2);
+               */
+          
+                
                 var instance= new minstance();
                 instance.name=instance_name;
                 instance.description='instance for pooling, with bare environment';
@@ -166,6 +176,9 @@ var timeoutcb= function(){
                 instance.topologyRef=pool.topologyRef._id;
                 instance.poolRef=pool._id;
                 instance.ucdEnvDesc=data;
+                instance.ucdEnvName=clog[0].name;
+                instance.ucdEnvID=clog[0].id;
+                instance.ucdApplication=clog[0].application;
                 instance.ucdURI='https://udeploy04.rtp.raleigh.ibm.com:8443/#environment/'+env_id;
                 instance.creationDate=date;
                 instance.iwdStatus=clog[0].IWDstatus;
