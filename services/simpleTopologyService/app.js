@@ -265,7 +265,8 @@ app.get('/api/v1/topology/pools', ensureAuthenticated,topologyPool.findAll);
 app.post('/api/v1/topology/pools', ensureAuthenticated,topologyPool.create);
 app.get('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.find);
 app.del('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.delete);
-//app.put('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.update);
+app.put('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.update);
+app.post('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.checkoutInstance);
 
 app.get('/api/v1/topology/pools/:id/instances', ensureAuthenticated,topologyInstance.findAll);
 app.get('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.find);

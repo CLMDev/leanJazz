@@ -208,13 +208,65 @@ exports.create = function(req, res) {
 		res.send(err, 400);
 	}
 };
-exports.find = function(req, res) {
-	console.log('finding ' + req.params.id);
+
+checkoutEnvInstancefromPool= function(res, pool, instance, user, comment){
+    instance.checkedout=true;
+    instance.checkedoutUser=user;
+    instance.checkedoutComment=comment;
+    instance.checkedoutDate=new Date();
+    instance.save();
+    pool.available--;
+    pool.checkedout++;
+    pool.save();
+    res.send(instance);
+}     
+
+checkoutEnvfromPool= function(res, pool, user, comment){
+    minstance.find({type:'noapp'; poolRef: pool._id; checkedout: false}, function(err, instances) {
+       if(instances.length==0){
+         var dummy_instance={};
+         res.send(dummy_instance);
+         return;
+       }
+       checkoutEnvInstancefromPool(res, pool, instances[0], user, comment);
+    }
+}   
+
+checkoutAppInstancefromPool= function(res, pool, instance, user, comment){
+    instance.appcheckedout=true;
+    instance.appcheckedoutUser=user;
+    instance.appcheckedoutComment=comment;
+    instance.appcheckedoutDate=new Date();
+    instance.save();
+    pool.available--;
+    pool.checkedout++;
+    pool.save();
+    res.send(instance);
+}     
+
+checkoutAppfromPool= function(res, pool, user, comment){
+    minstance.find({type:'app'; apppoolRef: pool._id; appcheckedout: false}, function(err, instances) {
+       if(instances.length==0){
+         var dummy_instance={};
+         res.send(dummy_instance);
+         return;
+       }
+       checkoutEnvInstancefromPool(res, pool, instances[0], user, comment);
+    }
+}      
+
+exports.checkoutInstance = function(req, res) {
+	console.log('Trying to checkout from pool id: ' + req.params.id);
+	var user=req.session.userid;
+	var comment=req.body.checkoutComment;
 	topologyPoolModel.findById(req.params.id, function(err, doc) {
 		if (! doc) {
 			res.send(404);
 		}else {
-			res.send(doc);
+			if(doc.type=='noapp')
+			   checkoutEnvfromPool(res, doc, user, comment);
+			else
+			   checkoutAppfromPool(res, doc, user, comment);
 		}
 	});
 };
