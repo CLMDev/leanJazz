@@ -290,6 +290,8 @@ app.get('/api/v1/topology/pools/:id/instances', passport.authenticate('basic', {
 app.get('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.find);
 app.del('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.delete);
 app.put('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.update);
+app.del('/api4gui/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.delete);
+app.put('/api4gui/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.update);
 
 app.get('/buildstreams',ensureAuthenticated, buildstream.findAllView);
 app.get('/buildstreams/new',ensureAuthenticated, buildstream.addViewSetup);
@@ -302,6 +304,7 @@ app.post('/api/v1/buildstreams',passport.authenticate('basic', { session: false 
 app.get('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.find);
 app.del('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.delete);
 app.put('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.update);
+app.del('/api4gui/v1/buildstreams/:id', ensureAuthenticated , buildstream.delete);
 
 app.get('/builds', ensureAuthenticated,build.findAllView);
 app.get('/builds/new', ensureAuthenticated,build.addViewSetup);
@@ -314,6 +317,8 @@ app.post('/api/v1/builds', passport.authenticate('basic', { session: false }),bu
 app.get('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.find);
 app.del('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.delete);
 app.put('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.update);
+app.del('/api4gui/v1/builds/:id', ensureAuthenticated, build.delete);
+app.put('/api4gui/v1/builds/:id', ensureAuthenticated, build.update);
 
 var options = {
   key: fs.readFileSync('https/key.pem'),
