@@ -107,6 +107,23 @@ passport.use(new LocalStrategy(
   }
 ));
 
+passport.use(new BasicStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      console.log('user found: '+ user.mail);
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (!user.isRegistered) {console.log('not activiated.'); return done(null, false, { message: 'Not activiated: ' + username }); }
+      if (!user.isActive) { console.log('disabled');return done(null, false); }
+      var sha = crypto.createHash('sha1');
+      sha.update(password+user._salt);
+      if (user.passwordHash!= sha.digest('hex')) {console.log('invalid password'); return done(null, false); }
+      console.log('valid password!');
+      return done(null, user); 
+    });
+  }
+));
+
 var routes = require('./routes');
 var provider = require('./routes/provider');
 var topology = require('./routes/topology');
@@ -230,12 +247,12 @@ app.get('/providers/:id/edit', ensureAuthenticated, provider.editViewSetup);
 app.put('/providers/:id', ensureAuthenticated, provider.editViewExecute);
 app.del('/providers/:id', ensureAuthenticated, provider.deleteView);
 
-app.get('/api/v1/providers', ensureAuthenticated, provider.findAll);
-app.post('/api/v1/providers',ensureAuthenticated, provider.create);
-app.get('/api/v1/providers/:id', ensureAuthenticated, provider.find);
-app.del('/api/v1/providers/:id', ensureAuthenticated, provider.delete);
-app.put('/api/v1/providers/:id', ensureAuthenticated, provider.update);
-app.del('/api/v1/providers/:id', ensureAuthenticated, provider.delete);
+app.get('/api/v1/providers', passport.authenticate('basic', { session: false }), provider.findAll);
+app.post('/api/v1/providers',passport.authenticate('basic', { session: false }), provider.create);
+app.get('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.find);
+app.del('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.delete);
+app.put('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.update);
+app.del('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.delete);
 
 app.get('/topology/topologies', ensureAuthenticated, topology.findAllView);
 app.get('/topology/topologies/new', ensureAuthenticated,topology.addViewSetup);
@@ -255,23 +272,23 @@ app.get('/topology/pools/:id/instances', ensureAuthenticated,topologyInstance.fi
 app.del('/topology/pools/:pid/instances/:id', ensureAuthenticated, topologyInstance.deleteView);
 
 //setup routes for the topologies API
-app.get('/api/v1/topology/topologies', ensureAuthenticated,topology.findAll);
-app.post('/api/v1/topology/topologies', ensureAuthenticated,topology.add);
-app.get('/api/v1/topology/topologies/:id', ensureAuthenticated,topology.find);
-app.del('/api/v1/topology/topologies/:id', ensureAuthenticated,topology.delete);
-app.put('/api/v1/topology/topologies/:id', ensureAuthenticated,topology.update);
+app.get('/api/v1/topology/topologies', passport.authenticate('basic', { session: false }),topology.findAll);
+app.post('/api/v1/topology/topologies', passport.authenticate('basic', { session: false }),topology.add);
+app.get('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.find);
+app.del('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.delete);
+app.put('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.update);
 
-app.get('/api/v1/topology/pools', ensureAuthenticated,topologyPool.findAll);
-app.post('/api/v1/topology/pools', ensureAuthenticated,topologyPool.create);
-app.get('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.find);
-app.del('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.delete);
-//app.put('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.update);
-app.post('/api/v1/topology/pools/:id', ensureAuthenticated,topologyPool.checkoutInstance);
+app.get('/api/v1/topology/pools', passport.authenticate('basic', { session: false }),topologyPool.findAll);
+app.post('/api/v1/topology/pools', passport.authenticate('basic', { session: false }),topologyPool.create);
+app.get('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.find);
+app.del('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.delete);
+//app.put('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.update);
+app.post('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.checkoutInstance);
 
-app.get('/api/v1/topology/pools/:id/instances', ensureAuthenticated,topologyInstance.findAll);
-app.get('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.find);
-app.del('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.delete);
-app.put('/api/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.update);
+app.get('/api/v1/topology/pools/:id/instances', passport.authenticate('basic', { session: false }),topologyInstance.findAll);
+app.get('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.find);
+app.del('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.delete);
+app.put('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.update);
 
 app.get('/buildstreams',ensureAuthenticated, buildstream.findAllView);
 app.get('/buildstreams/new',ensureAuthenticated, buildstream.addViewSetup);
@@ -279,11 +296,11 @@ app.post('/buildstreams', ensureAuthenticated,buildstream.addViewExecute);
 app.get('/buildstreams/:id/edit', ensureAuthenticated,buildstream.editViewSetup);
 app.put('/buildstreams/:id', ensureAuthenticated,buildstream.editViewExecute);
 
-app.get('/api/v1/buildstreams', ensureAuthenticated, buildstream.findAll);
-app.post('/api/v1/buildstreams',ensureAuthenticated, buildstream.create);
-app.get('/api/v1/buildstreams/:id', ensureAuthenticated, buildstream.find);
-app.del('/api/v1/buildstreams/:id', ensureAuthenticated, buildstream.delete);
-app.put('/api/v1/buildstreams/:id', ensureAuthenticated, buildstream.update);
+app.get('/api/v1/buildstreams', passport.authenticate('basic', { session: false }), buildstream.findAll);
+app.post('/api/v1/buildstreams',passport.authenticate('basic', { session: false }), buildstream.create);
+app.get('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.find);
+app.del('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.delete);
+app.put('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.update);
 
 app.get('/builds', ensureAuthenticated,build.findAllView);
 app.get('/builds/new', ensureAuthenticated,build.addViewSetup);
@@ -291,11 +308,11 @@ app.post('/builds', ensureAuthenticated,build.addViewExecute);
 app.get('/builds/:id/edit', ensureAuthenticated,build.editViewSetup);
 app.put('/builds/:id', ensureAuthenticated,build.editViewExecute);
 
-app.get('/api/v1/builds', ensureAuthenticated,build.findAll);
-app.post('/api/v1/builds', ensureAuthenticated,build.create);
-app.get('/api/v1/builds/:id', ensureAuthenticated,build.find);
-app.del('/api/v1/builds/:id', ensureAuthenticated,build.delete);
-app.put('/api/v1/builds/:id', ensureAuthenticated,build.update);
+app.get('/api/v1/builds', passport.authenticate('basic', { session: false }),build.findAll);
+app.post('/api/v1/builds', passport.authenticate('basic', { session: false }),build.create);
+app.get('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.find);
+app.del('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.delete);
+app.put('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.update);
 
 var options = {
   key: fs.readFileSync('https/key.pem'),
