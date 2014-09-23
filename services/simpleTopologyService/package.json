@@ -17,6 +17,7 @@
     "request-json":"*",
     "redis":"*",
     "passport":"*",
+    "passport-http":"*",
     "passport-local":"*",
     "nodemailer":"*",
     "node-uuid":"*",

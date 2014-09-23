@@ -36,7 +36,8 @@ var
     flash = require('connect-flash')
   , passport = require('passport')
   , util = require('util')
-  , LocalStrategy = require('passport-local').Strategy;
+  , LocalStrategy = require('passport-local').Strategy
+  , BasicStrategy = require('passport-http').BasicStrategy;
 
 
 
@@ -109,7 +110,7 @@ passport.use(new LocalStrategy(
 
 passport.use(new BasicStrategy(
   function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
+    User.findOne({ mail: username }, function (err, user) {
       console.log('user found: '+ user.mail);
       if (err) { return done(err); }
       if (!user) { return done(null, false); }

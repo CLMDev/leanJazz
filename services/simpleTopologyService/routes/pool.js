@@ -265,7 +265,7 @@ checkoutAppfromPool= function(res, pool, user, comment){
 
 exports.checkoutInstance = function(req, res) {
 	console.log('Trying to checkout from pool id: ' + req.params.id);
-	var user=req.session.userid;
+	var user=req.user.mail;
 	var comment=req.body.checkoutComment;
         console.log('In checkoutInstance');
         console.log('user:'+user);
