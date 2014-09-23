@@ -111,13 +111,13 @@ block content
                a(href="#{build.refURL}" target="_blank") #{build.BUILDID} 
               td #{build.buildStream}
               td 
-               a(href="/api/v1/builds/#{build.BUILDID}" ) json 
+               a(href="/api4gui/v1/builds/#{build.BUILDID}" ) json 
               td #{build.isRecommended}
               td
                 if !build.isRecommended
-                  button.btn(type='submit',value='/api/v1/builds/'+ build.BUILDID, id='Recommend_'+build.BUILDID) Recommend
+                  button.btn(type='submit',value='/api4gui/v1/builds/'+ build.BUILDID, id='Recommend_'+build.BUILDID) Recommend
               td
-                button.btn(type='submit',value='/api/v1/builds/' + build.BUILDID, id='delete_'+ build.BUILDID, title='Delete '+build.BUILDID+' ?') Delete
+                button.btn(type='submit',value='/api4gui/v1/builds/' + build.BUILDID, id='delete_'+ build.BUILDID, title='Delete '+build.BUILDID+' ?') Delete
   - else
     p No available instances
   p

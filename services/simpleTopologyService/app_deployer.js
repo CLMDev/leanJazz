@@ -154,21 +154,10 @@ var timeoutcb= function(){
                   timer=setTimeout(timeoutcb, 60000);
                   return;
             }
-            var login={ 
-              username: 'apiuser@ibm.com',
-              password: ''
-            }
-            login.password=api_password;
-            console.log('api user password:'+login.password);
-            json_client.post('/api/v1/login',login , function(err, res, body) {
-
-              console.log('res.headers:'+JSON.stringify(res.headers));
-              var cookie= res.headers['set-cookie'];
-              console.log('cookie:'+cookie);
-              options.headers.cookie=cookie;
-              json_client = request_json.newClient('https://localhost:' + topologyPort, options);
-
-              json_client.get('/api/v1/topology/pools/' + parent._id+'/instances', function(err, res, body) {
+            json_client.setBasicAuth('apiuser@ibm.com', api_password);
+            console.log('api user password:'+api_password);
+            
+            json_client.get('/api/v1/topology/pools/' + parent._id+'/instances', function(err, res, body) {
               var found=false;
               body.forEach(function(instance){
               if(!found && !instance.checkedout){
@@ -234,7 +223,6 @@ var timeoutcb= function(){
             return;
           }
           });//json_client.get(
-          });//longin
           });//mbuild.find
         }).populate('topologyRef');//mpool.findById(pool.parentPool
 

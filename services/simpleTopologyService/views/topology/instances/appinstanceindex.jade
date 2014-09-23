@@ -151,14 +151,14 @@ block content
               td #{instance.buildid}
               td #{instance.appdeploymentStatus}
               td 
-                a(href="/api/v1/topology/pools/#{instance.apppoolRef}/instances/#{instance.id}" ) json
+                a(href="/api4gui/v1/topology/pools/#{instance.apppoolRef}/instances/#{instance.id}" ) json
               td #{instance.appcheckoutUser}
               td #{instance.appcheckoutComment}
               td
                 if !instance.appcheckedout
-                  button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
+                  button.btn(type='submit',value='/api4gui/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
               td
-                button.btn(type='submit',value='/api/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
+                button.btn(type='submit',value='/api4gui/v1/topology/pools/' + instance.apppoolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
   - else
     p No available instances
   

@@ -210,10 +210,15 @@ exports.create = function(req, res) {
 };
 
 checkoutEnvInstancefromPool= function(res, pool, instance, user, comment){
+    console.log('In chekcoutEnvInstancefromPool');
+    console.log('user:'+user);
+    console.log('comment:'+comment);
+    console.log('pool:'+JSON.stringify(pool));
+    console.log('instance:'+JSON.stringify(instance));
     instance.checkedout=true;
-    instance.checkedoutUser=user;
-    instance.checkedoutComment=comment;
-    instance.checkedoutDate=new Date();
+    instance.checkoutUser=user;
+    instance.checkoutComment=comment;
+    instance.checkoutDate=new Date();
     instance.save();
     pool.available--;
     pool.checkedout++;
@@ -222,21 +227,25 @@ checkoutEnvInstancefromPool= function(res, pool, instance, user, comment){
 }     
 
 checkoutEnvfromPool= function(res, pool, user, comment){
-    minstance.find({type:'noapp'; poolRef: pool._id; checkedout: false}, function(err, instances) {
+    minstance.find({type:'noapp', poolRef: pool._id, checkedout: false}, function(err, instances) {
        if(instances.length==0){
-         var dummy_instance={};
-         res.send(dummy_instance);
+         res.send(404);
          return;
        }
        checkoutEnvInstancefromPool(res, pool, instances[0], user, comment);
-    }
+    });
 }   
 
 checkoutAppInstancefromPool= function(res, pool, instance, user, comment){
+    console.log('In chekcoutAppInstancefromPool');
+    console.log('user:'+user);
+    console.log('comment:'+comment);
+    console.log('pool:'+JSON.stringify(pool));
+    console.log('instance:'+JSON.stringify(instance));
     instance.appcheckedout=true;
-    instance.appcheckedoutUser=user;
-    instance.appcheckedoutComment=comment;
-    instance.appcheckedoutDate=new Date();
+    instance.appcheckoutUser=user;
+    instance.appcheckoutComment=comment;
+    instance.appcheckoutDate=new Date();
     instance.save();
     pool.available--;
     pool.checkedout++;
@@ -245,20 +254,22 @@ checkoutAppInstancefromPool= function(res, pool, instance, user, comment){
 }     
 
 checkoutAppfromPool= function(res, pool, user, comment){
-    minstance.find({type:'app'; apppoolRef: pool._id; appcheckedout: false}, function(err, instances) {
+    minstance.find({type:'app', apppoolRef: pool._id, appcheckedout: false}, function(err, instances) {
        if(instances.length==0){
-         var dummy_instance={};
-         res.send(dummy_instance);
+         res.send(404);
          return;
        }
-       checkoutEnvInstancefromPool(res, pool, instances[0], user, comment);
-    }
+       checkoutAppInstancefromPool(res, pool, instances[0], user, comment);
+    });
 }      
 
 exports.checkoutInstance = function(req, res) {
 	console.log('Trying to checkout from pool id: ' + req.params.id);
-	var user=req.session.userid;
+	var user=req.user.mail;
 	var comment=req.body.checkoutComment;
+        console.log('In checkoutInstance');
+        console.log('user:'+user);
+        console.log('comment:'+comment);
 	topologyPoolModel.findById(req.params.id, function(err, doc) {
 		if (! doc) {
 			res.send(404);

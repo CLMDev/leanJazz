@@ -84,9 +84,9 @@ block content
                 a(href="#{buildstream.refURL}" target="_blank") #{buildstream.buildStream}
               td #{buildstream.description}
               td 
-                a(href="/api/v1/buildstreams/#{buildstream.buildStream}" ) json
+                a(href="/api4gui/v1/buildstreams/#{buildstream.buildStream}" ) json
               td
-                button.btn(type='submit',value='/api/v1/buildstreams/' + buildstream.buildStream, id='delete_'+ buildstream.buildStream, title='Delete '+buildstream.buildStream+' ?') Delete
+                button.btn(type='submit',value='/api4gui/v1/buildstreams/' + buildstream.buildStream, id='delete_'+ buildstream.buildStream, title='Delete '+buildstream.buildStream+' ?') Delete
   - else
     p No available build streams
   p
