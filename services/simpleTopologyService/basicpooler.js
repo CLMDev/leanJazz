@@ -40,7 +40,8 @@ var fs = require('fs');
 console.log(pname+': pooling process is running! ');
 var timer;
 var request_no=0;
-addRequest4Pool(pool){
+function addRequest4Pool(pool)
+{
     console.log(pname+': pool to be checked:')
     console.log('pool name:'+pool.name);
     console.log('topology name:'+pool.topologyRef.name);
@@ -73,7 +74,7 @@ addRequest4Pool(pool){
         console.log('maximum resources reached or still have available resources for pool:'+ pool.name);
       });//client.llen processing
     });//client.llen request
-}
+};
 var timeoutcb= function(){
 
 console.log(pname+': inside callback');
