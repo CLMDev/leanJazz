@@ -278,6 +278,7 @@ app.post('/api/v1/topology/topologies', passport.authenticate('basic', { session
 app.get('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.find);
 app.del('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.delete);
 app.put('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.update);
+app.get('/api4gui/v1/topology/topologies/:id', ensureAuthenticated,topology.find);
 
 app.get('/api/v1/topology/pools', passport.authenticate('basic', { session: false }),topologyPool.findAll);
 app.post('/api/v1/topology/pools', passport.authenticate('basic', { session: false }),topologyPool.create);
@@ -285,11 +286,13 @@ app.get('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: 
 app.del('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.delete);
 //app.put('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.update);
 app.post('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.checkoutInstance);
+app.get('/api4gui/v1/topology/pools/:id', ensureAuthenticated,topologyPool.find);
 
 app.get('/api/v1/topology/pools/:id/instances', passport.authenticate('basic', { session: false }),topologyInstance.findAll);
 app.get('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.find);
 app.del('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.delete);
 app.put('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.update);
+app.get('/api4gui/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.find);
 app.del('/api4gui/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.delete);
 app.put('/api4gui/v1/topology/pools/:pid/instances/:id', ensureAuthenticated,topologyInstance.update);
 
@@ -304,6 +307,7 @@ app.post('/api/v1/buildstreams',passport.authenticate('basic', { session: false 
 app.get('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.find);
 app.del('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.delete);
 app.put('/api/v1/buildstreams/:id', passport.authenticate('basic', { session: false }), buildstream.update);
+app.get('/api4gui/v1/buildstreams', ensureAuthenticated, buildstream.findAll);
 app.del('/api4gui/v1/buildstreams/:id', ensureAuthenticated , buildstream.delete);
 
 app.get('/builds', ensureAuthenticated,build.findAllView);
@@ -317,6 +321,7 @@ app.post('/api/v1/builds', passport.authenticate('basic', { session: false }),bu
 app.get('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.find);
 app.del('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.delete);
 app.put('/api/v1/builds/:id', passport.authenticate('basic', { session: false }),build.update);
+app.get('/api4gui/v1/builds/:id', ensureAuthenticated, build.find);
 app.del('/api4gui/v1/builds/:id', ensureAuthenticated, build.delete);
 app.put('/api4gui/v1/builds/:id', ensureAuthenticated, build.update);
 
