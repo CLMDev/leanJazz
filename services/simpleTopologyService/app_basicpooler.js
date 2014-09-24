@@ -39,13 +39,8 @@ var fs = require('fs');
 console.log(pname+': pooling process is running! ');
 var timer;
 var request_no=0;
-var timeoutcb= function(){
-
-mpool.find({type:'app'},function(err, pools){
-
-  if (err) return console.error(err);
-    //console.log(pools)
-  pools.forEach(function( pool){
+function addRequest4Pool(pool)
+{
     console.log(pname+': pool to be checked:')
     //console.log(pool)
     console.log('pool name:'+pool.name);
@@ -78,6 +73,15 @@ mpool.find({type:'app'},function(err, pools){
         console.log('maximum resources reached or still have available resources for app pool:'+ pool.name);
       });//client.llen processing
     });//client.llen request
+};
+var timeoutcb= function(){
+
+mpool.find({type:'app'},function(err, pools){
+
+  if (err) return console.error(err);
+    //console.log(pools)
+  pools.forEach(function( pool){
+    addRequest4Pool(pool);
   });//pools.foreach
   timer=setTimeout(timeoutcb, 60000); //every 60 seconds
 
