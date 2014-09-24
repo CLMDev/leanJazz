@@ -126,7 +126,7 @@ mpool.find({type:'noapp'}, function(err, pools){
                    num_available++;
             });//instance.forEach
             pool.available=num_available;
-            pool.checkedout=num_available;
+            pool.checkedout=num_checkedout;
             pool.save();
         });//minstance.find
     });//pools.forEach
@@ -145,7 +145,7 @@ mpool.find({type:'app'}, function(err, pools){
                    num_available++;
             });//instance.forEach
             pool.available=num_available;
-            pool.checkedout=num_available;
+            pool.checkedout=num_checkedout;
             pool.save();
         });//minstance.find
     });//pools.forEach
