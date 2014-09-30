@@ -249,6 +249,7 @@ app.put('/providers/:id', ensureAuthenticated, provider.editViewExecute);
 app.del('/providers/:id', ensureAuthenticated, provider.deleteView);
 
 app.get('/api/v1/providers', passport.authenticate('basic', { session: false }), provider.findAll);
+app.get('/api4gui/v1/providers',  ensureAuthenticated, provider.findAll);
 app.post('/api/v1/providers',passport.authenticate('basic', { session: false }), provider.create);
 app.get('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.find);
 app.del('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.delete);
