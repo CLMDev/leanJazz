@@ -1,13 +1,13 @@
 {
 	"PORT" : 3001,
-	"STS_HOSTNAME" : "liuzc-rh.rtp.raleigh.ibm.com",
+	"STS_HOSTNAME" : "P14VC3Z.cn.ibm.com",
 	"REDIS_HOST": "localhost",
 	"STS_INSTANCE_PREFIX": "p-",
 	"REMOVE-TEST-DATA" : "true", 
-	"DEFAULT_PROVIDER_URL": "yourudeploy.rtp.raleigh.ibm.com", 
-	"DEFAULT_PROVIDER_USERNAME" : "yourusername", 
-	"DEFAULT_PROVIDER_PASSWORD" : "yourpassword",
-	"MONGO_URI":"mongodb://localhost/leanJazz",
+	"DEFAULT_PROVIDER_URL": "udeploy04.rtp.raleigh.ibm.com", 
+	"DEFAULT_PROVIDER_USERNAME" : "xuepow", 
+	"DEFAULT_PROVIDER_PASSWORD" : "xsny:oh0",
+	"MONGO_URI":"mongodb://P14VC3Z.cn.ibm.com:27017/leanJazz",
 	"MAIL_PROVIDER":".ibm.com",
 	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please"
 	

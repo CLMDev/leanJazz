@@ -22,15 +22,15 @@ block content
       thead
         tr
           th Provider Name          
-          th UCD webURL
-          th IWD host
+          th UCD Server
+          th UCD Username
           th Description
       tbody
           each provider in docs
             tr
               td #{provider.name}
-              td #{provider.UCD_webURL}
-              td #{provider.IWD_host}
+              td #{provider.UCD_SERVER}
+              td #{provider.UCD_USERNAME}
               td #{provider.description}
               td
                 a.btn(href="/providers/#{provider._id}/edit") Edit

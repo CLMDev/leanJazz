@@ -15,7 +15,6 @@
 extends ../../layout
 block content
   h1 Create a new provider
-     
   form.form-horizontal(method='post', action='/providers')
     fieldset
       legend Create a topology provider
@@ -25,42 +24,28 @@ block content
             div.span3
               p name 
             div
-              input.span3(name='provider[name]')
+              input.span3(name='provider[name]', class='xlarge')
           div.row
             div.span3
               p description
             div
-              input.span6(name='provider[description]')
+              input.span6(name='provider[description]', class='xlarge')
           div.row
             div.span3
-              p UCD_webURL
+              p UCD Server
             div
-              input.span6(name='provider[UCD_webURL]')
+              input.span6(name='provider[UCD_SERVER]', class='xlarge')
           div.row
             div.span3
-              p UCD_authtoken
+              p UCD Username
             div
-              input.span6(name='provider[UCD_authtoken]')
+              input.span6(name='provider[UCD_USERNAME]', class='xlarge')
           div.row
             div.span3
-              p IWD_host
+              p UCD Password
             div
-              input.span3(name='provider[IWD_host]')
-          div.row
-            div.span3
-              p IWD_username
-            div
-              input.span3(name='provider[IWD_username]')
-          div.row
-            div.span3
-              p IWD_password
-            div
-              input.span3(name='provider[IWD_password]')
-          
-
+              input.span6(name='provider[UCD_PASSWORD]', type='password', class='xlarge')
         div.actions 
           div.row
             input.offset3(type='submit', value='Save', class='btn primary')
             button.offset1(type='reset', class='btn') Cancel
-
-

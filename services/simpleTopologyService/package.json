@@ -21,6 +21,6 @@
     "passport-local":"*",
     "nodemailer":"*",
     "node-uuid":"*",
-    "crypto":"*"
+    "connect-flash":"*"
   }
 }

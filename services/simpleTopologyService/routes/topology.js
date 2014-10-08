@@ -17,189 +17,181 @@
 var mongoose = require('mongoose');
 var nconf = require('nconf');
 
-nconf.argv()
-        .env()
-        .file({ file: './config.json'});
+nconf.argv().env().file({ file: './config.json'});
 
 var Topology = require ('../models/topologymodel');
 
-
 // setup routes for topologies and apis
 exports.findAllView = function(req, res) {
-  Topology.find({},function(err, docs) {
-    if (!docs) {
-      console.log('no topologies found');
-      docs = [];
-    }
-    res.render('topology/topologies/topologyindex', {
-      title: 'Available Topologies',
-      docs: docs
-    });
-  });
+	Topology.find({},function(err, docs) {
+		if (!docs) {
+			console.log('no topologies found');
+			docs = [];
+		}
+		res.render('topology/topologies/topologyindex', {
+			title: 'Available Topologies',
+			docs: docs
+		});
+	});
 };
 exports.findAll = function(req, res) {
 	Topology.find({},function(err, docs) {
 		if (!docs) {
 			res.send(404);
-		}else {
+		} else {
 			res.json(docs);
 		}
 	});
 };
-exports.addViewSetup = function(req, res) {
-        res.render('topology/topologies/newtopology.jade', {
-                title: 'Create new topology'
-        });
+exports.find = function(req, res) {
+	console.log('topology.find: finding ' + req.params.id);
+	Topology.findById(req.params.id, function(err, doc) {
+		if (!doc) {
+			res.send(404);
+		} else {
+			res.json(doc);
+		}
+	});
 };
-var validator = require('validator');
 
+var validator = require('validator');
 var validateTopology = function(doc, next) {
 	console.log("validating Topology document");
 	console.log(doc);
     if (validator.isNull(doc.name)) {
 		next(new Error('Name of the topology can not be null'));
-    }else if (!validator.isURL(doc.referenceURL)) {
-		next(new Error('referenceURL must be a URL'));
-    }else {
+    } else {
 		console.log('validated json');
 		next(null);
 	}
 };
 
+exports.addViewSetup = function(req, res) {
+	res.render('topology/topologies/newtopology.jade', {
+		title: 'Create new topology'
+	});
+};
 exports.addViewExecute = function(req, res) {
 	validateTopology(req.body.topology, function(err) {
-		if (! err) {
+		if (!err) {
 			var topology = new Topology(req.body.topology);
 			topology.save(function(err) {
-				if (! err) {
+				if (!err) {
 					res.redirect('/topology/topologies');
-				}else {
+				} else {
 					console.log('error saving topology');
 					console.log(err);
 					res.redirect('/topology/topologies/new');
 				}
 			});
-		}else {
+		} else {
 			console.log('error in addViewExecute validating topology');
 			console.log(err);
 			res.redirect('/topology/topologies');
 		}
 	});
 };
-exports.add = function(req, res) {
+exports.create = function(req, res) {
 	validateTopology(req.body, function(err) {
-		if (! err) {
+		if (!err) {
 			try {
-			var newTopology = new Topology(req.body);
-			newTopology.save(function(err) {
-				if (!err) {
-					res.send(newTopology);
-				}else {
-					res.send(err, 400);
-				}
-			});
-			}catch (myerror) {
+				var newTopology = new Topology(req.body);
+				newTopology.save(function(err) {
+					if (!err) {
+						res.json(newTopology);
+					} else {
+						res.send(err, 400);
+					}
+				});
+			} catch (myerror) {
 				console.log('could not save topology, most likely due to invalid data');
 				console.log(myerror);
 				res.send(myerror, 400);
 			}
-		}else {
+		} else {
 			console.log('invalid input: ' + err);
 			console.log(req.body);
 			res.send(err, 400);
 		}
 	});
 };
+
 exports.editViewSetup = function(req, res) {
-  Topology.findById(req.params.id, function(err, doc) {
-    res.render('topology/topologies/edittopology', {
-      title: 'Edit Topology',
-      topology: doc
-    });
-  });
-};
-exports.editViewExecute = function(req, res) {
-  Topology.findById(req.params.id, function(err, doc) {
-    
-    doc.updated_at = new Date();
-    doc.name = req.body.topology.name;
-    doc.providerRef = req.body.topology.providerRef;
-    doc.referenceURL = req.body.topology.referenceURL;
-    doc.description = req.body.topology.description;
-    doc.topologyDocument=req.body.topology.topologyDocument;
-    doc.appProcessTemplate=req.body.topology.appProcessTemplate;
-    console.log('attempting to update document');
-    console.log(doc);
-    validateTopology(doc, function(err) {
-		if (!err) {
-			doc.save(function(err) {
-				if (!err) {
-					res.redirect('/topology/topologies');
-				}
-				else {
-					console.log('error saving to database');
-					res.redirect('/topology/topologies');
-				}
-			});
-		}else {
-			console.log('invalid data:' + err);
-			res.redirect('/topology/topologies');
-		}
-    });
-  });
-};
-exports.update = function(req, res) {
-  Topology.findById(req.params.id, function(err, doc) {
-	console.log('Updating document ' + req.params.id);
-	updateDoc = req.body;
-	console.log(updateDoc);
-        if (err) {
-		console.log('error finding topology');
-		res.send(err, 400);
-	}else if (! doc) {
-		console.log('could not find document');
-		res.send(400);
-	}else {
-		try {
-			console.log('found document, attempting to update');
-			for (var param in updateDoc) {
-				console.log('updating ' + param + ' with ' + updateDoc[param]);
-				doc[param] = updateDoc[param];
-			}
-			validateTopology(doc, function(err) {
-				if (!err) {
-					doc.save();
-					res.json(doc);
-					console.log('saved doc');
-					console.log(doc);
-				}else {
-					console.log('error caught validating topology ' + err);
-					res.send(err, 400);
-				}
-			});
-		}catch (myerror) {
-			console.log('error caught ' + myerror);
-			res.send(myerror, 400);
-		}
-	}
-    });
-};
-
-
-exports.find = function(req, res) {
-	console.log('topology.find: finding ' + req.params.id);
 	Topology.findById(req.params.id, function(err, doc) {
-		console.log('printing doc');
-		console.log(doc);
-		console.log('printing error');
-		console.log(err);
-		if (! doc) {
-			res.send(404);
-		}else {
-			res.send(doc);
-		}
+		res.render('topology/topologies/edittopology', {
+			title: 'Edit Topology',
+			topology: doc
+		});
 	});
 };
+exports.editViewExecute = function(req, res) {
+	Topology.findById(req.params.id, function(err, doc) {
+	    doc.updated_at = new Date();
+	    doc.name = req.body.topology.name;
+	    doc.description = req.body.topology.description;
+	    doc.providerId = req.body.topology.providerId;
+	    doc.appName = req.body.topology.appName;
+	    doc.blueprintName = req.body.topology.blueprintName;
+	    doc.nodeProperties = req.body.topology.nodeProperties;
+	    doc.appProcessTemplate = req.body.topology.appProcessTemplate;
+	    
+	    console.log('attempting to update document');
+	    console.log(doc);
+	    
+	    validateTopology(doc, function(err) {
+			if (!err) {
+				doc.save(function(err) {
+					if (!err) {
+						res.redirect('/topology/topologies');
+					} else {
+						console.log('error saving to database');
+						res.redirect('/topology/topologies');
+					}
+				});
+			} else {
+				console.log('invalid data:' + err);
+				res.redirect('/topology/topologies');
+			}
+	    });
+	});
+};
+exports.update = function(req, res) {
+	Topology.findById(req.params.id, function(err, doc) {
+		console.log('Updating document ' + req.params.id);
+		updateDoc = req.body;
+		console.log(updateDoc);
+		if (err) {
+			console.log('error finding topology');
+			res.send(err, 400);
+		} else if (!doc) {
+			console.log('could not find document');
+			res.send(400);
+		} else {
+			try {
+				console.log('found document, attempting to update');
+				for (var param in updateDoc) {
+					console.log('updating ' + param + ' with ' + updateDoc[param]);
+					doc[param] = updateDoc[param];
+				}
+				validateTopology(doc, function(err) {
+					if (!err) {
+						doc.save();
+						res.json(doc);
+						console.log('saved doc');
+						console.log(doc);
+					} else {
+						console.log('error caught validating topology ' + err);
+						res.send(err, 400);
+					}
+				});
+			} catch (myerror) {
+				console.log('error caught ' + myerror);
+				res.send(myerror, 400);
+			}
+		}
+    });
+};
+
 exports.deleteView = function(req, res) {
 	Topology.findById(req.params.id, function(err, doc) {
 		if (!doc) {
@@ -216,9 +208,9 @@ exports.delete = function(req, res) {
 	Topology.findById(req.params.id, function(err, doc) {
 		if (!doc) {
 			res.send(404);
-		}else {
+		} else {
 			doc.remove(function() {
-			res.send(200);
+				res.send(200);
 			});
 		}
 	});

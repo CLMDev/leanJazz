@@ -241,14 +241,15 @@ appmonitor.send({password:api_password});
 app.get('/users', ensureAuthenticated, user.findAllView);
 app.put('/users/:id', ensureAuthenticated, user.update);
 
-app.get('/providers',ensureAuthenticated, provider.findAllView);
-app.get('/providers/new',ensureAuthenticated, provider.addViewSetup);
+app.get('/providers', ensureAuthenticated, provider.findAllView);
+app.get('/providers/new', ensureAuthenticated, provider.addViewSetup);
 app.post('/providers', ensureAuthenticated, provider.addViewExecute);
-app.get('/providers/:id/edit', ensureAuthenticated, provider.editViewSetup);
+app.get('/providers/:id',ensureAuthenticated, provider.findAllView);
 app.put('/providers/:id', ensureAuthenticated, provider.editViewExecute);
 app.del('/providers/:id', ensureAuthenticated, provider.deleteView);
 
 app.get('/api/v1/providers', passport.authenticate('basic', { session: false }), provider.findAll);
+app.get('/api4gui/v1/providers', ensureAuthenticated, provider.findAll);
 app.post('/api/v1/providers',passport.authenticate('basic', { session: false }), provider.create);
 app.get('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.find);
 app.del('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.delete);
@@ -274,7 +275,7 @@ app.del('/topology/pools/:pid/instances/:id', ensureAuthenticated, topologyInsta
 
 //setup routes for the topologies API
 app.get('/api/v1/topology/topologies', passport.authenticate('basic', { session: false }),topology.findAll);
-app.post('/api/v1/topology/topologies', passport.authenticate('basic', { session: false }),topology.add);
+app.post('/api/v1/topology/topologies', passport.authenticate('basic', { session: false }),topology.create);
 app.get('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.find);
 app.del('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.delete);
 app.put('/api/v1/topology/topologies/:id', passport.authenticate('basic', { session: false }),topology.update);

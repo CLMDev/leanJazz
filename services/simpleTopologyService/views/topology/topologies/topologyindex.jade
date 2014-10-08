@@ -15,22 +15,24 @@
 extends ../../layout
 
 block content
-  h1= title
+  h1=title
   p The following is a list of the available topologies
   - if(docs.length)
     table.table.table-striped
       thead
         tr
           th Topology Name
-          th Reference URL
           th Description
+          th Application
+          th Blueprint
           th Details
       tbody
           each topology in docs
             tr
               td #{topology.name}
-              td #{topology.referenceURL}
               td #{topology.description}
+              td #{topology.appName}
+              td #{topology.blueprintName}
               td 
                 a(href="/api4gui/v1/topology/topologies/#{topology.id}" ) json 
               td

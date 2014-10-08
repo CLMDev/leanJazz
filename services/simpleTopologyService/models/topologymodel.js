@@ -17,9 +17,7 @@
 var mongoose = require('mongoose');
 var nconf = require('nconf');
 
-nconf.argv()
-        .env()
-        .file({ file: './config.json'});
+nconf.argv().env().file({ file: './config.json'});
 
 //define documents for mongo
 var Schema = mongoose.Schema;
@@ -27,70 +25,14 @@ var ObjectId = Schema.ObjectId;
 var Topology = new Schema({
 	_id: {type: ObjectId, auto: true},
 	name: {type: String, unique: true},
-	topologyDocument: String,
 	description: String,
-	topologyDocument: String,
-	appProcessTemplate:String,
-	referenceURL: String,
-	pools: [],
-	providerRef: {type: String, ref:'Provider'},	
+	providerId: String,
+	appName: String,
+	blueprintName: String,
+	nodeProperties: String,
+	appProcessTemplate:String
 	},{strict: 'throw'}
 );
-var validator = require('validator');
-//this is used for very basic validation of json document being passed in 
-//TBD: add in schema validation for the properties on the model 
-
-
-
-var validateProviders = function(providers) {
-	console.log(">>>validating providers:");
-	/**
-		{
-			type: 
-			url: 
-			usernameProperty: 
-			passwordProperty: 
-		}
-	*/
-	for (var i=0;i<providers.length;i++){
-		val = providers[i];
-		console.log("checking : ");
-		console.log(val);
-		console.log("checking password property");
-		console.log(val.passwordProperty);
-		if (! validator.isURL(val.url)){
-			console.log("invalid provider URL " + val);
-			return false;
-		}else if (! (validator.equals(val.type, "IWD") || validator.equals(val.type, "UCD"))){
-			console.log("invalid provider type ");
-			return false;
-		}else if (validator.isNull(val.usernameProperty) || validator.isNull(nconf.get(val.usernameProperty)) ){
-			console.log("invalid provider username ... the following property is not set " + val.usernameProperty);
-			return false;
-		}else if (validator.isNull(val.passwordProperty) || validator.isNull(nconf.get(val.passwordProperty)) ){
-			console.log("invalid provider password ... the following property is not set " + val.passwordProperty);
-			return false;
-		}else{
-			console.log("checking valie of passwordProperty ");
-			console.log(nconf.get(val.passwordProperty));
-			return true;
-		}
-	}
-};
-Topology.path('referenceURL').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
-
-
-Topology.path('name').set(function(v) {
-	console.log('setting name');
-	//this._id = v;
-	if (! this.pools) {
-		this.pools = [];
-	}
-	if (! this.providers) {
-		this.providers = [];
-	}
-	return v;
-});
 
 var Topology = mongoose.model('Topology', Topology);
 

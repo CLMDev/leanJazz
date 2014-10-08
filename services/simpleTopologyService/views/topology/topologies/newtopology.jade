@@ -14,29 +14,146 @@
 
 extends ../../layout
 block content
-  h1 Register a new topology 
+  h1=title
   script(type='text/javascript').
-    $( document ).ready(function() {
-      console.log( "ready!" );
-      $('#div_provider').show();
-               $.ajax({
-               url: "/api/v1/providers/",
-               type: "GET",
-               success: function( json ) {
-                 var option_string='';
-                 json.forEach( function(provider){
-                 option_string=option_string+'<option value="' +provider._id+'">'+provider.name+'</option>';
-                 });
-                 if(option_string=='')
-                     alert( "please define the topology providers first!" );
-                 $('#div_provider select').html(option_string); 
-               },
-               error: function( xhr, status, errorThrown ) {
-                 alert( "Sorry, there was a problem to get providers!" );
-                 console.log( "Error: " + errorThrown );
-                 console.log( "Status: " + status );
-               }
-             });//ajax
+    function queryProviders() {
+      $.ajax({
+        url: "/api/v1/providers/",
+        type: "GET",
+        success: function(json) {
+          if ($.isEmptyObject(json)) {
+            alert( "please define the topology providers first!" );
+            return;
+          }
+          json.forEach(function(provider) {
+            $('#div_provider select').append('<option value="' + provider._id + '">' + provider.name + '</option>');
+          });
+          $('#div_provider select').change();
+        },
+        error: function( xhr, status, errorThrown ) {
+            alert( "Sorry, there was a problem to get providers!" );
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+        }
+      });
+    }
+    var UCD_ADAPTER = 'http://10.2.0.1:64869';
+    function queryApplications(providerId) {
+      $.ajax({
+        url: '/api/v1/providers/' + providerId + '/',
+        type: "GET",
+        success: function(provider) {
+          $.ajax({
+            url: UCD_ADAPTER + '/rest/ucd/applications',
+            type: "GET",
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
+              xhr.setRequestHeader('UCD_USERNAME', provider.UCD_USERNAME);
+              xhr.setRequestHeader('UCD_PASSWORD', provider.UCD_PASSWORD);
+            },
+            success: function(json) {
+              if ($.isEmptyObject(json)) {
+                alert( "Cannot find any applications in specified provider!" );
+                return;
+              }
+              json.forEach(function(application) {
+                $('#div_application select').append('<option value="' + application.name + '">' + application.name + '</option>');
+              });
+              $('#div_application select').change();
+            },
+            error: function( xhr, status, errorThrown ) {
+              console.log( "Error: " + errorThrown );
+              console.log( "Status: " + status );
+            }
+          });
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+        }
+      });
+    }
+    function queryBlueprints(providerId, appName) {
+      console.log("appName:" + appName);
+      $.ajax({
+        url: '/api/v1/providers/' + providerId + '/',
+        type: "GET",
+        success: function(provider) {
+          $.ajax({
+            url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/blueprints',
+            type: "GET",
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
+              xhr.setRequestHeader('UCD_USERNAME', provider.UCD_USERNAME);
+              xhr.setRequestHeader('UCD_PASSWORD', provider.UCD_PASSWORD);
+            },
+            success: function(json) {
+              if ($.isEmptyObject(json)) {
+                alert( "Cannot find any blueprints in specified application!" );
+                return;
+              }
+              json.forEach(function(blueprint) {
+                $('#div_blueprint select').append('<option value="' + blueprint.name + '">' + blueprint.name + '</option>');
+              });
+              $('#div_blueprint select').change();
+            },
+            error: function( xhr, status, errorThrown ) {
+              console.log( "Error: " + errorThrown );
+              console.log( "Status: " + status );
+            }
+          });
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+        }
+      });
+    }
+    function queryNodeProperties(providerId, appName, blueprintName) {
+      $.ajax({
+        url: '/api/v1/providers/' + providerId + '/',
+        type: "GET",
+        success: function(provider) {
+          $.ajax({
+            url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/blueprints/' + blueprintName,
+            type: "GET",
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
+              xhr.setRequestHeader('UCD_USERNAME', provider.UCD_USERNAME);
+              xhr.setRequestHeader('UCD_PASSWORD', provider.UCD_PASSWORD);
+            },
+            success: function(nodeProperties) {
+              $('#div_nodeprops textarea').val(JSON.stringify(nodeProperties, null, 4));
+            },
+            error: function( xhr, status, errorThrown ) {
+              console.log( "Error: " + errorThrown );
+              console.log( "Status: " + status );
+            }
+          });
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+        }
+      });
+    }
+    $(document).ready(function() {
+      $('#div_provider select').bind('change', function(event) {
+          $('#div_application select').empty();
+          $('#div_blueprint select').empty();
+          $('#div_nodeprops textarea').val('');
+          queryApplications($(this).val());
+        });
+      $('#div_application select').bind('change', function(event) {
+          $('#div_blueprint select').empty();
+          $('#div_nodeprops textarea').val('');
+          queryBlueprints($('#div_provider select').val(), $(this).val());
+        });
+      $('#div_blueprint select').bind('change', function(event) {
+          $('#div_nodeprops textarea').val('');
+          queryNodeProperties($('#div_provider select').val(), $('#div_application select').val(), $(this).val());
+        });
+      queryProviders();
     });//ready
 
   form.form-horizontal(method='post', action='/topology/topologies')
@@ -48,36 +165,38 @@ block content
             div.span3
               p name 
             div
-              input.span6(name='topology[name]')
+              input.span6(name='topology[name]', class='xlarge')
+          div.row
+            div.span3
+              p description
+            div
+              input.span6(name='topology[description]', class='xlarge')
           div.row(id="div_provider")
             div.span3
               p Provider 
             div
-              select(name='topology[providerRef]')
-          div.row
+              select(name='topology[providerId]', class='xlarge')
+          div.row(id="div_application")
             div.span3
-              p TopologyDocument
+              p Application 
             div
-              textarea.span6(name='topology[topologyDocument]', rows=20, class='xlarge')    
+              select(name='topology[appName]', class='xlarge')
+          div.row(id="div_blueprint")
+            div.span3
+              p Blueprint 
+            div
+              select(name='topology[blueprintName]', class='xlarge')
+          div.row(id="div_nodeprops")
+            div.span3
+              p Node Properties
+            div
+              textarea.span6(name='topology[nodeProperties]', rows=20, class='xlarge')    
           div.row
             div.span3
               p Process Template
             div
               textarea.span6(name='topology[appProcessTemplate]', rows=20, class='xlarge')                    
-          div.row
-            div.span3
-              p referenceURL
-            div
-              input.span6(name='topology[referenceURL]')
-          div.row
-            div.span3
-              p description
-            div
-              input.span6(name='topology[description]')
-
         div.actions
           div.row
             input.offset3(type='submit', value='Save', class='btn primary')
             button.offset1(type='reset', class='btn') Cancel
-
-

@@ -17,9 +17,7 @@
 var mongoose = require('mongoose');
 var nconf = require('nconf');
 
-nconf.argv()
-        .env()
-        .file({ file: './config.json'});
+nconf.argv().env().file({ file: './config.json' });
 
 //define documents for mongo
 var Schema = mongoose.Schema;
@@ -28,17 +26,15 @@ var Provider = new Schema({
 	_id: {type: ObjectId, auto: true},
 	name: {type: String, unique: true},
 	description: String,
-	UCD_webURL: String,
-	UCD_authtoken: String,
-	UCD_version: String,
-	IWD_host: String,
-	IWD_version: String,
-	IWD_username:String,
-	IWD_password: String
+	UCD_SERVER: String,
+	UCD_USERNAME: String,
+	UCD_PASSWORD: String
 	},{strict: 'throw'}
 );
+
 var validator = require('validator');
+Provider.path('UCD_SERVER').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
 
 var Provider = mongoose.model('Provider', Provider);
 
-module.exports =Provider;
+module.exports = Provider;
