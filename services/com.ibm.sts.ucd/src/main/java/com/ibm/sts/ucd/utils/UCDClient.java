@@ -74,9 +74,7 @@ public class UCDClient extends UDRestClient {
 		return body;
 	}
 
-	public UUID createEnvironment(URI topoDocURI) throws IOException {
-		String topoDoc = new String(Files.readAllBytes(Paths.get(topoDocURI)));
-
+	public UUID createEnvironment(String topoDoc) throws IOException {
 		HttpPut method = new HttpPut(String.format("%s/cli/environment/provisionEnvironment", this.url));
 		method.setEntity(new StringEntity(topoDoc));
 		HttpResponse response = invokeMethod(method);
@@ -164,6 +162,31 @@ public class UCDClient extends UDRestClient {
 		boolean deleteCloudInstances = true;
 		HttpDelete method = new HttpDelete(String.format("%s/cli/environment/deleteEnvironment?application=%s&environment=%s&deleteAttachedResources=%s&deleteCloudInstances=%s", this.url, URLEncoder.encode(appName, "UTF-8"), URLEncoder.encode(envName, "UTF-8"), deleteAttachedResources, deleteCloudInstances));
 		invokeMethod(method);
+	}
+	
+	public String listApplicationProcesses(String appName) throws IOException {
+		HttpGet method = new HttpGet(String.format("%s/cli/applicationProcess/info?application=%s", this.url, URLEncoder.encode(appName, "UTF-8")));
+		HttpResponse response = invokeMethod(method);
+		String body = getBody(response);
+		logger.debug(body);
+		return body;
+	}
+	
+	public String applicationProcessRequest(String procDoc) throws IOException {
+		HttpPut method = new HttpPut(String.format("%s/cli/applicationProcessRequest/request", this.url));
+		method.setEntity(new StringEntity(procDoc));
+		HttpResponse response = invokeMethod(method);
+		String body = getBody(response);
+		logger.debug(body);
+		return body;
+	}
+	
+	public String getRequestStatus(String requestId) throws IOException {
+		HttpGet method = new HttpGet(String.format("%s/cli/applicationProcessRequest/requestStatus?request=%s", this.url, requestId));
+		HttpResponse response = invokeMethod(method);
+		String body = getBody(response);
+		logger.debug(body);
+		return body;
 	}
 
 }

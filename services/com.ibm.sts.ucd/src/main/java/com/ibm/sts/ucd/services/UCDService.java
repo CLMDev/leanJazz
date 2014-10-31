@@ -60,7 +60,54 @@ public class UCDService {
 			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when listing applications")).build();
 		}
 	}
-
+	
+	@PUT
+	@Path("applications/{appName}/requestApplicationProcess")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response requestApplicationProcess(
+			@HeaderParam("UCD_SERVER") String ucdServer, @HeaderParam("UCD_USERNAME") String ucdUsername, @HeaderParam("UCD_PASSWORD") String ucdPassword,
+			@PathParam("appName") String appName, String content) {
+		this.checkHeaderParams(ucdServer, ucdUsername, ucdPassword);
+		try {
+			JSONObject json = new JSONObject(content);
+			json.put("application", appName);
+			
+			UCDClient client = new UCDClient(new URI(ucdServer), ucdUsername, ucdPassword);
+			String result = client.applicationProcessRequest(json.toString());			
+			return Response.status(Status.CREATED).entity(result).build();
+		} catch (JSONException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Invalid content of request: %s", content)).build();
+		} catch (URISyntaxException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Invalid UCD Server URL: %s", ucdServer)).build();
+		} catch (IOException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when request process with content: %s", content)).build();
+		}
+	}
+	
+	@GET
+	@Path("applications/{appName}/requestApplicationProcess/{requestId}")
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response getRequestStatus(
+			@HeaderParam("UCD_SERVER") String ucdServer, @HeaderParam("UCD_USERNAME") String ucdUsername, @HeaderParam("UCD_PASSWORD") String ucdPassword,
+			@PathParam("appName") String appName, @PathParam("requestId") String requestId) {
+		this.checkHeaderParams(ucdServer, ucdUsername, ucdPassword);
+		try {
+			UCDClient client = new UCDClient(new URI(ucdServer), ucdUsername, ucdPassword);
+			String status = client.getRequestStatus(requestId);
+			return Response.ok(status).build();
+		} catch (URISyntaxException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Invalid UCD Server URL: %s", ucdServer)).build();
+		} catch (IOException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when geting status for request '%s' in application '%s'", requestId, appName)).build();
+		}
+	}
+	
 	@GET
 	@Path("applications/{appName}/blueprints")
 	@Produces({MediaType.APPLICATION_JSON})
@@ -114,11 +161,8 @@ public class UCDService {
 			json.put("application", appName);
 			
 			UCDClient client = new UCDClient(new URI(ucdServer), ucdUsername, ucdPassword);
-			java.nio.file.Path path = File.createTempFile("sts-", null).toPath();
-			logger.debug(String.format("Storing topology doc at %s", path));
-			Files.write(path, json.toString().getBytes());
-			logger.debug(new String(Files.readAllBytes(path)));
-			UUID uuid = client.createEnvironment(path.toUri());
+			
+			UUID uuid = client.createEnvironment(json.toString());
 			if (uuid == null) {
 				return Response.status(Status.BAD_REQUEST).entity(String.format("Failed to create environment with topology doc: %s", content)).build();
 			}
