@@ -99,8 +99,8 @@ exports.editViewExecute = function(req, res) {
     doc.UCD_version= req.body.provider.UCD_version;
     doc.IWD_host= req.body.provider.IWD_host;
     doc.IWD_version= req.body.provider.IWD_version;
-    doc.IWD_username= req.body.provider.IWD_username;
-    doc.IWD_password= req.body.provider.IWD_password;
+    //doc.IWD_username= req.body.provider.IWD_username;
+    //doc.IWD_password= req.body.provider.IWD_password;
     
     console.log('attempting to update document');
     console.log(doc);
