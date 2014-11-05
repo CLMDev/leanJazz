@@ -18,7 +18,7 @@ block content
   script(type='text/javascript').
     function queryProviders() {
       $.ajax({
-        url: "/api/v1/providers/",
+        url: "/api4gui/v1/providers/",
         type: "GET",
         success: function(json) {
           if ($.isEmptyObject(json)) {
@@ -37,15 +37,16 @@ block content
         }
       });
     }
-    var UCD_ADAPTER = 'http://10.2.0.1:64869';
+    var UCD_ADAPTER = '//10.2.0.1:9443';
     function queryApplications(providerId) {
       $.ajax({
-        url: '/api/v1/providers/' + providerId + '/',
+        url: '/api4gui/v1/providers/' + providerId + '/',
         type: "GET",
         success: function(provider) {
           $.ajax({
             url: UCD_ADAPTER + '/rest/ucd/applications',
             type: "GET",
+            crossDomain: true,
             beforeSend: function(xhr) {
               xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
               xhr.setRequestHeader('UCD_USERNAME', provider.UCD_USERNAME);
@@ -76,12 +77,13 @@ block content
     function queryBlueprints(providerId, appName) {
       console.log("appName:" + appName);
       $.ajax({
-        url: '/api/v1/providers/' + providerId + '/',
+        url: '/api4gui/v1/providers/' + providerId + '/',
         type: "GET",
         success: function(provider) {
           $.ajax({
             url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/blueprints',
             type: "GET",
+            crossDomain: true,
             beforeSend: function(xhr) {
               xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
               xhr.setRequestHeader('UCD_USERNAME', provider.UCD_USERNAME);
@@ -111,12 +113,13 @@ block content
     }
     function queryNodeProperties(providerId, appName, blueprintName) {
       $.ajax({
-        url: '/api/v1/providers/' + providerId + '/',
+        url: '/api4gui/v1/providers/' + providerId + '/',
         type: "GET",
         success: function(provider) {
           $.ajax({
             url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/blueprints/' + blueprintName,
             type: "GET",
+            crossDomain: true,
             beforeSend: function(xhr) {
               xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
               xhr.setRequestHeader('UCD_USERNAME', provider.UCD_USERNAME);
@@ -175,7 +178,7 @@ block content
             div.span3
               p Provider 
             div
-              select(name='topology[providerId]', class='xlarge')
+              select(name='topology[providerRef]', class='xlarge')
           div.row(id="div_application")
             div.span3
               p Application 

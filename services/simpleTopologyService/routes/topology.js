@@ -118,6 +118,7 @@ exports.create = function(req, res) {
 
 exports.editViewSetup = function(req, res) {
 	Topology.findById(req.params.id, function(err, doc) {
+		console.log(doc);
 		res.render('topology/topologies/edittopology', {
 			title: 'Edit Topology',
 			topology: doc
@@ -129,7 +130,7 @@ exports.editViewExecute = function(req, res) {
 	    doc.updated_at = new Date();
 	    doc.name = req.body.topology.name;
 	    doc.description = req.body.topology.description;
-	    doc.providerId = req.body.topology.providerId;
+	    doc.providerRef = req.body.topology.providerRef;
 	    doc.appName = req.body.topology.appName;
 	    doc.blueprintName = req.body.topology.blueprintName;
 	    doc.nodeProperties = req.body.topology.nodeProperties;

@@ -3,8 +3,6 @@ package com.ibm.sts.ucd.utils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -90,12 +88,13 @@ public class UCDClient extends UDRestClient {
 		return result;
 	}
 
-	public EnvironmentStatus getEnvironmentStatus(String appName, String envName) throws IOException {
-		EnvironmentStatus envStatus = new EnvironmentStatus();
+	public EnvironmentStatus getEnvironmentStatus(String appName, String envName) {
+		EnvironmentStatus envStatus = null;
 		Map<String, String> resources = getResourcesStatusByEnv(appName, envName);
 		if (resources.isEmpty()) {
 			return envStatus;
 		}
+		envStatus = new EnvironmentStatus();
 		int onlineCnt = 0;
 		int total = resources.size();
 		for (Map.Entry<String, String> res : resources.entrySet()) {
@@ -114,7 +113,7 @@ public class UCDClient extends UDRestClient {
 		return envStatus;
 	}
 
-	private Map<String, String> getResourcesStatusByEnv(String appName, String envName) throws IOException {
+	private Map<String, String> getResourcesStatusByEnv(String appName, String envName) {
 		Map<String, String> resStatus = new HashMap<String, String>();
 		try {
 			HttpGet method = new HttpGet(String.format("%s/cli/environment/getBaseResources?application=%s&environment=%s", this.url, URLEncoder.encode(appName, "UTF-8"), URLEncoder.encode(envName, "UTF-8")));
@@ -128,32 +127,31 @@ public class UCDClient extends UDRestClient {
 				JSONObject res = baseResArray.getJSONObject(i);
 				checkResourceStatus(res, resStatus);
 			}
-		} catch (JSONException e) {
+		} catch (JSONException | IOException e) {
 			logger.error("Error when checking resource status", e);
 		}
 		return resStatus;
 	}
 
-	private void checkResourceStatus(JSONObject res, Map<String, String> resStatus) throws IOException {
-		try {
-			String type = res.getString("type");
-			if ("subresource".equalsIgnoreCase(type)) {
+	private void checkResourceStatus(JSONObject res, Map<String, String> resStatus) throws JSONException {
+		String type = res.getString("type");
+		if ("subresource".equalsIgnoreCase(type)) {
+			try {
 				HttpGet method = new HttpGet(String.format("%s/cli/resource?parent=%s", this.url, res.getString("id")));
 				HttpResponse response = invokeMethod(method);
 				String body = getBody(response);
 				logger.debug(body);
-
 				JSONArray resArray = new JSONArray(body);
 				for (int i = 0; i < resArray.length(); i++) {
 					checkResourceStatus(resArray.getJSONObject(i), resStatus);
 				}
-			} else if ("agent".equalsIgnoreCase(type)) {
-				String name = res.getString("name");
-				String status = res.has("status") ? res.getString("status") : null;
-				resStatus.put(name, status);
+			} catch (IOException e) {
+				logger.error(e.getLocalizedMessage(), e);
 			}
-		} catch (JSONException e) {
-			logger.error("Failed to parse resource info", e);
+		} else if ("agent".equalsIgnoreCase(type)) {
+			String name = res.getString("name");
+			String status = res.has("status") ? res.getString("status") : null;
+			resStatus.put(name, status);
 		}
 	}
 

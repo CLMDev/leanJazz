@@ -3,11 +3,9 @@
  */
 package com.ibm.sts.ucd.services;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -189,13 +187,13 @@ public class UCDService {
 		try {
 			UCDClient client = new UCDClient(new URI(ucdServer), ucdUsername, ucdPassword);
 			EnvironmentStatus status = client.getEnvironmentStatus(appName, envName);
+			if (status == null) {
+				return Response.status(Status.NOT_FOUND).build();
+			}
 			return Response.ok(status).build();
 		} catch (URISyntaxException e) {
 			logger.error(e.getLocalizedMessage(), e);
 			return Response.status(Status.BAD_REQUEST).entity(String.format("Invalid UCD Server URL: %s", ucdServer)).build();
-		} catch (IOException e) {
-			logger.error(e.getLocalizedMessage(), e);
-			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when checking environment '%s' in application '%s'", envName, appName)).build();
 		}
 	}
 

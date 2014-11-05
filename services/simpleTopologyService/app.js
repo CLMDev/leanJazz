@@ -171,11 +171,11 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-var pooler = require('child_process').fork('basicpooler.js');//generate requests for adding instances for all noapp pools 
+// var pooler = require('child_process').fork('basicpooler.js');//generate requests for adding instances for all noapp pools 
 var monitor = require('child_process').fork('poolmonitor.js');//monitor pools and fork instance creators for pools
 var apppooler = require('child_process').fork('app_basicpooler.js');//generate requests for adding instances for all app pools 
 var appmonitor = require('child_process').fork('app_poolmonitor.js');//monitor pools and fork instance creators for pools
-var housekeeper = require('child_process').fork('housekeeper.js');//for housekeeping, redis queque, etc.
+// var housekeeper = require('child_process').fork('housekeeper.js');//for housekeeping, redis queque, etc.
 
 app.get('/', function(req, res){
   res.redirect('/login');
@@ -245,12 +245,14 @@ app.get('/providers', ensureAuthenticated, provider.findAllView);
 app.get('/providers/new', ensureAuthenticated, provider.addViewSetup);
 app.post('/providers', ensureAuthenticated, provider.addViewExecute);
 app.get('/providers/:id',ensureAuthenticated, provider.findAllView);
+app.get('/providers/:id/edit', ensureAuthenticated, provider.editViewSetup);
 app.put('/providers/:id', ensureAuthenticated, provider.editViewExecute);
 app.del('/providers/:id', ensureAuthenticated, provider.deleteView);
 
 app.get('/api/v1/providers', passport.authenticate('basic', { session: false }), provider.findAll);
 app.get('/api4gui/v1/providers', ensureAuthenticated, provider.findAll);
 app.post('/api/v1/providers',passport.authenticate('basic', { session: false }), provider.create);
+app.get('/api4gui/v1/providers/:id', ensureAuthenticated, provider.find);
 app.get('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.find);
 app.del('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.delete);
 app.put('/api/v1/providers/:id', passport.authenticate('basic', { session: false }), provider.update);
@@ -327,9 +329,13 @@ app.del('/api4gui/v1/builds/:id', ensureAuthenticated, build.delete);
 app.put('/api4gui/v1/builds/:id', ensureAuthenticated, build.update);
 
 var options = {
-  key: fs.readFileSync('https/key.pem'),
-  cert: fs.readFileSync('https/cert.pem')
+  key: fs.readFileSync(nconf.get('SSL_KEY_FILE')),
+  cert: fs.readFileSync(nconf.get('SSL_CERT_FILE'))
 };
+var passphrase = nconf.get('SSL_PASSPHRASE');
+if (passphrase) {
+	options.passphrase = passphrase;
+}
 
 https.createServer(options, app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));

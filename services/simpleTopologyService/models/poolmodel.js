@@ -23,18 +23,6 @@ TODO:
 	how to require that topologyRef is set as a part of the constructor
 */
 var mongoose = require('mongoose');
-var nconf = require('nconf');
-nconf.argv().env().file({ file: './config.json'});
-
-mongoose.connect(nconf.get('MONGO_URI'),
-  function(err) {
-    if (!err) {
-      console.log('mongoose connected');
-    }else {
-      console.log('error:'+err);
-      console.log('mongoose already connected');
-    }
-});
 
 var Topology = require ('./topologymodel');
 
@@ -51,12 +39,7 @@ var TopologyPoolSchema = new Schema({
 	topologyRef: {type: String, ref:'Topology'},
 	poolMethod: {type: String, default: 'basic'},
 	poolMinAvailable: {type: Number, default: 2},
-	poolMaxTotal: {type: Number, default: 10},
-	available: {type: Number, default: 0},
-	checkedout: {type: Number, default: 0},
-	//total: {type: Number, default: 0},
-	availableInstances: {type: [], default: []},
-	checkedOutInstances: {type: [], default: []}
+	poolMaxTotal: {type: Number, default: 10}
 	},{strict: 'throw'}
 );
 
@@ -100,7 +83,7 @@ TopologyPoolSchema.path('poolMaxTotal').validate(validatePoolMaxTotal, 'validati
 TopologyPoolSchema.path('poolMethod').validate(validatePoolMethod, 'validation of `{PATH}` failed with value `{VALUE}` invalid value set for pool type');
 
 TopologyPoolSchema.pre('save', function (next) {
-	console.log(">>>save.pre");
+//	console.log(">>>save.pre");
 	//this.setProcessing("Initializing Pool");
 	if (this.poolMethod == "basic"){
 		this.oPoolingMethod = new BasicPoolingMethod(this.poolMin, this.poolMax); 
@@ -113,11 +96,11 @@ TopologyPoolSchema.pre('save', function (next) {
 		//this should never happen due to validators.
 		next(new Error('Pooling method ' + newpool.poolMethod + '  not supported'));
 	}
-	console.log("<<<save.pre");
+//	console.log("<<<save.pre");
 });
 TopologyPoolSchema.post('save', function (doc) {
 	console.log(">>>save.post");
-	console.log(doc);
+//	console.log(doc);
 	console.log("<<<save.post");
 });
 
@@ -212,8 +195,8 @@ TopologyPoolSchema.statics.create = function(json, callback){
 	console.log("<<<create");
 };
 
-var mTopologyPool = mongoose.model('mTopologyPool', TopologyPoolSchema);
-
+var mpool = mongoose.model('TopologyPool', TopologyPoolSchema);
+module.exports = mpool;
 
 /**
 	Need to move this into a function like so https://github.com/stevekwan/experiments/blob/master/javascript/module-pattern.html 
@@ -324,5 +307,3 @@ function findByName = function(name,callback){
 	});
 };
 */
-
-module.exports = mTopologyPool;

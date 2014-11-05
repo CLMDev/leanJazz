@@ -33,16 +33,16 @@ exports.findAllView = function(req, res) {
 };
 
 exports.addViewSetup = function(req, res) {
-  Topology.find({},function(err, topdocs) {
-    if (!topdocs) {
-      console.log('no topology found');
-      topdocs = [];
-    }
-    res.render('topology/pools/newpool.jade', {
-                title: 'Create new pool', 
-                topdocs: topdocs
-    });
-  });
+	Topology.find({},function(err, topdocs) {
+		if (!topdocs) {
+			console.log('no topology found');
+			topdocs = [];
+		}
+		res.render('topology/pools/newpool.jade', {
+			title: 'Create new pool', 
+			topdocs: topdocs
+		});
+	});
 };
 
 var validator = require('validator');
@@ -57,41 +57,38 @@ var validatePool = function(doc, next) {
 	}
 };
 
-
 exports.addViewExecute = function(req, res) {
 	validatePool(req.body.pool, function(err) {
-		if (! err) {
+		if (!err) {
 			var pool = new topologyPoolModel(req.body.pool);
-                        if(pool.type=='noapp'){
-                          pool.parentPool='N/A';
-                          pool.attachedStream='N/A';
-			  pool.save(function(err) {
-				if (! err) {
-					res.redirect('/topology/pools');
-				}else {
-					console.log('error saving pool');
-					console.log(err);
-					res.redirect('/topology/pools/new');
-				}
-		  	  });
-                        } else {
-                        topologyPoolModel.findById(pool.parentPool, function( err, parent)
-                          {
-                            pool.topologyRef= parent.topologyRef;
-                            pool.parentPoolName=parent.name;
-			    pool.save(function(err) {
-				if (! err) {
-					res.redirect('/topology/pools');
-				}else {
-					console.log('error saving pool');
-					console.log(err);
-					res.redirect('/topology/pools/new');
-				}
-			    });
-                          });//topogloygPoolModel.findById
-                        }//else
-
-		}else {
+			if(pool.type == 'noapp') {
+				pool.parentPool = 'N/A';
+				pool.attachedStream = 'N/A';
+				pool.save(function(err) {
+					if (!err) {
+						res.redirect('/topology/pools');
+					} else {
+						console.log('error saving pool');
+						console.log(err);
+						res.redirect('/topology/pools/new');
+					}
+				});
+			} else {
+				topologyPoolModel.findById(pool.parentPool, function(err, parent) {
+					pool.topologyRef = parent.topologyRef;
+					pool.parentPoolName = parent.name;
+					pool.save(function(err) {
+						if (!err) {
+							res.redirect('/topology/pools');
+						} else {
+							console.log('error saving pool');
+							console.log(err);
+							res.redirect('/topology/pools/new');
+						}
+					});
+				});//topogloygPoolModel.findById
+			}//else
+		} else {
 			console.log('error in addViewExecute validating pool');
 			console.log(err);
 			res.redirect('/topology/pools');

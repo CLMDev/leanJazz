@@ -15,9 +15,6 @@
 */
 
 var mongoose = require('mongoose');
-var nconf = require('nconf');
-
-nconf.argv().env().file({ file: './config.json' });
 
 //define documents for mongo
 var Schema = mongoose.Schema;
@@ -36,5 +33,4 @@ var validator = require('validator');
 Provider.path('UCD_SERVER').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
 
 var Provider = mongoose.model('Provider', Provider);
-
 module.exports = Provider;

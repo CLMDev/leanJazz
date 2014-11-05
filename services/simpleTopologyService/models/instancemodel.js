@@ -15,17 +15,9 @@
 */
 
 var mongoose = require('mongoose');
-var nconf = require('nconf');
-nconf.argv().env().file({ file: './config.json'});
 
-mongoose.connect(nconf.get('MONGO_URI'),
-  function(err) {
-    if (!err) {
-      console.log('mongoose connected');
-    }else {
-      console.log('mongoose already connected');
-    }
-});
+var Topology = require('../models/topologymodel');
+var TopologyPool = require('../models/poolmodel');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
@@ -35,8 +27,8 @@ var TopologyInstanceSchema = new Schema({
 	description: String,
 	type: {type: String, default: 'noapp'},
 	topologyRef: {type: String, ref: 'Topology'},
-	poolRef: {type: String, ref: 'mTopologyPool'},
-	apppoolRef: {type: String, ref: 'mTopologyPool'},
+	poolRef: {type: String, ref: 'TopologyPool'},
+	apppoolRef: {type: String, ref: 'TopologyPool'},
 	buildid: String,
         iwdStatus: String,
         iwdURI: String,
@@ -60,7 +52,39 @@ var TopologyInstanceSchema = new Schema({
 	},{strict: 'throw'}
 );
 
-var mTopologyInstance = mongoose.model('mTopologyInstance', TopologyInstanceSchema);
-module.exports = mTopologyInstance;
+var mInstance = mongoose.model('TopologyInstance', TopologyInstanceSchema);
+module.exports = mInstance;
 
+function createInstance(provider, pool, request, callback) {
+	var instance = new mInstance();
+	instance.name = request.name;
+	instance.description = 'instance for pooling, with bare environment';
+	instance.type = 'noapp';
+	instance.topologyRef = pool.topologyRef._id;
+	instance.poolRef = pool._id;
+	instance.ucdEnvName = request.name;
+	instance.ucdEnvID = request.uuid;
+	instance.ucdApplication = request.application;
+	instance.ucdURI = provider.UCD_SERVER + '/#environment/' + request.uuid;
+	instance.creationDate = new Date();
+	
+	var jsonStr = JSON.stringify(instance);
+	console.log('[' + pname + '] ' + 'Creating instance for pool '+ pool.name + '(id: ' + pool._id + '): ' + jsonStr);
+	
+	instance.save(function(err, doc) {
+		if (err) {
+			console.log('[' + pname + '] ' + "Error saving new instance: " + err);
+			if (callback) {
+				callback(err, null);
+			}
+			return;
+		}
+		console.log('[' + pname + '] ' + 'Instance saved: ' + JSON.stringify(doc));
+		if (callback) {
+			callback(null, doc);
+		}
+	});//instance.save
+}
+
+module.exports.createInstance = createInstance;
 

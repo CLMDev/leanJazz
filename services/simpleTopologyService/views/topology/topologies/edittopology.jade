@@ -18,7 +18,7 @@ block content
   script(type='text/javascript').
     function queryProviders() {
       $.ajax({
-        url: "/api/v1/providers/",
+        url: "/api4gui/v1/providers/",
         type: "GET",
         success: function(json) {
           if ($.isEmptyObject(json)) {
@@ -26,7 +26,7 @@ block content
             return;
           }
           json.forEach(function(provider) {
-            if (provider.id == "#{topology.providerId}") {
+            if (provider.id == "#{topology.providerRef}") {
               $('#div_provider select').append('<option value="' + provider._id + '" selected="selected">' + provider.name + '</option>');
             } else {
               $('#div_provider select').append('<option value="' + provider._id + '">' + provider.name + '</option>');
@@ -40,10 +40,10 @@ block content
         }
       });
     }
-    var UCD_ADAPTER = 'http://10.2.0.1:64869';
+    var UCD_ADAPTER = '//10.2.0.1:9443';
     function queryApplications(providerId) {
       $.ajax({
-        url: '/api/v1/providers/' + providerId + '/',
+        url: '/api4gui/v1/providers/' + providerId + '/',
         type: "GET",
         success: function(provider) {
           $.ajax({
@@ -82,7 +82,7 @@ block content
     function queryBlueprints(providerId, appName) {
       console.log("appName:" + appName);
       $.ajax({
-        url: '/api/v1/providers/' + providerId + '/',
+        url: '/api4gui/v1/providers/' + providerId + '/',
         type: "GET",
         success: function(provider) {
           $.ajax({
@@ -120,7 +120,7 @@ block content
     }
     function queryNodeProperties(providerId, appName, blueprintName) {
       $.ajax({
-        url: '/api/v1/providers/' + providerId + '/',
+        url: '/api4gui/v1/providers/' + providerId + '/',
         type: "GET",
         success: function(provider) {
           $.ajax({
@@ -163,8 +163,8 @@ block content
           queryNodeProperties($('#div_provider select').val(), $('#div_application select').val(), $(this).val());
         });
       queryProviders();
-      queryApplications("#{topology.providerId}");
-      queryBlueprints("#{topology.providerId}", "#{topology.appName}");
+      queryApplications("#{topology.providerRef}");
+      queryBlueprints("#{topology.providerRef}", "#{topology.appName}");
     });//ready
 
   form(method='post', action='/topology/topologies/' + topology.id)
@@ -187,7 +187,7 @@ block content
             div.span3
               p Provider
             div
-                select(name='topology[providerId]')
+                select(name='topology[providerRef]')
           div.row(id="div_application")
             div.span3
               p Application

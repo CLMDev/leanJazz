@@ -15,9 +15,8 @@
 */
 
 var mongoose = require('mongoose');
-var nconf = require('nconf');
 
-nconf.argv().env().file({ file: './config.json'});
+var mprovider = require('../models/providermodel');
 
 //define documents for mongo
 var Schema = mongoose.Schema;
@@ -26,7 +25,7 @@ var Topology = new Schema({
 	_id: {type: ObjectId, auto: true},
 	name: {type: String, unique: true},
 	description: String,
-	providerId: String,
+	providerRef: {type: String, ref: 'Provider'},
 	appName: String,
 	blueprintName: String,
 	nodeProperties: String,
