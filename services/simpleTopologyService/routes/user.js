@@ -39,6 +39,7 @@ var mailOptions = {
     subject: 'Activate your account for STS', // Subject line
     text: 'DO *NOT* ACTIVATE THIS ACCOUNT, UNLESS YOU CREATE AND INTEND TO USE IT. To activate, click on this link, ' 
 };
+var mailOptions_text= 'DO *NOT* ACTIVATE THIS ACCOUNT, UNLESS YOU CREATE AND INTEND TO USE IT. To activate, click on this link, ' 
 
 var resetmailOptions = {
     from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
@@ -47,6 +48,7 @@ var resetmailOptions = {
     text: 'DO *NOT* CLICK THE LINK, UNLESS YOU WOULD LIKE TO RESET YOUR PASSWORD. To reset your password, click on this link, ' 
 };
 
+var resetmailOptions_text= 'DO *NOT* CLICK THE LINK, UNLESS YOU WOULD LIKE TO RESET YOUR PASSWORD. To reset your password, click on this link, ' 
 var apiuser;
 var random=uuid.v4();
 exports.createAPIUser= function(){
@@ -147,13 +149,13 @@ exports.resetMail = function(req, res) {
       res.render('topology/users/password_reset', { message: 'Mail sent, please follow the link to reset your password'});
       // send mail with defined transport object
       resetmailOptions.to=docs[0].mail;
-      resetmailOptions.text=resetmailOptions.text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt;
+      resetmailOptions.text=resetmailOptions_text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt;
       transporter.sendMail(resetmailOptions, function(error, info){
       if(error){
         console.log('error: sending mail!');
         console.log(error);
       }else{
-      //  console.log('Message sent: ' + resetmailOptions.text);
+        //console.log('Message sent: ' + resetmailOptions.text);
       }
       });
    });
@@ -210,7 +212,7 @@ exports.createAccount = function(req, res) {
       res.render('topology/users/signup', { message: 'Account created! Please check your mail and activate it.'});
       // send mail with defined transport object
       mailOptions.to=newUser.mail;
-      mailOptions.text=mailOptions.text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/activate/'+newUser._salt;
+      mailOptions.text=mailOptions_text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/activate/'+newUser._salt;
       transporter.sendMail(mailOptions, function(error, info){
       if(error){
         console.log('error: sending mail!');
