@@ -85,6 +85,10 @@ function submitRequestForNewInstance(pool, callback) {
 						callback(null, updatedReq);
 					}
 				});
+				var teams=nconf.get('teams');
+		        ucd.addEnvironmentToTeams(provider, request.application, request.name, teams, function(err) {
+		        	console.log('[' + pname + '] ' + 'Error when add Environment to Teams: ' + err);
+		        });	
 			});// End of create environment
 		});// End of create request
 	});

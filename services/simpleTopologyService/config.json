@@ -9,6 +9,8 @@
 	"REMOVE-TEST-DATA" : "true",
 	"MONGO_URI":"mongodb://p14vc3z.cn.ibm.com:27017/leanJazz",
 	"MAIL_PROVIDER":".ibm.com",
-	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please"
+	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please",
+	"TEAMS":
+	       ["CLM/SSE Automation Team", "SVT"]
 	
 }

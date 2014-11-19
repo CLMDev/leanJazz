@@ -88,6 +88,17 @@ public class UCDClient extends UDRestClient {
 		return result;
 	}
 
+	public void addEnvironmentToTeam(String application, String environment, String team) throws IOException {
+		application=java.net.URLEncoder.encode(application, "utf-8");
+		environment=java.net.URLEncoder.encode(environment, "utf-8");
+		team=java.net.URLEncoder.encode(team, "utf-8");
+		String url=String.format("%s/cli/environment/teams?application=%s&environment=%s&team=%s", this.url, application, environment, team);
+			
+		HttpPut method = new HttpPut(url);
+		invokeMethod(method);		
+		return;
+	}
+	
 	public EnvironmentStatus getEnvironmentStatus(String appName, String envName) {
 		EnvironmentStatus envStatus = null;
 		Map<String, String> resources = getResourcesStatusByEnv(appName, envName);

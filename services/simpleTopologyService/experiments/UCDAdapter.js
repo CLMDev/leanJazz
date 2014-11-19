@@ -31,6 +31,36 @@ exports.createEnvironment = function(provider, topoDoc, callback) {
 	});
 }
 
+exports.addEnvironmentToTeams = function(provider, app, env, teams, callback) {
+	teams.forEach(function(team){
+		addEnvironmentToTeam(provider, app, env, team, callback);
+		
+	})
+	
+}
+addEnvironmentToTeam = function(provider, app, env, team, callback) {
+	request.put({
+		url: UCD_ADAPTER + '/rest/ucd/applications/' + app + '/environments/' +env,
+		headers: {
+			'UCD_SERVER': provider.UCD_SERVER,
+			'UCD_USERNAME': provider.UCD_USERNAME,
+			'UCD_PASSWORD': provider.UCD_PASSWORD,
+			'content-type': 'application/json'
+		},
+		body: {
+			'team': team
+		}
+	}, function(err, resp, body) {
+		if (err) {
+			return callback(err);
+		}
+		if (resp.statusCode != 201) {
+			return callback(JSON.stringify(resp));
+		}
+		callback(null);
+	});
+}
+
 exports.pingEnvironment = function(provider, appName, envName, callback) {
 	request.get({
 		url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/environments/' + envName + '/ping',

@@ -177,6 +177,41 @@ public class UCDService {
 		}
 	}
 
+	@PUT
+	@Path("applications/{appName}/environments/{envName}")
+	@Consumes({MediaType.APPLICATION_JSON})
+	@Produces({MediaType.TEXT_PLAIN})
+	public Response addEnvironmentToTeam(
+			@HeaderParam("UCD_SERVER") String ucdServer, @HeaderParam("UCD_USERNAME") String ucdUsername, @HeaderParam("UCD_PASSWORD") String ucdPassword,
+			@PathParam("appName") String appName, @PathParam("envName") String envName, String content) {
+		
+		this.checkHeaderParams(ucdServer, ucdUsername, ucdPassword);
+		try {
+			JSONObject json = new JSONObject(content);
+			String team;
+			
+			if(json.has("team"))
+					team=json.get("team").toString();
+			else 
+				return Response.status(Status.BAD_REQUEST).entity(String.format("Failed to add environment to team: %s", content)).build();
+			
+			UCDClient client = new UCDClient(new URI(ucdServer), ucdUsername, ucdPassword);
+			
+			client.addEnvironmentToTeam(appName, envName, team);
+			
+			return Response.status(Status.CREATED).build();
+		} catch (JSONException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Invalid content of team: %s", content)).build();
+		} catch (URISyntaxException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Invalid UCD Server URL: %s", ucdServer)).build();
+		} catch (IOException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when adding environment to team: %s", content)).build();
+		}
+	}
+	
 	@GET
 	@Path("applications/{appName}/environments/{envName}/ping")
 	@Produces({MediaType.APPLICATION_JSON})
