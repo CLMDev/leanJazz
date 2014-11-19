@@ -40,14 +40,14 @@ block content
         }
       });
     }
-    var UCD_ADAPTER = '//10.2.0.1:9443';
+    
     function queryApplications(providerId) {
       $.ajax({
         url: '/api4gui/v1/providers/' + providerId + '/',
         type: "GET",
         success: function(provider) {
           $.ajax({
-            url: UCD_ADAPTER + '/rest/ucd/applications',
+            url: '/rest/ucd/applications',
             type: "GET",
             beforeSend: function(xhr) {
               xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
@@ -86,7 +86,7 @@ block content
         type: "GET",
         success: function(provider) {
           $.ajax({
-            url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/blueprints',
+            url: '/rest/ucd/applications/' + appName + '/blueprints',
             type: "GET",
             beforeSend: function(xhr) {
               xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
@@ -124,7 +124,7 @@ block content
         type: "GET",
         success: function(provider) {
           $.ajax({
-            url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/blueprints/' + blueprintName,
+            url: '/rest/ucd/applications/' + appName + '/blueprints/' + blueprintName,
             type: "GET",
             beforeSend: function(xhr) {
               xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
