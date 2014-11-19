@@ -10,8 +10,8 @@
 	"MONGO_URI":"mongodb://localhost:27017/leanJazz",
 	"MAIL_PROVIDER":".ibm.com",
 	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please",
-	"UCD_ADAPTER_PATH":"/rest/ucd/applications",
-	"UCD_ADAPTER_TARGET":"http://localhost:64869/",
+	"UCD_ADAPTER_PATH":"/rest/ucd",
+	"UCD_ADAPTER_TARGET":"http://localhost:64869/rest/ucd",
 	"TEAMS":
 	       ["CLM/SSE Automation Team", "SVT"]
 	
