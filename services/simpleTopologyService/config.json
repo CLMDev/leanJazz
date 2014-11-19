@@ -1,15 +1,17 @@
 {
 	"PORT" : 3001,
-	"STS_HOSTNAME" : "p14vc3z.cn.ibm.com",
-	"SSL_KEY_FILE" : ".\\https\\key.pem",
-	"SSL_CERT_FILE" : ".\\https\\cert.pem",
+	"STS_HOSTNAME" : "liuzc-rh.rtp.raleigh.ibm.com",
+	"SSL_KEY_FILE" : ".\/https\/key.pem",
+	"SSL_CERT_FILE" : ".\/https\/cert.pem",
 	"SSL_PASSPHRASE" : "",
 	"REDIS_HOST": "localhost",
 	"STS_INSTANCE_PREFIX": "p-",
 	"REMOVE-TEST-DATA" : "true",
-	"MONGO_URI":"mongodb://p14vc3z.cn.ibm.com:27017/leanJazz",
+	"MONGO_URI":"mongodb://localhost:27017/leanJazz",
 	"MAIL_PROVIDER":".ibm.com",
 	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please",
+	"UCD_ADAPTER_PATH":"/rest/ucd/applications",
+	"UCD_ADAPTER_TARGET":"http://localhost:64869/",
 	"TEAMS":
 	       ["CLM/SSE Automation Team", "SVT"]
 	

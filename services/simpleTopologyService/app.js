@@ -143,6 +143,8 @@ https.globalAgent.maxSockets = 100;
 //setup properties file
 var fs = require('fs');
 
+var httpProxy = require('http-proxy');
+var proxy = httpProxy.createProxyServer(options);
 
 console.log('PORT:'+ nconf.get('PORT'));
 console.log('MONGO_URI:'+ nconf.get('MONGO_URI'));
@@ -154,6 +156,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
+app.use(nconf.get('UCD_ADAPTER_PATH'),function(req, res){
+	proxy.web(req, res, { target: nconf.get('UCD_ADAPTER_TARGET') });
+});
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.cookieParser());
