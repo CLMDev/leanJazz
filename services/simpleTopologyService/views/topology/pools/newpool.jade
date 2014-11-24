@@ -31,7 +31,7 @@ block content
           $('#div_stream').show();
           $('#div_topology').hide();
                $.ajax({
-               url: "/api/v1/buildstreams/",
+               url: "/api4gui/v1/buildstreams/",
                type: "GET",
                success: function( json ) {
                  var option_string='';
@@ -47,7 +47,7 @@ block content
                }
              });//ajax
                $.ajax({
-               url: "/api/v1/topology/pools/",
+               url: "/api4gui/v1/topology/pools/",
                type: "GET",
                success: function( json ) {
                  var option_string='';
