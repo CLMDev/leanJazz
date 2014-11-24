@@ -8,7 +8,7 @@ request.defaults({
 // Hack for self-signed certificate
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-UCD_ADAPTER = 'https://10.2.0.1:9443'
+UCD_ADAPTER = 'http://localhost:64869';
 
 exports.createEnvironment = function(provider, topoDoc, callback) {
 	request.put({
@@ -33,12 +33,18 @@ exports.createEnvironment = function(provider, topoDoc, callback) {
 
 exports.addEnvironmentToTeams = function(provider, app, env, teams, callback) {
 	teams.forEach(function(team){
+                console.log('add to team:'+team);
 		addEnvironmentToTeam(provider, app, env, team, callback);
 		
 	})
 	
 }
 addEnvironmentToTeam = function(provider, app, env, team, callback) {
+        var team_json={team:""};
+        team_json["team"]=team;
+        var json_string;
+        json_string=JSON.stringify(team_json);
+//        console.log('json string as request body:'+json_string);
 	request.put({
 		url: UCD_ADAPTER + '/rest/ucd/applications/' + app + '/environments/' +env,
 		headers: {
@@ -47,9 +53,7 @@ addEnvironmentToTeam = function(provider, app, env, team, callback) {
 			'UCD_PASSWORD': provider.UCD_PASSWORD,
 			'content-type': 'application/json'
 		},
-		body: {
-			'team': team
-		}
+		body: JSON.stringify(team_json)
 	}, function(err, resp, body) {
 		if (err) {
 			return callback(err);

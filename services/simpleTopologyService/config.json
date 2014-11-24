@@ -12,7 +12,5 @@
 	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please",
 	"UCD_ADAPTER_PATH":"/rest/ucd",
 	"UCD_ADAPTER_TARGET":"http://localhost:64869/rest/ucd",
-	"TEAMS":
-	       ["CLM/SSE Automation Team", "SVT"]
-	
+	"TEAMS": "CLM/SSE Automation Team:SVT"
 }

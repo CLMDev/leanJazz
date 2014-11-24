@@ -85,13 +85,15 @@ function submitRequestForNewInstance(pool, callback) {
 						callback(null, updatedReq);
 					}
 				});
-				var teams=nconf.get('teams');
+				var teams=nconf.get('TEAMS');
+				var team_array=teams.split(':');
 				console.log('[' + pname + '] ' + 'About to add Environment to team ');
 				console.log('[' + pname + '] ' + 'teams ' + teams);
 				console.log('[' + pname + '] ' + 'Application name ' + request.application);
 				console.log('[' + pname + '] ' + 'Environment name ' + request.name);
-		        ucd.addEnvironmentToTeams(provider, request.application, request.name, teams, function(err) {
-		        	console.log('[' + pname + '] ' + 'Error when add Environment to Teams: ' + err);
+		        ucd.addEnvironmentToTeams(provider, request.application, request.name, team_array, function(err) {
+                                if(err)
+		        	  console.log('[' + pname + '] ' + 'Error when add Environment to Teams: ' + err);
 		        });	
 			});// End of create environment
 		});// End of create request
@@ -204,7 +206,7 @@ function processRequestIfNeeded(pool, callback) {
 					return console.log('[' + pname + '] ' + "New environment '" + env + "' in application '" + app + "' is not ready for pool " + pool.name + '(id: ' + pool._id + ') yet.');
 				}
 				console.log('[' + pname + '] ' + "New environment '" + env + "' in application '" + app + "' goes online for pool " + pool.name + '(id: ' + pool._id + ')');
-				removeRequest(pool, request);
+				mrequests.remove(pool, request);
 				mprovider.findById(pool.topologyRef.providerRef, function(err, provider) {
 					if (err) {
 						console.log('[' + pname + '] ' + 'Error when finding provider: ' + err);
