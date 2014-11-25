@@ -1,0 +1,15 @@
+   <ServerCluster CloneSeparatorChange="false" GetDWLMTable="false" IgnoreAffinityRequests="true" LoadBalance="Round Robin" Name="_WAS_SERVER_NAME___WAS_NODE_NAME__Cluster" PostBufferSize="64" PostSizeLimit="-1" RemoveSpecialHeaders="true" RetryInterval="60">
+      <Server ConnectTimeout="0" ExtendedHandshake="false" MaxConnections="-1" Name="_WAS_NODE_NAME___WAS_SERVER_NAME_" ServerIOTimeout="900" WaitForContinue="false">
+         <Transport Hostname="_WAS_HOST_NAME_" Port="9080" Protocol="http"/>
+         <Transport Hostname="_WAS_HOST_NAME_" Port="9443" Protocol="https">
+            <Property Name="keyring" Value="_IHS_PLUGINS_HOME_/config/_WebServerMerge_/plugin-key.kdb"/>
+            <Property Name="stashfile" Value="_IHS_PLUGINS_HOME_/config/_WebServerMerge_/plugin-key.sth"/>
+         </Transport>
+      </Server>
+   </ServerCluster>
+
+   <UriGroup Name="default_host__WAS_SERVER_NAME___WAS_NODE_NAME__Cluster_URIs">
+      <Uri AffinityCookie="JSESSIONID" AffinityURLIdentifier="jsessionid" Name="/_CONTEXT_/*"/>
+   </UriGroup>
+   
+   <Route ServerCluster="_WAS_SERVER_NAME___WAS_NODE_NAME__Cluster" UriGroup="default_host__WAS_SERVER_NAME___WAS_NODE_NAME__Cluster_URIs" VirtualHostGroup="default_host"/>
