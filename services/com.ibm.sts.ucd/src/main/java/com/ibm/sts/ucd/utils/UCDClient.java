@@ -125,7 +125,7 @@ public class UCDClient extends UDRestClient {
 	}
 
 	private Map<String, String> getResourcesStatusByEnv(String appName, String envName) {
-		Map<String, String> resStatus = new HashMap<String, String>();
+		Map<String, String> resStatus = new HashMap<>();
 		try {
 			HttpGet method = new HttpGet(String.format("%s/cli/environment/getBaseResources?application=%s&environment=%s", this.url, URLEncoder.encode(appName, "UTF-8"), URLEncoder.encode(envName, "UTF-8")));
 			HttpResponse response = invokeMethod(method);

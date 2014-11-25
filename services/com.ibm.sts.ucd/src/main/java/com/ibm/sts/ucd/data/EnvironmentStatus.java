@@ -29,7 +29,7 @@ public class EnvironmentStatus implements Serializable {
 	@XmlAttribute(name = "online")
 	private boolean online;
 	@XmlElement(name = "resources")
-	private final List<ResourceStatus> resources = new LinkedList<ResourceStatus>();
+	private final List<ResourceStatus> resources = new LinkedList<>();
 	
 	/**
 	 * @return the online

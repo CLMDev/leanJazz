@@ -16,7 +16,9 @@
 
 var topologyPoolModel = require('../models/poolmodel');
 var Topology = require('../models/topologymodel');
+var mprovider = require('../models/providermodel');
 var minstance= require('../models/instancemodel');
+var ucd = require('../experiments/UCDAdapter');
 
 
 process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
@@ -100,75 +102,42 @@ exports.find = function(req, res) {
 };
 
 exports.delete = function(req, res) {
-   console.log('req.params.id:'+req.params.id);
-   console.log('req.params.pid:'+req.params.pid);
-   topologyPoolModel.count({_id:req.params.pid}, function(err, count) {
-		console.log('::::count of pool:'+count);
-		if (count==1) { 
-           minstance.findById(req.params.id, function(err, instance) {
-           if (err) {
-             console.log ( 'error get instance');
-             res.send(404);
-             return;
-           }   
-           console.log('populated instance'+ JSON.stringify(instance));
-/* need to create a json to present the environment to be deleted
-[
-    {
-        "application": "CLM-E1-distributed-linux",
-        "name": "pool-53abc-201406300829-No5",
-        "id": "934e8419-6179-4944-8635-322a04725f88"
-    }
-]
-*/
-           var json_to_be_deleted=instance.ucdEnvDesc;
-           console.log('json_to_be_deleted'+ json_to_be_deleted);
-           var dir='/tmp/pool-'+instance.poolRef.id;
-           var stream=fs.createWriteStream(dir+'/'+instance.name+ '_delete.json');
-           stream.end(json_to_be_deleted, function(){
-             var exec = require('child_process').exec, child;
-             child = exec('/root/deleteEnv.py -v --udclient /root/udclient/udclient '+ dir +'/'+instance.name+ '_delete.json',
-            function (error, stdout, stderr) {
-              console.log('instance is deleted in UCD:');
-              
-              console.log('stdout: ' + stdout);
-              console.log('stderr: ' + stderr);
-              instance.remove(function() {
-                topologyPoolModel.findById(instance.poolRef,  function(err, doc) {
-                  if(instance.checkedout) 
-                    doc.checkedout--;
-                  else                
-                    doc.available--;
-                  console.log('available instances for noapp pool:'+doc.available);
-                  doc.save (function(err) {
-                    if (err) {
-                      console.log('error saving pool');
-                      console.log(err);
-                    }
-                    if(doc.type=='app'){
-                      topologyPoolModel.findById(instance.apppoolRef,  function(err, apppool) {
-                        if(instance.appcheckedout) 
-                          apppool.checkedout--;
-                        else
-                          apppool.available--;
-                        console.log('available instances for apppool:'+apppool.available);
-                        apppool.save (function(err) {});
-                      })
-                    }
-
-                  });//pool.save
-                });//mpool.findById              
-			  res.send(200);
-			  });
-            });//exec
-           })//stream.end
-            
-           
-           }).populate('topologyRef').populate('poolRef');
-       }
-       else
-         res.send(404);
-  });
+   var instId = req.params.id;
+   var poolId = req.params.pid;
+   minstance.findById(instId, function(err, instance) {
+	   if (err) {
+           console.log ('Error when finding instance with id(' + instId + '): ' + err);
+           res.send(404);
+           return;
+	   }
+	   console.log(instance);
+	   var appName = instance.ucdApplication;
+	   var envName = instance.ucdEnvName;
+	   var providerRef = instance.topologyRef.providerRef;
+	   mprovider.findById(providerRef, function(err, provider) {
+			if (err) {
+				console.log('Error when finding provider with id(' + providerRef + '): ' + err);
+				res.send(404);
+				return;
+			}
+			ucd.deleteEnvironment(provider, appName, envName, function(err, removed) {
+				if (err) {
+					console.log('Error when deleting UCD environment: ' + err);
+					res.send(500);
+					return;
+				}
+				minstance.findByIdAndRemove(instId, function(err) {
+					if (err) {
+						console.log('Error when removing instance: ' + err);
+						res.send(500);
+						return;
+					}
+					console.log('Instance removed: ' + instance);
+					res.send(200);
+				});
+			});
+	   });// End of find provider by id
+   }).populate('topologyRef');// End of find instance by id
 };
 
 exports.update = function(req, res) {
