@@ -55,6 +55,8 @@ var TopologyInstanceSchema = new Schema({
 var mInstance = mongoose.model('TopologyInstance', TopologyInstanceSchema);
 module.exports = mInstance;
 
+var pname='Pool Instances';
+
 function createInstance(provider, pool, request, callback) {
 	var instance = new mInstance();
 	instance.name = request.name;
