@@ -33,6 +33,16 @@ client = redis.createClient(6379,redis_host);
 var mtopology = require('./models/topologymodel');
 var mpool = require('./models/poolmodel');
 var minstance = require('./models/instancemodel');
+var mongoose = require('mongoose');
+mongoose.connect(nconf.get('MONGO_URI'),
+  function(err) {
+    if (!err) {
+    	console.log('[' + pname + '] ' + 'Mogoose DB connected! ');
+    } else {
+      throw err;
+    }
+});
+
 
 //setup properties file
 var fs = require('fs');

@@ -295,6 +295,7 @@ app.del('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: 
 //app.put('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.update);
 app.post('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }),topologyPool.checkoutInstance);
 app.get('/api4gui/v1/topology/pools/:id', ensureAuthenticated,topologyPool.find);
+app.get('/api4gui/v1/topology/pools', ensureAuthenticated,topologyPool.findAll);
 
 app.get('/api/v1/topology/pools/:id/instances', passport.authenticate('basic', { session: false }),topologyInstance.findAll);
 app.get('/api/v1/topology/pools/:pid/instances/:id', passport.authenticate('basic', { session: false }),topologyInstance.find);
