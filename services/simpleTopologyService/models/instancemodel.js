@@ -58,15 +58,16 @@ module.exports = mInstance;
 var pname='Pool Instances';
 
 function createInstance(provider, pool, request, callback) {
+	var topoDoc = JSON.parse(request.content);
 	var instance = new mInstance();
-	instance.name = request.name;
+	instance.name = topoDoc.name;
 	instance.description = 'instance for pooling, with bare environment';
 	instance.type = 'noapp';
 	instance.topologyRef = pool.topologyRef._id;
 	instance.poolRef = pool._id;
-	instance.ucdEnvName = request.name;
+	instance.ucdEnvName = topoDoc.name;
 	instance.ucdEnvID = request.uuid;
-	instance.ucdApplication = request.application;
+	instance.ucdApplication = topoDoc.application;
 	instance.ucdURI = provider.UCD_SERVER + '/#environment/' + request.uuid;
 	instance.creationDate = new Date();
 	
