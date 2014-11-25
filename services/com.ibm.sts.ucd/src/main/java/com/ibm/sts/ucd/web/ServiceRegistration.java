@@ -20,7 +20,7 @@ public class ServiceRegistration extends Application {
 
 	@Override
     public Set<Class<?>> getClasses() {
-        Set<Class<?>> classes = new HashSet<Class<?>>();
+        Set<Class<?>> classes = new HashSet<>();
         classes.add(UCDService.class);
         return classes;
     }

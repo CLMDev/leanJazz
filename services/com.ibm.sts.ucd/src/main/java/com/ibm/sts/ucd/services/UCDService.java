@@ -250,7 +250,7 @@ public class UCDService {
 			logger.error(e.getLocalizedMessage(), e);
 			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when deleting environment '%s' in application '%s'", envName, appName)).build();
 		}
-		return Response.status(Status.GONE).build();
+		return Response.status(Status.ACCEPTED).build();
 	}
 	
 	private void checkHeaderParams(String ucdServer, String ucdUsername, String ucdPassword) {

@@ -32,21 +32,19 @@ exports.createEnvironment = function(provider, topoDoc, callback) {
 }
 
 exports.addEnvironmentToTeams = function(provider, app, env, teams, callback) {
-	teams.forEach(function(team){
-                console.log('add to team:'+team);
+	teams.forEach(function(team) {
+		console.log('add to team:' + team);
 		addEnvironmentToTeam(provider, app, env, team, callback);
-		
-	})
-	
+	});
 }
+
 addEnvironmentToTeam = function(provider, app, env, team, callback) {
-        var team_json={team:""};
-        team_json["team"]=team;
-        var json_string;
-        json_string=JSON.stringify(team_json);
-//        console.log('json string as request body:'+json_string);
+	var team_json = {team: ""};
+	team_json["team"] = team;
+//	var json_string = JSON.stringify(team_json);
+//	console.log('json string as request body:'+json_string);
 	request.put({
-		url: UCD_ADAPTER + '/rest/ucd/applications/' + app + '/environments/' +env,
+		url: UCD_ADAPTER + '/rest/ucd/applications/' + app + '/environments/' + env,
 		headers: {
 			'UCD_SERVER': provider.UCD_SERVER,
 			'UCD_USERNAME': provider.UCD_USERNAME,
@@ -82,5 +80,24 @@ exports.pingEnvironment = function(provider, appName, envName, callback) {
 		}
 		var envStat = JSON.parse(body);
 		callback(null, envStat.online);
+	});
+}
+
+exports.deleteEnvironment = function(provider, appName, envName, callback) {
+	request.del({
+		url: UCD_ADAPTER + '/rest/ucd/applications/' + appName + '/environments/' + envName,
+		headers: {
+			'UCD_SERVER': provider.UCD_SERVER,
+			'UCD_USERNAME': provider.UCD_USERNAME,
+			'UCD_PASSWORD': provider.UCD_PASSWORD
+		}
+	}, function(err, resp, body) {
+		if (err) {
+			return callback(err, null);
+		}
+		if (resp.statusCode != 202) {
+			return callback(JSON.stringify(resp), null);
+		}
+		callback(null, true);
 	});
 }
