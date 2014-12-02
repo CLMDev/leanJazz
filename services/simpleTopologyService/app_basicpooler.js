@@ -18,20 +18,11 @@ var pname='app_basicpooler';
 
 var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
-var redis_host=nconf.get('REDIS_HOST');
-var redis = require("redis"),
-client = redis.createClient(6379,redis_host);
-
-    // if you'd like to select database 3, instead of 0 (default), call
-    // client.select(3, function() { /* ... */ });
-
-    client.on("error", function (err) {
-        console.log(pname+": Redis Error " + err);
-    });
 
 var mtopology = require('./models/topologymodel');
 var mpool = require('./models/poolmodel');
 var minstance = require('./models/instancemodel');
+var mprocessrequest = require('./models/processrequestmodel');
 var mongoose = require('mongoose');
 mongoose.connect(nconf.get('MONGO_URI'),
   function(err) {
@@ -42,60 +33,234 @@ mongoose.connect(nconf.get('MONGO_URI'),
     }
 });
 
-//setup properties file
-var fs = require('fs');
+var ucd = require('./experiments/UCDAdapter');
+
+var api_password;
+
+
+
+var https = require('https');
+var request_json= require('request-json');
+var topologyPort = nconf.get('PORT');
+var options = {
+rejectUnauthorized: false,
+headers: {cookie:''}
+};
+var json_client = request_json.newClient('https://localhost:' + topologyPort, options);
+
+process.on('message', function(m) {
+	  api_password=m.password;
+});
 
 console.log(pname+': pooling process is running! ');
 var timer;
 var request_no=0;
-function addRequest4Pool(pool)
-{
-    console.log(pname+': pool to be checked:')
-    //console.log(pool)
-    console.log('pool name:'+pool.name);
-    console.log('pool available:'+pool.available);
-    console.log('pool checkedout:'+pool.checkedout);
-    console.log('pool poolMinAvailable:'+pool.poolMinAvailable);
-    console.log('pool poolMaxTotal:'+pool.poolMaxTotal);
-    var request_queuelen=0;
-    var processing_queuelen=0;
-    client.llen(pool._id+'-app-request', function (err, len){
-      if (err) return console.error(err);
-      request_queuelen=len;
-      console.log('request queue length:'+ request_queuelen);
-      client.llen(pool._id+'-app-processing', function (err, len){
-        if (err) return console.error(err);
-        processing_queuelen=len;
-        console.log('processing queue length:'+ processing_queuelen);
-        queuelen=request_queuelen+processing_queuelen;
-      
-        if (pool.available + queuelen < pool.poolMinAvailable && pool.available+ pool.checkedout + queuelen< pool.poolMaxTotal){
-          console.log('need to add resource to pool:'+ pool.name);
-          for (i=1;i<= Math.min(pool.poolMaxTotal-pool.available- pool.checkedout, pool.poolMinAvailable- pool.available)-queuelen; i++ ){
-            request_no++;
-            json=JSON.stringify( { pool_id: pool._id, date: Date.now(), request_no: request_no})
-            console.log('json representation:'+ json);
-            console.log('adding to queue:'+pool._id+'-app-request');
-            client.lpush(pool._id+'-app-request', json);
-          }
-        } else 
-        console.log('maximum resources reached or still have available resources for app pool:'+ pool.name);
-      });//client.llen processing
-    });//client.llen request
-};
+
+function submitRequestForProcessRun(pool, callback) {
+	var providerRef = pool.topologyRef.providerRef;
+	mprovider.findById(providerRef, function(err, provider) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when finding provider: ' + err);
+			if (callback) {
+				callback(err, null);
+			}
+			return;
+		}
+		var request = {			
+			application: pool.topologyRef.appName,
+			process: pool.topologyRef.appProcessTemplate;
+		};
+		mrequests.create(pool, request, function (err, req ) {
+			if (err) {
+				if (callback) {
+					callback(err, null);
+				}
+				return;
+			}
+			console.log('[' + pname + '] ' + 'Run process with request: ' + JSON.stringify(req.content));
+			
+			RunProcesswithRequest(pool, request, callback);
+		});
+	});
+}
+
+function CheckIfBuildAvailable(pool, callback){
+    
+    console.log('lookup buildstream:'+pool.attachedStream);
+    mbuild.find({buildStream:pool.attachedStream}, function( err, builds){
+      if(err){
+            console.log('error get builds for build stream:'+pool.attachedStream);
+            
+            callback(err);
+            return;
+      }
+      console.log('builds available:'+builds);
+      var latest_recommend='';
+      builds.forEach(function(build){
+        if(build.isRecommended && build.BUILDID>latest_recommend)
+             latest_recommend=build.BUILDID;
+      });//forEach()
+      console.log('latest recommended build:'+latest_recommend);
+      if(latest_recommend==undefined){
+            console.log('latest recommended undefined, returning!');
+            
+            callback('latest recommended undefined, returning!');
+            return;
+      }
+      callback(null,latest_recommend);
+    });
+}
+function CheckoutIfResourceAvailableInParentPool(parentpool, callback){
+	
+	json_client.setBasicAuth('apiuser@ibm.com', api_password);
+    console.log('api user password:'+api_password);
+    
+    json_client.get('/api/v1/topology/pools/' + parentpool+'/instances', function(err, res, body) {
+      var found=false;
+      body.forEach(function(instance){
+      if(!found && !instance.checkedout){
+        var today = Date.now();            
+        found=true;
+        instance.checkedout=true;
+        instance.type='app';
+        instance.buildid=latest_recommend;
+        instance.checkoutUser='APP Pooler';
+        instance.checkoutDate=today;
+        instance.checkoutComment='reserved for app pool';
+        instance.apppoolRef=pool._id;
+        json_client.put('/api/v1/topology/pools/' + parentpool+'/instances/'+instance._id,instance, function(err, res, body) {
+        if (res.statusCode!=200) {
+          console.log('checkout from parent pool failed!');
+          callback('checkout from parent pool failed!');
+          return; 
+        }
+        callback(null, instance);
+        });
+      };//if(!found && !instance.checkedout)
+      });//body.forEach
+      if(!found) callback('No Available resource in parent pool');
+      return;
+    }); //json_client.get    
+	
+}
+
+function RunProcesswithRequest(pool, request, callback) {
+	CheckIfBuildAvailable(pool, function(err, build){
+		CheckoutIfResourceAvailableInParentPool(pool.parentPool, function(err, instance){
+			var process_template,process_template_obj;
+			mpool.findById(pool.parentPool, function(err, parent) {
+			    if(!parent){
+			      console.log('error: can not find parent pool!');
+			      callback('error: can not find parent pool!');
+			      return;
+			    }
+			    try{
+			          process_template=parent.topologyRef.appProcessTemplate;
+			          console.log(process_template);
+			          process_template_obj=JSON.parse(process_template);
+			    } catch (err){
+			          console.log(err);
+			          console.log('please check process template of pool:'+parent.name);
+			          console.log('process template:');
+			          callback(err);
+			          return;
+			    }
+			    process_template_obj.environment=instance.name;
+                process_template_obj.versions[0].version=build;
+            
+                process_template_updated=JSON.stringify(process_template_obj);
+            
+                var providerRef = pool.topologyRef.providerRef;
+        	    mprovider.findById(providerRef, function(err, provider) {
+        		  if (err) {
+        			console.log('[' + pname + '] ' + 'Error when finding provider: ' + err);
+        			if (callback) {
+        				callback(err, null);
+        			}
+        			return;
+        		  }
+                  ucd.requestApplicationProcess(provider, process_template_updated, function (err, body){
+                	if(err) { callback(err); return;}
+                	AddInstanceToAppPool(pool, instance, callback);
+                	mprocessrequest.remove(pool, request, callback);                	
+                	
+                  });//ucd.requestApplicationProcess
+        	    });//mprovider.findById
+			
+		});
+		
+	});
+};	
+			
+			
+
+function requestProcessIfNeeded(pool, callback) {
+	mprocessrequest.count({ poolRef: pool._id }, function(err, queueCnt) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when counting request for pool ' + pool.name + '(id: ' + pool._id + '):' + err);
+			if (callback) {
+				callback(err, null);
+			}
+			return;
+		}
+		minstance.count({ poolRef: pool._id }, function(err, totalInstCnt) {
+			if (err) {
+				console.log('[' + pname + '] ' + 'Error when counting instances for pool ' + pool.name + '(id: ' + pool._id + '):' + err);
+				if (callback) {
+					callback(err, null);
+				}
+				return;
+			}
+			minstance.count({ poolRef: pool._id, checkedout: true }, function(err, checkedOutCnt) {
+				if (err) {
+					console.log('[' + pname + '] ' + 'Error when counting checked out instances for pool ' + pool.name + '(id: ' + pool._id + '):' + err);
+					if (callback) {
+						callback(err, null);
+					}
+					return;
+				}
+				
+				var poolAvailable = totalInstCnt - checkedOutCnt;
+				console.log('[' + pname + '] ' + 'Pool ' + pool.name + '(id: ' + pool._id + ') c/a/q status: ' + checkedOutCnt + ' / ' + poolAvailable + ' / ' + queueCnt);
+				
+				var needToCreate = pool.poolMinAvailable - (poolAvailable + queueCnt);
+				if (needToCreate > 0) {
+					if (totalInstCnt + queueCnt + needToCreate > pool.poolMaxTotal) {
+						needToCreate = pool.poolMaxTotal - (totalInstCnt + queueCnt);
+						if (needToCreate <= 0) {
+							return console.log('[' + pname + '] ' + 'Reaches max instance count, No need to create more instances.');
+						}
+					}
+					console.log('[' + pname + '] ' + 'Need to create ' + needToCreate + ' more instance(s).');
+					for (i = 0; i < needToCreate; i++) {
+						submitRequestForProcessRun(pool, callback);
+					}
+				} else {
+					return console.log('[' + pname + '] ' + 'Still have available or queued instance(s), no need to create more instances.');
+				}
+			});
+		});
+	});
+}
+
+
+
 var timeoutcb= function(){
 
 mpool.find({type:'app'},function(err, pools){
 
     console.log('['+pname+']:inside call back')
   if (err) return console.error(err);
-//    console.log(pools)
+    console.log(pools)
   pools.forEach(function( pool){
-    addRequest4Pool(pool);
+	  requestProcessIfNeeded(pool, function(err){
+		  if(err)
+			  console.log('['+pname+']:'+ err);
+	  });
   });//pools.foreach
   timer=setTimeout(timeoutcb, 60000); //every 60 seconds
 
-});//mpool.find
+}).populate('topologyRef').populate('parentPool');//mpool.find
 
 
 };
