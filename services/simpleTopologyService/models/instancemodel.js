@@ -93,3 +93,18 @@ function createInstance(provider, pool, request, callback) {
 
 module.exports.createInstance = createInstance;
 
+function listByPool(pool, callback) {
+	mInstance.find({ poolRef: pool._id }, function(err, requests) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when finding instances for pool ' + pool.name + '(id: ' + pool._id + '):' + err);
+			if (callback) {
+				callback(err, null);
+			}
+			return;
+		}
+		if (callback) {
+			callback(null, requests);
+		}
+	});
+}
+module.exports.listByPool = listByPool;

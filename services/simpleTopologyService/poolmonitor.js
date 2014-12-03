@@ -176,7 +176,7 @@ function createNewInstancesIfNeeded(pool, callback) {
 }
 
 function processRequestIfNeeded(pool, callback) {
-	mrequests.find({ poolRef: pool._id }, function(err, requests) {
+	mrequests.listByPool(pool, function(err, requests) {
 		if (err) {
 			console.log('[' + pname + '] ' + 'Error when finding requests for pool ' + pool.name + '(id: ' + pool._id + '):' + err);
 			if (callback) {

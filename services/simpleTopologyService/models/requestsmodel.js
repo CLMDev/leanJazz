@@ -25,6 +25,8 @@ var RequestsSchema = new Schema({
     poolRef: {type: String, ref: 'TopologyPool'},
 	uuid: {type: String},
 	content: {type: String},
+	status: String,
+	submitDate: String,
 	},{strict: 'throw'}
 );
 
@@ -37,6 +39,8 @@ function create(pool, content, callback) {
 	var req = new Requests();
 	req.poolRef = pool._id;
 	req.content = JSON.stringify(content);
+	req.submitDate = new Date();
+	req.status = 'CREATED';
 	
 	var jsonStr = JSON.stringify(req);
 	console.log('[' + pname + '] ' + 'Creating request for pool '+ pool.name + '(id: ' + pool._id + '): ' + jsonStr);
@@ -76,7 +80,7 @@ module.exports.remove = remove;
 function updateUUID(pool, request, uuid, callback) {
 	var jsonStr = JSON.stringify(request);
 	console.log('[' + pname + '] ' + 'Updating request for pool ' + pool.name + '(id: ' + pool._id + '): ' + jsonStr);
-	Requests.findByIdAndUpdate(request._id, { uuid: uuid }, function(err, doc) {
+	Requests.findByIdAndUpdate(request._id, { uuid: uuid, status: 'PROCESSING' }, function(err, doc) {
 		if (err) {
 			console.log('[' + pname + '] ' + 'Error when updating request: ' + err);
 			if (callback) {
@@ -93,3 +97,18 @@ function updateUUID(pool, request, uuid, callback) {
 
 module.exports.updateUUID = updateUUID;
 
+function listByPool(pool, callback) {
+	Requests.find({ poolRef: pool._id }, function(err, requests) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when finding requests for pool ' + pool.name + '(id: ' + pool._id + '):' + err);
+			if (callback) {
+				callback(err, null);
+			}
+			return;
+		}
+		if (callback) {
+			callback(null, requests);
+		}
+	});
+}
+module.exports.listByPool = listByPool;

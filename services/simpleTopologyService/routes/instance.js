@@ -17,68 +17,99 @@
 var topologyPoolModel = require('../models/poolmodel');
 var Topology = require('../models/topologymodel');
 var mprovider = require('../models/providermodel');
+var mrequests = require('../models/requestsmodel');
 var minstance= require('../models/instancemodel');
 var ucd = require('../experiments/UCDAdapter');
 
 
 process.env['JAVA_HOME'] = '/root/ibm-java-x86_64-60/jre';
 var fs = require('fs');
+
+function listNoAppInstancesByPool(pool, callback) {
+	minstance.listByPool(pool, function(err, instances) {
+		if (err) {
+			console.log ('Failed to list instances from pool: ' + err);
+			if (callback) {
+				callback(err, null, null);
+			}
+			return;
+		}
+		mrequests.listByPool(pool, function(err, requests) {
+			if (err) {
+				console.log ('Failed to list requests from pool: ' + err);
+				if (callback) {
+					callback(err, null, null);
+				}
+				return;
+			}
+			if (callback) {
+				callback(null, instances, requests);
+			}
+		});// End of list requests
+	});// End of list instances
+}
 exports.findAllView = function(req, res) {
-   console.log('req.params.id:'+req.params.id);
-   topologyPoolModel.findById(req.params.id, function(err, pool) {
-     if (pool==undefined) { 
-       console.log ( 'pool not found');
-       return;
-     }
-     if (pool.type=='noapp'){
-       minstance.find({poolRef:req.params.id}, function(err, instances) {
-         res.render('topology/instances/instanceindex', {
-            title: 'Associated Instances',
-            docs: instances
-          });
-       });
-     } else {//pool.type=='app'
-       console.log('processing app pool');
-       minstance.find({apppoolRef:req.params.id}, function(err, instances) {
-       //  console.log('app pool instances:');
-       //  console.log(instances);
-         res.render('topology/instances/appinstanceindex', {
-            title: 'Associated Instances',
-            docs: instances
-         });
-       });
-     }
-   });
+	var poolID = req.params.id;
+	topologyPoolModel.findById(poolID, function(err, pool) {
+		if (pool==undefined) { 
+			console.log ( 'pool not found');
+			return;
+		}
+		if (pool.type == 'noapp') {
+			listNoAppInstancesByPool(pool, function(err, instances, requests) {
+				if (err) {
+					res.render('topology/instances/instanceindex', {
+						title: 'Associated Instances',
+						docs: {'instances': [], 'requests': []}
+					});
+					return;
+				}
+				res.render('topology/instances/instanceindex', {
+					title: 'Associated Instances',
+					docs: {'instances': instances, 'requests': requests}
+				});
+			});
+		} else {//pool.type=='app'
+			console.log('processing app pool');
+			minstance.find({apppoolRef:req.params.id}, function(err, instances) {
+				//  console.log('app pool instances:');
+				//  console.log(instances);
+				res.render('topology/instances/appinstanceindex', {
+					title: 'Associated Instances',
+					docs: instances
+				});
+			});
+		}
+	});
 };
 
 exports.findAll = function(req, res) {
-   console.log('req.params.id:'+req.params.id);
-   topologyPoolModel.findById(req.params.id, function(err, pool) {
-		
-		if (pool!=undefined) { 
-		  if(pool.type=='noapp'){ 
-            minstance.find({poolRef:req.params.id}, function(err, instances) {
-            if (err) {
-            console.log ( 'error get instances associated with noapp pool');
-            res.send(404);
-            return;
-            }   
-            res.json(instances);
-            });
-          } else {//poot.type=='app'
-            minstance.find({apppoolRef:req.params.id}, function(err, instances) {
-            if (err) {
-            console.log ( 'error get instances associated with app pool');
-            res.send(404);
-            return;
-            }   
-            res.json(instances);
-            });
-          }
-        } 
-        else
-         res.send(404);
-  });
+	console.log('req.params.id:'+req.params.id);
+	var poolID = req.params.id;
+	topologyPoolModel.findById(poolID, function(err, pool) {
+		if (pool) { 
+			if(pool.type == 'noapp') {
+				listNoAppInstancesByPool(pool, function(err, instances, requests) {
+					if (err) {
+						res.json({'instances': [], 'requests': []});
+						return;
+					}
+					res.json({'instances': instances, 'requests': requests});
+				});
+			} else {//poot.type=='app'
+				minstance.find({apppoolRef:req.params.id}, function(err, instances) {
+					if (err) {
+						console.log ( 'error get instances associated with app pool');
+						res.send(404);
+						return;
+					}   
+					res.json(instances);
+				});
+			}
+		} else {
+			res.send(404);
+		}
+	});
 };
 
 exports.find = function(req, res) {

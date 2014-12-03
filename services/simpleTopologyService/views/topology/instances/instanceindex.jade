@@ -15,7 +15,6 @@
 extends ../../layout
 
 block content
-  h1= title
   script(type='text/javascript').
     $( document ).ready(function() {
       console.log( "ready!" );
@@ -117,8 +116,7 @@ block content
         });//checkout
     });//ready
     
-  p The following is a list of the instances
-  - if(docs.length) 
+  - if(docs.instances.length) 
     div(id="checkoutdialog", title="checkout comments")
      p
       label
@@ -129,32 +127,62 @@ block content
      p
       label
         Are you sure you want to delete it? 
-
-    table.table.table-striped
-      thead
-        tr
-          th Instance Name
-          th Instance Type
-          th Creation Date
-          th Details
-          th Checkout User
-          th Checkout Comment
-      tbody
-          each instance in docs
-            tr
-              td 
-                a(href="#{instance.ucdURI}" target="_blank") #{instance.name}
-              td #{instance.type}
-              td #{instance.creationDate}
-              td 
-                a(href="/api4gui/v1/topology/pools/#{instance.poolRef}/instances/#{instance.id}" ) json
-              td #{instance.checkoutUser}
-              td #{instance.checkoutComment}
-              td
-                if !instance.checkedout
-                  button.btn(type='submit',value='/api4gui/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
-              td
-                button.btn(type='submit',value='/api4gui/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
   - else
-    p No available instances
+    div
+
+  h1= title
+  p
+  table.table.table-striped
+    caption
+      h4 Instances
+    thead
+      tr
+        th Instance Name
+        th Instance Type
+        th Creation Date
+        th Details
+        th Checkout User
+        th Checkout Comment
+    tbody
+      - if(docs.instances.length) 
+        each instance in docs.instances
+          tr
+            td 
+              a(href="#{instance.ucdURI}" target="_blank") #{instance.name}
+            td #{instance.type}
+            td #{instance.creationDate}
+            td 
+              a(href="/api4gui/v1/topology/pools/#{instance.poolRef}/instances/#{instance.id}" ) json
+            td #{instance.checkoutUser}
+            td #{instance.checkoutComment}
+            td
+              if !instance.checkedout
+                button.btn(type='submit',value='/api4gui/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='checkout_'+instance.id) Checkout
+            td
+              button.btn(type='submit',value='/api4gui/v1/topology/pools/' + instance.poolRef+'/instances/'+ instance.id, id='delete_'+instance.id, title='Delete '+instance.name+' ?') Delete
+      - else
+        tr
+          td(colspan=6) There's no available instance
+  p
+  table.table.table-striped
+    caption
+      h4 Requests
+    thead
+      tr
+        th Request ID
+        th Submit Date
+        th Status
+        th Actions
+    tbody
+      - if(docs.requests.length) 
+        each request in docs.requests
+          tr
+            td #{request._id}
+            td #{request.submitDate}
+            td #{request.status}
+            td
+              p
+      - else
+        tr
+          td(colspan=4) There's no on going request
   
