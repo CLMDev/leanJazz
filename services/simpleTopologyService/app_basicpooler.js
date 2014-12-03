@@ -19,19 +19,13 @@ var pname='app_basicpooler';
 var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
 
+var mbuild = require('./models/buildmodel');
+var mprovider = require('./models/providermodel');
 var mtopology = require('./models/topologymodel');
 var mpool = require('./models/poolmodel');
 var minstance = require('./models/instancemodel');
 var mprocessrequest = require('./models/processrequestmodel');
 var mongoose = require('mongoose');
-mongoose.connect(nconf.get('MONGO_URI'),
-  function(err) {
-    if (!err) {
-    	console.log('[' + pname + '] ' + 'Mogoose DB connected! ');
-    } else {
-      throw err;
-    }
-});
 
 var ucd = require('./experiments/UCDAdapter');
 
@@ -68,9 +62,8 @@ function submitRequestForProcessRun(pool, callback) {
 		}
 		var request = {			
 			application: pool.topologyRef.appName,
-			process: pool.topologyRef.appProcessTemplate;
 		};
-		mrequests.create(pool, request, function (err, req ) {
+		mprocessrequest.create(pool, request, function (err, req ) {
 			if (err) {
 				if (callback) {
 					callback(err, null);
@@ -110,34 +103,34 @@ function CheckIfBuildAvailable(pool, callback){
       callback(null,latest_recommend);
     });
 }
-function CheckoutIfResourceAvailableInParentPool(parentpool, callback){
+function CheckoutIfResourceAvailableInParentPool(pool, parentpool, build, callback){
 	
 	json_client.setBasicAuth('apiuser@ibm.com', api_password);
-    console.log('api user password:'+api_password);
+    //console.log('api user password:'+api_password);
     
-    json_client.get('/api/v1/topology/pools/' + parentpool+'/instances', function(err, res, body) {
+    json_client.get('/api/v1/topology/pools/' + parentpool.id+'/instances', function(err, res, body) {
+      var today = Date.now();
       var found=false;
-      body.forEach(function(instance){
-      if(!found && !instance.checkedout){
-        var today = Date.now();            
-        found=true;
-        instance.checkedout=true;
-        instance.type='app';
-        instance.buildid=latest_recommend;
-        instance.checkoutUser='APP Pooler';
-        instance.checkoutDate=today;
-        instance.checkoutComment='reserved for app pool';
-        instance.apppoolRef=pool._id;
-        json_client.put('/api/v1/topology/pools/' + parentpool+'/instances/'+instance._id,instance, function(err, res, body) {
-        if (res.statusCode!=200) {
-          console.log('checkout from parent pool failed!');
-          callback('checkout from parent pool failed!');
-          return; 
-        }
-        callback(null, instance);
-        });
-      };//if(!found && !instance.checkedout)
-      });//body.forEach
+        body.forEach(function(instance){
+              if(!found && !instance.checkedout){
+                found=true;
+                instance.checkedout=true;
+                instance.type='app';
+                instance.buildid=build;
+                instance.checkoutUser='APP Pooler';
+                instance.checkoutDate=today;
+                instance.checkoutComment='reserved for app pool';
+                instance.apppoolRef=pool._id;
+                json_client.put('/api/v1/topology/pools/' + parentpool.id+'/instances/'+instance._id,instance, function(err, res, body) {
+                  if (res.statusCode!=200) {
+                    console.log('checkout from parent pool failed!');
+                    callback('checkout from parent pool failed!');
+                    return; 
+                  }
+                  callback(null, instance);
+                });
+              };//if(!found && !instance.checkedout)
+        });//body.forEach
       if(!found) callback('No Available resource in parent pool');
       return;
     }); //json_client.get    
@@ -146,7 +139,7 @@ function CheckoutIfResourceAvailableInParentPool(parentpool, callback){
 
 function RunProcesswithRequest(pool, request, callback) {
 	CheckIfBuildAvailable(pool, function(err, build){
-		CheckoutIfResourceAvailableInParentPool(pool.parentPool, function(err, instance){
+		CheckoutIfResourceAvailableInParentPool(pool, pool.parentPool, build, function(err, instance){
 			var process_template,process_template_obj;
 			mpool.findById(pool.parentPool, function(err, parent) {
 			    if(!parent){
@@ -166,31 +159,28 @@ function RunProcesswithRequest(pool, request, callback) {
 			          return;
 			    }
 			    process_template_obj.environment=instance.name;
-                process_template_obj.versions[0].version=build;
+                            process_template_obj.versions[0].version=build;
             
-                process_template_updated=JSON.stringify(process_template_obj);
-            
-                var providerRef = pool.topologyRef.providerRef;
-        	    mprovider.findById(providerRef, function(err, provider) {
-        		  if (err) {
+                            var providerRef = pool.topologyRef.providerRef;
+        	            mprovider.findById(providerRef, function(err, provider) {
+        		      if (err) {
         			console.log('[' + pname + '] ' + 'Error when finding provider: ' + err);
         			if (callback) {
         				callback(err, null);
         			}
         			return;
-        		  }
-                  ucd.requestApplicationProcess(provider, process_template_updated, function (err, body){
-                	if(err) { callback(err); return;}
-                	AddInstanceToAppPool(pool, instance, callback);
-                	mprocessrequest.remove(pool, request, callback);                	
+        		      }
+                              ucd.requestApplicationProcess(provider, process_template_obj, function (err, body){
+                	        if(err) { callback(err); return;}
+                	        AddInstanceToAppPool(pool, instance, callback);
+                	        mprocessrequest.remove(pool, request, callback);                	
                 	
-                  });//ucd.requestApplicationProcess
-        	    });//mprovider.findById
-			
-		});
-		
-	});
-};	
+                              });//ucd.requestApplicationProcess
+        	            });//mprovider.findById
+		       }).populate('topologyRef');//mpoolfindById
+	      });//Checkout
+         });//CheckifBuildAvailable
+}	
 			
 			
 
