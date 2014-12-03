@@ -145,6 +145,7 @@ function RunProcesswithRequest(pool, request, callback) {
 			    if(!parent){
 			      console.log('error: can not find parent pool!');
 			      callback('error: can not find parent pool!');
+                	      mprocessrequest.remove(pool, request, callback);                	
 			      return;
 			    }
 			    try{
@@ -156,6 +157,7 @@ function RunProcesswithRequest(pool, request, callback) {
 			          console.log('please check process template of pool:'+parent.name);
 			          console.log('process template:');
 			          callback(err);
+                	          mprocessrequest.remove(pool, request, callback);                	
 			          return;
 			    }
 			    process_template_obj.environment=instance.name;
@@ -168,12 +170,25 @@ function RunProcesswithRequest(pool, request, callback) {
         			if (callback) {
         				callback(err, null);
         			}
+                	        mprocessrequest.remove(pool, request, callback);                	
         			return;
         		      }
                               ucd.requestApplicationProcess(provider, process_template_obj, function (err, body){
-                	        if(err) { callback(err); return;}
-                	        AddInstanceToAppPool(pool, instance, callback);
-                	        mprocessrequest.remove(pool, request, callback);                	
+                	        if(err) { 
+                                    callback(err); 
+                	            mprocessrequest.remove(pool, request, callback);                	
+                                    return;
+                                }
+                                console.log('instance.id:'+instance._id);
+                                minstance.findById(instance._id, function(err, instance_mg){
+                                  if(err) console.log(err);  
+                                  console.log(instance_mg);
+                                  instance_mg.apppoolRef=pool.id;
+                                  instance_mg.apprequestId=body;
+                                  console.log('apprequestId:'+instance_mg.apprequestId);
+                                  instance_mg.save();
+                	          mprocessrequest.remove(pool, request, callback);                	
+                                });
                 	
                               });//ucd.requestApplicationProcess
         	            });//mprovider.findById
@@ -182,6 +197,7 @@ function RunProcesswithRequest(pool, request, callback) {
          });//CheckifBuildAvailable
 }	
 			
+
 			
 
 function requestProcessIfNeeded(pool, callback) {
