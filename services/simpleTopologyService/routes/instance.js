@@ -91,10 +91,10 @@ exports.findAll = function(req, res) {
 			if(pool.type == 'noapp') {
 				listNoAppInstancesByPool(pool, function(err, instances, requests) {
 					if (err) {
-						res.json({'instances': [], 'requests': []});
+						res.json([]);
 						return;
 					}
-					res.json({'instances': instances, 'requests': requests});
+					res.json(instances);
 				});
 			} else {//poot.type=='app'
 				minstance.find({apppoolRef:req.params.id}, function(err, instances) {
