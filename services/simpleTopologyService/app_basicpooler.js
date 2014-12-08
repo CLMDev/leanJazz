@@ -72,7 +72,7 @@ function submitRequestForProcessRun(pool, callback) {
 			}
 			console.log('[' + pname + '] ' + 'Run process with request: ' + JSON.stringify(req.content));
 			
-			RunProcesswithRequest(pool, request, callback);
+			RunProcesswithRequest(pool, req, callback);
 		});
 	});
 }
@@ -140,6 +140,10 @@ function CheckoutIfResourceAvailableInParentPool(pool, parentpool, build, callba
 function RunProcesswithRequest(pool, request, callback) {
 	CheckIfBuildAvailable(pool, function(err, build){
 		CheckoutIfResourceAvailableInParentPool(pool, pool.parentPool, build, function(err, instance){
+                        if (instance== undefined){
+                              mprocessrequest.remove(pool, request, callback);
+                              return;
+                        }
 			var process_template,process_template_obj;
 			mpool.findById(pool.parentPool, function(err, parent) {
 			    if(!parent){
@@ -184,7 +188,7 @@ function RunProcesswithRequest(pool, request, callback) {
                                   if(err) console.log(err);  
                                   console.log(instance_mg);
                                   instance_mg.apppoolRef=pool.id;
-                                  instance_mg.apprequestId=body;
+                                  instance_mg.apprequestId=JSON.parse(body).requestId;
                                   console.log('apprequestId:'+instance_mg.apprequestId);
                                   instance_mg.save();
                 	          mprocessrequest.remove(pool, request, callback);                	
@@ -272,4 +276,50 @@ mpool.find({type:'app'},function(err, pools){
 };
 
 timer=setTimeout(timeoutcb, 2000); //every 60 seconds
+var timer2 = setInterval(function() {
+	minstance.find({ type: 'app' }, function(err, instances) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when finding instances: ' + err);
+			return clearInterval(timer2);
+		}
+		instances.forEach(function(instance) {
+                    if(instance.appdeploymentStatus!='COMPLETED' && instance.appdeploymentStatus!='FAULTED' && instance.appdeploymentStatus!='CLOSED')
+			getRequestStatus(instance, function(err) {
+				if (err) {
+					console.log('[' + pname + '] ' + 'Error when getting request status for instance: ' + err);
+					clearInterval(timer2);
+					return;
+				}
+			});
+		});
+	}).populate('topologyRef');//minstance.find
+}, 30000); //every 30 seconds
 
+function getRequestStatus(instance, callback) {
+			checkProcessStatus(instance.apppoolRef, instance.apprequestId, function(err, status) {
+				if (err) {
+					console.log('[' + pname + '] ' + 'Error when checking enviroment status: ' + err);
+					return;
+				}
+				console.log('[' + pname + '] ' + ' process status for instance ' +instance.name +':'+ status);
+                                instance.appdeploymentStatus=JSON.parse(status).status;
+                                instance.save();
+			});
+}
+function checkProcessStatus(apppoolId, apprequestId,  callback) {
+   mpool.findById( apppoolId, function(err, apppool){
+      if (err) return console.error(err);
+      var providerRef = apppool.topologyRef.providerRef;
+      mprovider.findById(providerRef, function(err, provider) {
+        		  if (err) {
+        			console.log('[' + pname + '] ' + 'Error when finding provider: ' + err);
+        			if (callback) {
+        				callback(err, null);
+        			}
+        			return;
+        		  }
+                  ucd.getRequestStatus(provider, apppool.topologyRef.appName, apprequestId, callback);//ucd.
+      });//mprovider.findById 
+
+   }).populate('topologyRef');//mpool.findById
+}

@@ -23,6 +23,7 @@ var ObjectId = Schema.ObjectId;
 var ProcessRequestsSchema = new Schema({
     _id: {type: ObjectId, auto: true},
     poolRef: {type: String, ref: 'TopologyPool'},	
+    requestId: {type: String},
 	content: {type: String},
 	},{strict: 'throw'}
 );
@@ -72,4 +73,22 @@ function remove(pool, request, callback) {
 }
 module.exports.remove = remove;
 
+function updateRequestId(pool, request, requestId, callback) {
+	var jsonStr = JSON.stringify(request);
+	console.log('[' + pname + '] ' + 'Updating request for pool ' + pool.name + '(id: ' + pool._id + '): ' + jsonStr);
+	Requests.findByIdAndUpdate(request._id, { requestId: requestId }, function(err, doc) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when updating request: ' + err);
+			if (callback) {
+				callback(err, null);
+			}
+			return;
+		}
+		console.log('[' + pname + '] ' + 'Request updated: ' + doc);
+		if (callback) {
+			callback(null, doc);
+		}
+	});
+}
 
+module.exports.updateRequestId = updateRequestId;

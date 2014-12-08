@@ -33,7 +33,7 @@ exports.requestApplicationProcess = function(provider, requestcontent, callback)
 
 exports.getRequestStatus = function(provider, appname, requestId, callback) {
 	request.get({
-		url: UCD_ADAPTER + '/rest/ucd/applications/' + appname + '/requestApplicationProcess' +requestId,
+		url: UCD_ADAPTER + '/rest/ucd/applications/' + appname + '/requestApplicationProcess/' +requestId,
 		headers: {
 			'UCD_SERVER': provider.UCD_SERVER,
 			'UCD_USERNAME': provider.UCD_USERNAME,
@@ -45,7 +45,7 @@ exports.getRequestStatus = function(provider, appname, requestId, callback) {
 		if (err) {
 			return callback(err, null);
 		}
-		if (resp.statusCode != 201) {
+		if (resp.statusCode != 200) {
 			return callback(JSON.stringify(resp), null);
 		}
 		callback(null, body);
