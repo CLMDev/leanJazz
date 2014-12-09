@@ -125,6 +125,26 @@ public class UCDService {
 			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when getting blueprints of application: %s", appName)).build();
 		}
 	}
+	
+	@GET
+	@Path("applications/{appName}/components")
+	@Produces({MediaType.APPLICATION_JSON})
+	public Response listComponentsByApplication(
+			@HeaderParam("UCD_SERVER") String ucdServer, @HeaderParam("UCD_USERNAME") String ucdUsername, @HeaderParam("UCD_PASSWORD") String ucdPassword,
+			@PathParam("appName") String appName) {
+		this.checkHeaderParams(ucdServer, ucdUsername, ucdPassword);
+		try {
+			UCDClient client = new UCDClient(new URI(ucdServer), ucdUsername, ucdPassword);
+			String blueprints = client.listComponentsByApplication(appName);
+			return Response.ok(blueprints).build();
+		} catch (URISyntaxException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Invalid UCD Server URL: %s", ucdServer)).build();
+		} catch (IOException e) {
+			logger.error(e.getLocalizedMessage(), e);
+			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when getting components of application: %s", appName)).build();
+		}
+	}
 
 	@GET
 	@Path("applications/{appName}/blueprints/{blueprintName}")

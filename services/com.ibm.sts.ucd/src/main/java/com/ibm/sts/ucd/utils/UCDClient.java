@@ -197,5 +197,20 @@ public class UCDClient extends UDRestClient {
 		logger.debug(body);
 		return body;
 	}
+	
+	public String listComponentsByApplication(String appName) throws IOException {
+//		try {
+			HttpGet method = new HttpGet(String.format("%s/cli/application/componentsInApplication?application=%s", this.url, URLEncoder.encode(appName, "UTF-8")));
+			HttpResponse response = invokeMethod(method);
+			String body = getBody(response);
+			logger.debug(body);
+			return body;
+//			JSONArray baseResArray = new JSONArray(body);
+//			return baseResArray;
+//		} catch (JSONException e) {
+//			logger.error("Error when getting listing", e);
+//		}
+//		return null;
+	}
 
 }
