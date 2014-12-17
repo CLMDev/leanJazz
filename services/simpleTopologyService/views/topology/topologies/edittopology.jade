@@ -38,9 +38,8 @@ block content
             console.log( "Error: " + errorThrown );
             console.log( "Status: " + status );
         }
-      });
+     });
     }
-    
     function queryApplications(providerId) {
       $.ajax({
         url: '/api4gui/v1/providers/' + providerId + '/',
@@ -146,7 +145,105 @@ block content
         }
       });
     }
+    function queryComponents(providerId, appName) {
+      console.log("appName:" + appName);
+      $.ajax({
+        url: '/api4gui/v1/providers/' + providerId + '/',
+        type: "GET",
+        success: function(provider) {
+          $.ajax({
+            url: '/rest/ucd/applications/' + appName + '/components',
+            type: "GET",
+            crossDomain: true,
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('UCD_SERVER', provider.UCD_SERVER);
+              xhr.setRequestHeader('UCD_USERNAME', provider.UCD_USERNAME);
+              xhr.setRequestHeader('UCD_PASSWORD', provider.UCD_PASSWORD);
+            },
+            success: function(json) {
+              if ($.isEmptyObject(json)) {
+                //alert( "Cannot find any components in specified application!" );
+                return;
+              }
+              $('div[id^=div_component_]').remove();
+              var count=0;
+              var with_saved_components=false;
+              var appProcessTemplate;
+              var versions;
+              appProcessTemplate="#{topology.appProcessTemplate}";
+              if(appName=="#{topology.appName}"){
+                  with_saved_components=true;
+                  versions=JSON.parse(appProcessTemplate).versions;
+              }
+ 
+              json.forEach(function(component) {
+                count++;
+                if(with_saved_components){
+                var version_string;
+                version_string=versions[count].version;
+                $('#div_separator').after('<div id="div_component_'+count+' class="row"> <div class="span3"> <p id="p_component_'+count+'">'+component.name +'</p> </div> <div> <input id="input_version_'+count+'" class="span6 xlarge" value="'+version_string+'"> </div> </div>');
+                } else
+                $('#div_separator').after('<div id="div_component_'+count+' class="row"> <div class="span3"> <p id="p_component_'+count+'">'+component.name +'</p> </div> <div> <input id="input_version_'+count+'" class="span6 xlarge"> </div> </div>');
+              });//json.forEach
+                $('#div_separator').after('<div id="div_component_total" class="row"> <div class="span3">  </div> <div> <input id="input_total" class="span6 xlarge" type="hidden" value="'+count+'"> </div> </div>');
+            },
+            error: function( xhr, status, errorThrown ) {
+              console.log( "Error: " + errorThrown );
+              console.log( "Status: " + status );
+            }
+          });
+        },
+        error: function( xhr, status, errorThrown ) {
+            console.log( "Error: " + errorThrown );
+            console.log( "Status: " + status );
+        }
+      });
+}
+    function generateFormData(){
+      console.log('In function generateFormData:');
+      var count;
+      count=$('#input_total').val();
+
+      console.log('number of components:'+count);
+      var i;
+      var component, version;
+      var application, applicationProcess, properties, versions, version_array;
+      var template;
+      var template_obj={};
+
+      application=$('#div_application select').val();
+      applicationProcess=$('#div_process input').val();
+      properties=$('#div_process_properties textarea').val();
+      console.log('applicationProcess:'+applicationProcess);
+      console.log('applicationProcess Properties:'+properties);
+      template_obj["application"]=application;
+      template_obj["applicationProcess"]=applicationProcess;
+      template_obj["properties"]=properties;
+
+      version_array=[];
+      for(i=0;i<count; i++){
+         component=$('#p_component_'+i).text();
+         version=$('#input_version_'+i).val();
+         console.log('component:'+component);
+         console.log('version:'+version);
+         version_array[i]={};
+         version_array[i].version=version;
+         version_array[i].component=component;
+      }
+
+      template_obj["versions"]=version_array;
+      template=JSON.stringify(template_obj);
+      $('#div_process_template input').val(template);
+      console.log('generated template:'+template);
+
+    }
     $(document).ready(function() {
+      $("#input_submit").click(function(e){
+      // e.preventDefault();
+       var form = this;
+       generateFormData();
+      });
+
       $('#div_provider select').bind('change', function(event) {
           $('#div_application select').empty();
           $('#div_blueprint select').empty();
@@ -157,6 +254,7 @@ block content
           $('#div_blueprint select').empty();
           $('#div_nodeprops textarea').val('');
           queryBlueprints($('#div_provider select').val(), $(this).val());
+          queryComponents($('#div_provider select').val(), $(this).val());
         });
       $('#div_blueprint select').bind('change', function(event) {
           $('#div_nodeprops textarea').val('');
@@ -203,12 +301,27 @@ block content
               p Node Properties
             div
               textarea.span6(name='topology[nodeProperties]', rows=20, class='xlarge') #{topology.nodeProperties}
-          div.row
-            div.span3 
-              p Process Template
+          div.row(id="div_process")
+            div.span3
+              p Process Name
             div
-              textarea.span6(name='topology[appProcessTemplate]', rows=20, class='xlarge') #{topology.appProcessTemplate}
+              input.span6(name='topology[appProcessName]', class='xlarge')
+          div.row(id="div_process_properties")
+            div.span3
+              p Process Properties
+            div
+              textarea.span6(name='topology[processProperties]', rows=5, class='xlarge')
+          div.row(id="div_separator")
+            div.span3
+              p Components
+            div
+              p Versions
+          div.row(id="div_process_template")
+            div.span3
+            div
+              input.span6(name='topology[appProcessTemplate]', type='hidden', class='xlarge')
+
         div.actions
-          input.offset3(type='submit', value='Save', class='btn primary')
+          input.offset3(id='input_submit', type='submit', value='Save', class='btn primary')
           button.offset1(type='reset', class='btn') Cancel
 

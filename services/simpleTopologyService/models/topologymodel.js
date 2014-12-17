@@ -28,8 +28,10 @@ var Topology = new Schema({
 	providerRef: {type: String, ref: 'Provider'},
 	appName: String,
 	blueprintName: String,
+	appProcessName: String,
 	nodeProperties: String,
-	appProcessTemplate:String
+	appProcessTemplate:String,
+	processProperties: String
 	},{strict: 'throw'}
 );
 
