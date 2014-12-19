@@ -202,14 +202,14 @@ block content
       template_obj["properties"]=properties;
 
       version_array=[];
-      for(i=0;i<count; i++){
+      for(i=1;i<=count; i++){
          component=$('#p_component_'+i).text();
          version=$('#input_version_'+i).val();
          console.log('component:'+component);
          console.log('version:'+version);
-         version_array[i]={};
-         version_array[i].version=version;
-         version_array[i].component=component;
+         version_array[i-1]={};
+         version_array[i-1].version=version;
+         version_array[i-1].component=component;
       }
       
       template_obj["versions"]=version_array;

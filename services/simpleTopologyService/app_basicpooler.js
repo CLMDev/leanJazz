@@ -36,6 +36,7 @@ var api_password;
 var https = require('https');
 var request_json= require('request-json');
 var topologyPort = nconf.get('PORT');
+var productComponents = nconf.get('PRODUCT_COMPONENTS');
 var options = {
 rejectUnauthorized: false,
 headers: {cookie:''}
@@ -136,6 +137,14 @@ function CheckoutIfResourceAvailableInParentPool(pool, parentpool, build, callba
     }); //json_client.get    
 	
 }
+function isProductComponent(component){
+ var component_array=productComponents.split(':');
+ var found=false;
+ component_array.forEach( function(c){
+  if(component==c) found= true;
+ });
+ return found;
+}
 
 function RunProcesswithRequest(pool, request, callback) {
 	CheckIfBuildAvailable(pool, function(err, build){
@@ -166,7 +175,11 @@ function RunProcesswithRequest(pool, request, callback) {
 			    }
 			    process_template_obj.environment=instance.name;
                             process_template_obj.versions[0].version=build;
-            
+                            var num_components, c;
+                            num_components=process_template_obj.versions.lenghth;
+                            for(c=0;c<num_components;c++)
+                               if (isProductComponent(process_template_obj.versions[c].component))
+                                        process_template_obj.versions[c].version=build;
                             var providerRef = pool.topologyRef.providerRef;
         	            mprovider.findById(providerRef, function(err, provider) {
         		      if (err) {

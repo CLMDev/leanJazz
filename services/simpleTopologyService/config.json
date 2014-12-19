@@ -4,13 +4,13 @@
 	"SSL_KEY_FILE" : ".\/https\/key.pem",
 	"SSL_CERT_FILE" : ".\/https\/cert.pem",
 	"SSL_PASSPHRASE" : "",
-	"REDIS_HOST": "localhost",
 	"STS_INSTANCE_PREFIX": "p-",
 	"REMOVE-TEST-DATA" : "true",
 	"MONGO_URI":"mongodb://localhost:27017/leanJazz",
 	"MAIL_PROVIDER":".ibm.com",
 	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please",
 	"UCD_ADAPTER_PATH":"/rest/ucd",
-	"UCD_ADAPTER_TARGET":"http://localhost:64869/rest/ucd",
-	"TEAMS": "CLM/SSE Automation Team:SVT"
+	"UCD_ADAPTER_TARGET":"http://9.37.139.249:64869/rest/ucd",
+	"TEAMS": "CLM/SSE Automation Team:SVT",
+	"PRODUCT_COMPONENTS": "CLM:Rational_SSE:clm"
 }
