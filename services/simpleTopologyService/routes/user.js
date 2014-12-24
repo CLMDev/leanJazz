@@ -87,7 +87,7 @@ exports.findAllView = function(req, res) {
       console.log('no users found');
       docs = [];
     }
-    res.render('topology/users/userindex', {
+    res.render('users/userindex', {
       title: 'Available Users',
       docs: docs
     });
@@ -108,7 +108,7 @@ exports.update = function(req, res) {
 };
 
 exports.signup = function(req, res) {
-    res.render('topology/users/signup', { message: ''});
+    res.render('users/signup', { message: ''});
 };
 
 
@@ -118,7 +118,7 @@ exports.activate = function(req, res) {
   User.find({_salt:req.params.id},function(err, docs) {
     if (!docs.length) {
       console.log('no users found');
-      res.render('topology/users/signup', { message: 'User does not exist, please signup!'});
+      res.render('users/signup', { message: 'User does not exist, please signup!'});
       return;
     }
     var u=docs[0];
@@ -129,22 +129,22 @@ exports.activate = function(req, res) {
 };
 
 exports.reset = function(req, res) {
-    res.render('topology/users/password_reset', { message: ''});
+    res.render('users/password_reset', { message: ''});
 };
 
 exports.resetMail = function(req, res) {
   if(nconf.get('MAIL_PROVIDER')!='' && req.body.mail.indexOf(nconf.get('MAIL_PROVIDER'))==-1)
-    res.render('topology/users/password_reset', { message: nconf.get('MAIL_MESSAGE_PROVIDER')});
+    res.render('users/password_reset', { message: nconf.get('MAIL_MESSAGE_PROVIDER')});
   else {
     User.find({mail: req.body.mail},function( err, docs){
       console.log('docs.length:'+docs.length);
       if(docs.length==0){
         console.log('user not exist!');
-        res.render('topology/users/password_reset', { message: 'Account does not exist, sign up first!'});
+        res.render('users/password_reset', { message: 'Account does not exist, sign up first!'});
         return;
       }
       
-      res.render('topology/users/password_reset', { message: 'Mail sent, please follow the link to reset your password'});
+      res.render('users/password_reset', { message: 'Mail sent, please follow the link to reset your password'});
       // send mail with defined transport object
       resetmailOptions.to=docs[0].mail;
       resetmailOptions.text=resetmailOptions.text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt;
@@ -164,10 +164,10 @@ exports.resetStep2 = function(req, res) {
   User.find({_salt:req.params.id},function(err, docs) {
     if (!docs.length) {
       console.log('no users found');
-      res.render('topology/users/password_reset', { message: 'User does not exist!'});
+      res.render('users/password_reset', { message: 'User does not exist!'});
       return;
     }
-    res.render('topology/users/password_reset_2', { message: ''});
+    res.render('users/password_reset', { message: ''});
   });
 };
 
@@ -175,7 +175,7 @@ exports.resetStep3 = function(req, res) {
   User.find({_salt:req.params.id},function(err, docs) {
     if (!docs.length) {
       console.log('no users found');
-      res.render('topology/users/password_reset', { message: 'User does not exist!'});
+      res.render('users/password_reset', { message: 'User does not exist!'});
       return;
     }
     var sha = crypto.createHash('sha1');
@@ -188,13 +188,13 @@ exports.resetStep3 = function(req, res) {
 
 exports.createAccount = function(req, res) {
   if(nconf.get('MAIL_PROVIDER')!='' && req.body.mail.indexOf(nconf.get('MAIL_PROVIDER'))==-1)
-    res.render('topology/users/signup', { message: nconf.get('MAIL_MESSAGE_PROVIDER')});
+    res.render('users/signup', { message: nconf.get('MAIL_MESSAGE_PROVIDER')});
   else {
     User.find({mail: req.body.mail},function( err, docs){
       console.log('docs.length:'+docs.length);
       if(docs.length){
         console.log('user already exist!');
-        res.render('topology/users/signup', { message: 'Account already exist!'});
+        res.render('users/signup', { message: 'Account already exist!'});
         return;
       }
       var newUser=new User();
@@ -207,7 +207,7 @@ exports.createAccount = function(req, res) {
       //console.log('new User:'+newUser);
       newUser.save();
       
-      res.render('topology/users/signup', { message: 'Account created! Please check your mail and activate it.'});
+      res.render('users/signup', { message: 'Account created! Please check your mail and activate it.'});
       // send mail with defined transport object
       mailOptions.to=newUser.mail;
       mailOptions.text=mailOptions.text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/activate/'+newUser._salt;

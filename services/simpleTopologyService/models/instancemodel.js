@@ -16,95 +16,30 @@
 
 var mongoose = require('mongoose');
 
-var Topology = require('../models/topologymodel');
 var TopologyPool = require('../models/poolmodel');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
-var TopologyInstanceSchema = new Schema({
+
+var InstanceSchema = new Schema({
 	_id: {type: ObjectId, auto: true},
-	name: {type: String, unique: true},
-	description: String,
-	type: {type: String, default: 'noapp'},
-	topologyRef: {type: String, ref: 'Topology'},
-	poolRef: {type: String, ref: 'TopologyPool'},
-    ucdEnvName: String,
-    ucdEnvID: String,
-    ucdApplication: String,
-    ucdURI: String,
-    creationDate: String,
+	name: {type: String, required: true, unique: true},
+	type: {type: String, required: true, default: 'noapp'},
+	poolRef: {type: String, required: true, ref: 'TopologyPool'},
+    parentInstance: {type: String, required: true},
+    properties: {type: String, required: true, default: '{}'},
+	status: {type: String, required: true},
+    creationDate: {type: String, required: true},
     
-	apppoolRef: {type: String, ref: 'TopologyPool'},
+	trackingId: {type: String},
+	trackingUrl: {type: String},
 	
-	buildid: String,
-        iwdStatus: String,
-        iwdURI: String,
-        ucdStatus: String,
-        ucdEnvDesc: String,
-        checkoutDate: String,
-        checkoutUser: String,
-        checkoutComment: String,
-	    checkedout: {type: Boolean, default: false },
-	    appcheckoutDate: String,
-        appcheckoutUser: String,
-        appcheckoutComment: String,
-	    appcheckedout: {type: Boolean, default: false },
-	    apprequestId: {type: String, default: 'N/A' },
-	    appdeploymentStatus:{type: String, default: 'N/A' }
+    checkoutDate: {type: String},
+    checkoutUser: {type: String},
+    checkoutComment: {type: String}
+	
 	},{strict: 'throw'}
 );
 
-var mInstance = mongoose.model('TopologyInstance', TopologyInstanceSchema);
-module.exports = mInstance;
-
-var pname='Pool Instances';
-
-function createInstance(provider, pool, request, callback) {
-	var topoDoc = JSON.parse(request.content);
-	var instance = new mInstance();
-	instance.name = topoDoc.name;
-	instance.description = 'instance for pooling, with bare environment';
-	instance.type = 'noapp';
-	instance.topologyRef = pool.topologyRef._id;
-	instance.poolRef = pool._id;
-	instance.ucdEnvName = topoDoc.name;
-	instance.ucdEnvID = request.uuid;
-	instance.ucdApplication = topoDoc.application;
-	instance.ucdURI = provider.UCD_SERVER + '/#environment/' + request.uuid;
-	instance.creationDate = new Date();
-	
-	var jsonStr = JSON.stringify(instance);
-	console.log('[' + pname + '] ' + 'Creating instance for pool '+ pool.name + '(id: ' + pool._id + '): ' + jsonStr);
-	
-	instance.save(function(err, doc) {
-		if (err) {
-			console.log('[' + pname + '] ' + "Error saving new instance: " + err);
-			if (callback) {
-				callback(err, null);
-			}
-			return;
-		}
-		console.log('[' + pname + '] ' + 'Instance saved: ' + JSON.stringify(doc));
-		if (callback) {
-			callback(null, doc);
-		}
-	});//instance.save
-}
-
-module.exports.createInstance = createInstance;
-
-function listByPool(pool, callback) {
-	mInstance.find({ poolRef: pool._id }, function(err, requests) {
-		if (err) {
-			console.log('[' + pname + '] ' + 'Error when finding instances for pool ' + pool.name + '(id: ' + pool._id + '):' + err);
-			if (callback) {
-				callback(err, null);
-			}
-			return;
-		}
-		if (callback) {
-			callback(null, requests);
-		}
-	});
-}
-module.exports.listByPool = listByPool;
+var Instances = mongoose.model('TopologyInstance', InstanceSchema);
+module.exports = Instances;

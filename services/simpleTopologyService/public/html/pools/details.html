@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Instances of Pool</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+	<script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/css/style.css" />
+	<script type="text/javascript" src="/js/mustache.js"></script>
+	<script type="text/javascript" src="/js/pipeline/api.js"></script>
+	<script type="text/javascript" src="/js/pipeline/instances.js"></script>
+</head>
+<body>
+<nav id="top-navbar" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Home</a>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li id="nav-links-pools"><a href="/pools">Pools</a></li>
+				<li id="nav-links-settings" class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+						Settings <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" role="menu">
+						<li id="nav-links-providers"><a href="/settings/providers">Providers</a></li>
+						<li class="divider"></li>
+						<li id="nav-links-users"><a href="/users">Users</a></li>
+					</ul>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li id="header-links-jazzhub"><a href="https://hub.jazz.net/project/rjminsha/leanJazz/overview">Jazzhub Project</a></li>
+				<li id="header-links-gitgub"><a href="https://github.com/CLMDev/leanJazz">Github Project</a></li>
+				<li id="nav-links-logout"><a href="/logout">Logout</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</div><!-- /.container-fluid -->
+</nav>
+<div id="content" class="container-fluid">
+	<div class="row">
+		<ol class="breadcrumb">
+			<li><a href="/">Home</a></li>
+			<li><a href="/pools">Pools</a></li>
+			<li class="active"><span class="currentPoolName"></span></li>
+		</ol>
+	</div>
+	<h1>Instances of Pool: <span class="currentPoolName"></span></h1>
+	<div class="row">
+		<table id="instance-list" class="table table-hover">
+			<thead>
+			<tr>
+				<th>Name</th>
+				<th>Type</th>
+				<th>Creation Date</th>
+				<th>Status</th>
+				<th>Checkout User</th>
+				<th>Checkout Comment</th>
+				<th>Checkout Date</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr class="no-available">
+				<td colspan="8">No instance</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="row">
+		<div class="col-sm-offset-1 col-sm-11">
+			<button id="checkout-instance-button" class="btn btn-primary" data-toggle="modal" data-target="#checkoutInstanceModal">Checkout Instance</button>
+		</div>
+	</div>
+</div><!-- End of content -->
+<div class="modal fade" id="checkoutInstanceModal" tabindex="-1" role="dialog" aria-labelledby="checkoutInstanceModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="checkoutInstanceModalLabel">Delete Instance</h4>
+			</div>
+			<div id="checkoutInstanceBody" class="modal-body">
+				<form id="checkout-instance-form" class="form-horizontal well" role="form">
+					<input id="poolId" name="poolId" type="hidden" value="" />
+					<fieldset>
+						<div class="form-group">
+							<label for="comment" class="col-sm-3 control-label">Comment</label>
+							<div class="col-sm-9">
+								<textarea id="comment" name="comment" placeholder="Checkout Comment" class="form-control" rows="3"></textarea>
+							</div>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="submit-checkout-instance-form" type="button" class="btn btn-primary">Submit</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="deleteInstanceModal" tabindex="-1" role="dialog" aria-labelledby="deleteInstanceModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="deleteInstanceModalLabel">Delete Instance</h4>
+			</div>
+			<div id="deleteInstanceBody" class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button id="submit-delete-instance-form" type="button" class="btn btn-primary">Yes</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script id="instanceItemTemplate" type="x-tmpl-mustache">
+<tr id="{{_id}}" class="data instance {{type}} {{status}}">
+	<td class="name"><a target="_blank" href="{{trackingUrl}}">{{name}}</a></td>
+	<td class="type">{{type}}</td>
+	<td class="creationDate">{{creationDate}}</td>
+	<td class="status">{{status}}</td>
+	<td class="checkoutUser">{{checkoutUser}}</td>
+	<td class="checkoutComment">{{checkoutComment}}</td>
+	<td class="checkoutDate">{{checkoutDate}}</td>
+	<td class="actions">
+		<button class="btn btn-danger" data-toggle="modal" data-target="#deleteInstanceModal" data-poolid="{{poolRef}}" data-instanceid="{{_id}}" {{deletable}}>Delete</button>
+	</td>
+</tr>
+</script>
+</body>
+</html>
