@@ -45,14 +45,14 @@ function generateRequestContent(pool) {
 			blueprint: props.blueprintName,
 			lockSnapshots: false,
 			requireApprovals: false,
-			nodeProperties: JSON.parse(props.nodeProperties)
+			nodeProperties: props.nodeProperties
 		};
 	} else if (pool.type == 'app') {
 		return {
 			application: props.appName,
 			applicationProcess: props.appProcessName,
 			onlyChanged: false,
-			properties: JSON.parse(props.processProperties),
+			properties: props.processProperties,
 			snapshot: props.snapshotName
 		};
 	} else {

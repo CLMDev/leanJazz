@@ -254,7 +254,7 @@ function initCreateNoAppPoolModal() {
 				properties: JSON.stringify({
 					appName: $('select#appName').val(),
 					blueprintName: $('select#blueprintName').val(),
-					nodeProperties: $('input#nodeProperties').val()
+					nodeProperties: JSON.parse($('input#nodeProperties').val())
 				}),
 				poolMaxTotal: $('input#poolMaxTotal').val(),
 				poolMinAvailable: $('input#poolMinAvailable').val()
@@ -315,7 +315,7 @@ function initCreateAppPoolModal() {
 				properties: JSON.stringify({
 					appName: parentPool.props.appName,
 					appProcessName: $('input#appProcessName').val(),
-					processProperties: $('textarea#processProperties').val(),
+					processProperties: JSON.parse($('textarea#processProperties').val()),
 					snapshotName: $('input#snapshotName').val()
 				}),
 				poolMaxTotal: $('input#poolMaxTotal').val(),
@@ -378,7 +378,7 @@ function initEditNoAppPoolModal() {
 				properties: JSON.stringify({
 					appName: $('select#appName').val(),
 					blueprintName: $('select#blueprintName').val(),
-					nodeProperties: $('input#nodeProperties').val()
+					nodeProperties: JSON.parse($('input#nodeProperties').val())
 				}),
 				poolMaxTotal: $('input#poolMaxTotal').val(),
 				poolMinAvailable: $('input#poolMinAvailable').val()
@@ -458,7 +458,7 @@ function initEditAppPoolModal() {
 				properties: JSON.stringify({
 					appName: parentPool.props.appName,
 					appProcessName: $('input#appProcessName').val(),
-					processProperties: $('textarea#processProperties').val(),
+					processProperties: JSON.parse($('textarea#processProperties').val()),
 					snapshotName: $('input#snapshotName').val()
 				}),
 				poolMaxTotal: $('input#poolMaxTotal').val(),
