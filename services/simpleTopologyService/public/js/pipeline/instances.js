@@ -5,13 +5,10 @@ function createSingleInstanceRow(instance) {
 	delete instance.properties;
 	instance.props = props;
 	if (instance.status == 'INITIALIZING' || instance.status == 'AVAILABLE') {
-//		instance.releasable = 'disabled="disabled"';
 		instance.deletable = '';
 	} else if (instance.status == 'CHECKED_OUT') {
-//		instance.releasable = '';
 		instance.deletable = '';
 	} else {
-//		instance.releasable = 'disabled="disabled"';
 		instance.deletable = 'disabled="disabled"';
 	}
 	cached_instances[instance._id] = instance;
@@ -19,25 +16,30 @@ function createSingleInstanceRow(instance) {
 	var $item = Mustache.render($('#instanceItemTemplate').html(), instance);
 	$('#instance-list > tbody > tr.no-available').hide();
 	$('#instance-list > tbody').append($item);
+	
+	if (instance.status == 'AVAILABLE') {
+		$('#checkout-instance-button').removeAttr('disabled');
+	}
 }
 function updateSingleInstanceRow(instance) {
 	var props = JSON.parse(instance.properties);
 	delete instance.properties;
 	instance.props = props;
 	if (instance.status == 'INITIALIZING' || instance.status == 'AVAILABLE') {
-//		instance.releasable = 'disabled="disabled"';
 		instance.deletable = '';
 	} else if (instance.status == 'CHECKED_OUT') {
-//		instance.releasable = '';
 		instance.deletable = '';
 	} else {
-//		instance.releasable = 'disabled="disabled"';
 		instance.deletable = 'disabled="disabled"';
 	}
 	cached_instances[instance._id] = instance;
 	
 	var $item = Mustache.render($('#instanceItemTemplate').html(), instance);
 	$('#' + instance._id).replaceWith($item);
+	
+	if (instance.status == 'AVAILABLE') {
+		$('#checkout-instance-button').removeAttr('disabled');
+	}
 }
 function deleteSingleInstanceRow(instanceId) {
 	$('#' + instanceId).remove();
