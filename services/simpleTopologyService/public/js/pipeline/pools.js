@@ -403,11 +403,12 @@ function initEditNoAppPoolModal() {
 			var pool = cached_pools[poolId];
 			$('#edit-noapppool-form').html(Mustache.render($('#noAppPoolFormTemplate').html(), pool));
 			
+			$('input#name').attr('readonly', true);
+			
 			var provider = cached_providers[pool.provider[0]._id];
 			$('select#providerRef').append('<option value="' + provider._id + '">' + provider.type + ' - ' + provider.name + '</option>');
 			$('select#providerRef').attr('readonly', true);
 			
-			console.log(pool);
 			var appName = pool.props.appName;
 			var blueprintName = pool.props.blueprintName;
 			var nodeProperties = pool.props.nodeProperties;
@@ -435,12 +436,86 @@ function initEditNoAppPoolModal() {
 		.on('hide.bs.modal', function(e) {
 			$('#poolMaxTotalRange').off('change');
 			$('#poolMinAvailableRange').off('change');
-			//unbindNoAppSelectors();
 			$('#edit-noapppool-form').html('');
 			$('#submit-edit-noapppool-form').off('click');
 		});
 }
 function initEditAppPoolModal() {
+	$('#edit-apppool-form').submit(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		var form = $(this);
+		var type = 'app';
+		var parentPool = cached_pools[$('select#parentPool').val()];
+		var provider = parentPool.provider[0];
+		var pool = {
+				_id: $('input#_id').val(),
+				name: $('input#name').val(),
+				description: $('input#description').val(),
+				type: type,
+				parentPool: parentPool._id,
+				provider: [provider],
+				properties: JSON.stringify({
+					appName: parentPool.props.appName,
+					appProcessName: $('input#appProcessName').val(),
+					processProperties: $('textarea#processProperties').val(),
+					snapshotName: $('input#snapshotName').val()
+				}),
+				poolMaxTotal: $('input#poolMaxTotal').val(),
+				poolMinAvailable: $('input#poolMinAvailable').val()
+			};
+		updatePool(
+				pool,
+				function(updatedPool) {
+					$('#editAppPoolModal').modal('hide');
+					updateSinglePoolRow(updatedPool);
+				},
+				function(jqXHR, textStatus, errorThrown) {
+					console.log(jqXHR);
+					console.log(textStatus);
+					console.log(errorThrown);
+				}
+		);
+		return false;
+	});
+	$('#editAppPoolModal')
+		.on('show.bs.modal', function (e) {
+			var poolId = $(e.relatedTarget).data('poolid');
+			var pool = cached_pools[poolId];
+			$('#edit-apppool-form').html(Mustache.render($('#appPoolFormTemplate').html(), pool));
+			
+			$('input#name').attr('readonly', true);
+			
+			var parentPool = cached_pools[pool.parentPool];
+			$('select#parentPool').append('<option value="' + parentPool._id + '">' + parentPool.name + '</option>');
+			$('select#parentPool').attr('readonly', true);
+			
+			console.log(pool);
+			var processProperties = JSON.parse(pool.props.processProperties);
+			
+			$('input#appProcessName').attr('readonly', true);
+			$('textarea#processProperties').val(JSON.stringify(processProperties, null, 4));
+			$('input#snapshotName').attr('readonly', true);
+			
+			$('#poolMaxTotalRange').bind('change', function(event) {
+				var value = $(this).val();
+				$('#poolMaxTotal').val(value);
+				$('#poolMinAvailableRange').attr('max', value);
+			});
+			$('#poolMinAvailableRange').bind('change', function(event) {
+				var value = $(this).val();
+				$('#poolMinAvailable').val(value);
+			});
+			$('#submit-edit-apppool-form').on('click', function() {
+				$('#edit-apppool-form').submit();
+			});
+		})
+		.on('hide.bs.modal', function(e) {
+			$('#poolMaxTotalRange').off('change');
+			$('#poolMinAvailableRange').off('change');
+			$('#edit-apppool-form').html('');
+			$('#submit-edit-apppool-form').off('click');
+		});
 }
 function initDeletePoolModal() {
 	$('#deletePoolModal')

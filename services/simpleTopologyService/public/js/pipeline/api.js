@@ -19,6 +19,7 @@ function createProvider(provider, onSuccess, onError) {
 		type: 'POST',
 		url: '/api4gui/v1/providers',
 		data: provider,
+		dataType: 'json',
 		success: function(provider) {
 			if (onSuccess) {
 				return onSuccess(provider);
@@ -52,6 +53,7 @@ function updateProvider(provider, onSuccess, onError) {
 		type: 'PUT',
 		url: '/api4gui/v1/providers/' + provider._id,
 		data: provider,
+		dataType: 'json',
 		success: function(provider) {
 			if (onSuccess) {
 				return onSuccess(provider);
@@ -102,6 +104,7 @@ function createPool(pool, onSuccess, onError) {
 		type: 'POST',
 		url: '/api4gui/v1/topology/pools',
 		data: pool,
+		dataType: 'json',
 		success: function(pool) {
 			if (onSuccess) {
 				return onSuccess(pool);
@@ -135,6 +138,7 @@ function updatePool(pool, onSuccess, onError) {
 		type: 'PUT',
 		url: '/api4gui/v1/topology/pools/' + pool._id,
 		data: pool,
+		dataType: 'json',
 		success: function(doc) {
 			if (onSuccess) {
 				return onSuccess(doc)
@@ -188,6 +192,7 @@ function checkoutInstance(poolId, comment, onSuccess, onError) {
 			type: 'checkout',
 			comment: comment
 		},
+		dataType: 'json',
 		success: function(instance) {
 			if (onSuccess) {
 				return onSuccess(instance);

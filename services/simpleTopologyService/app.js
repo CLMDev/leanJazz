@@ -252,10 +252,10 @@ app.get('/api/v1/topology/pools', passport.authenticate('basic', { session: fals
 app.get('/api4gui/v1/topology/pools', ensureAPIAuthenticated, poolService.findAll);
 app.post('/api/v1/topology/pools', passport.authenticate('basic', { session: false }), poolService.create);
 app.post('/api4gui/v1/topology/pools', ensureAPIAuthenticated, poolService.create);
-app.get('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }), poolService.update);
+app.get('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }), poolService.find);
 app.get('/api4gui/v1/topology/pools/:id', ensureAPIAuthenticated, poolService.find);
 app.put('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }), poolService.update);
-app.put('/api4gui/v1/topology/pools/:id', ensureAPIAuthenticated, poolService.find);
+app.put('/api4gui/v1/topology/pools/:id', ensureAPIAuthenticated, poolService.update);
 app.del('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }), poolService.remove);
 app.del('/api4gui/v1/topology/pools/:id', ensureAPIAuthenticated, poolService.remove);
 

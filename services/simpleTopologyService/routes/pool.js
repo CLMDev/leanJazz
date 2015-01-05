@@ -71,6 +71,9 @@ function updatePool(req, res) {
 			console.log('Error when updating pool: ' + err);
 			return res.send(err, 400);
 		}
+		if (!doc) {
+			return res.send(404);
+		}
 		res.json(doc);
 	});
 }

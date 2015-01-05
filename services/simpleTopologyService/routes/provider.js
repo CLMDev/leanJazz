@@ -65,6 +65,9 @@ function updateProvider(req, res) {
 			console.log('Error when updating provider: ' + err);
 			return res.send(err, 400);
 		}
+		if (!doc) {
+			return res.send(404);
+		}
 		return res.json(doc);
 	});
 }
