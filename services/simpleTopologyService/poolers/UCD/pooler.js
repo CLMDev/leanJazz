@@ -30,8 +30,8 @@ UCD_ADAPTER = 'https://' + nconf.get('STS_HOSTNAME') + ':' + nconf.get('PORT');
 
 function generateDatetime() {
 	var time = (new Date()).toISOString();
-	var str = time.replace(/[\-:TZ]*/gi, '')
-	str = str.substring(0, str.indexOf('.'));
+	var str = time.replace(/[\-:T\.Z]*/gi, '')
+//	str = str.substring(0, str.indexOf('.'));
 	return str;
 }
 
