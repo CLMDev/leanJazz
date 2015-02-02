@@ -491,7 +491,7 @@ function initEditAppPoolModal() {
 			$('select#parentPool').attr('readonly', true);
 			
 			console.log(pool);
-			var processProperties = JSON.parse(pool.props.processProperties);
+			var processProperties = pool.props.processProperties;
 			
 			$('input#appProcessName').attr('readonly', true);
 			$('textarea#processProperties').val(JSON.stringify(processProperties, null, 4));
