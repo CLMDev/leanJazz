@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Pools</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+	<script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/css/style.css" />
+	<script type="text/javascript" src="/js/mustache.js"></script>
+	<script type="text/javascript" src="/js/pipeline/api.js"></script>
+	<script type="text/javascript" src="/js/pipeline/pools.js"></script>
+</head>
+<body>
+<nav id="top-navbar" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Home</a>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li id="nav-links-pools"><a href="/pools">Pools</a></li>
+				<li id="nav-links-settings" class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+						Settings <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" role="menu">
+						<li id="nav-links-providers"><a href="/settings/providers">Providers</a></li>
+						<li class="divider"></li>
+						<li id="nav-links-users"><a href="/users">Users</a></li>
+					</ul>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li id="header-links-jazzhub"><a href="https://hub.jazz.net/project/rjminsha/leanJazz/overview">Jazzhub Project</a></li>
+				<li id="header-links-gitgub"><a href="https://github.com/CLMDev/leanJazz">Github Project</a></li>
+				<li id="nav-links-logout"><a href="/logout">Logout</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</div><!-- /.container-fluid -->
+</nav>
+<div id="content" class="container-fluid">
+	<div class="row">
+		<ol class="breadcrumb">
+			<li><a href="/">Home</a></li>
+			<li class="active">Pools</li>
+		</ol>
+	</div>
+	<h1>Pools</h1>
+	<div class="row">
+		<table id="pool-list" class="table table-hover">
+			<thead>
+			<tr>
+				<th style="width:150px">Name</th>
+				<th>Description</th>
+				<th style="width:60px">Type</th>
+				<th>Application</th>
+				<th>Blueprint</th>
+				<th>Process</th>
+				<th style="width:180px">Snapshot</th>
+				<th style="width:150px">Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr class="no-available">
+				<td colspan="8">No available pool</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="row">
+		<div class="col-sm-offset-1 col-sm-11">
+			<button id="create-noapppool-button" class="btn btn-primary" data-toggle="modal" data-target="#createNoAppPoolModal">Create No-app Pool</button>
+			<button id="create-apppool-button" class="btn btn-primary" data-toggle="modal" data-target="#createAppPoolModal">Create App Pool</button>
+		</div>
+	</div>
+</div><!-- End of content -->
+<!-- Modal -->
+<div class="modal fade" id="createNoAppPoolModal" tabindex="-1" role="dialog" aria-labelledby="createNoAppPoolModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="createNoAppPoolModalLabel">Create No-app Pool</h4>
+			</div>
+			<div id="createNoAppPoolBody" class="modal-body">
+				<form id="create-noapppool-form" class="form-horizontal well" role="form">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="submit-create-noapppool-form" type="button" class="btn btn-primary">Save</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="createAppPoolModal" tabindex="-1" role="dialog" aria-labelledby="createAppPoolModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="createAppPoolModalLabel">Create App Pool</h4>
+			</div>
+			<div id="createAppPoolBody" class="modal-body">
+				<form id="create-apppool-form" class="form-horizontal well" role="form">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="submit-create-apppool-form" type="button" class="btn btn-primary">Save</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="editNoAppPoolModal" tabindex="-1" role="dialog" aria-labelledby="editNoAppPoolModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="editNoAppPoolModalLabel">Edit No-app Pool</h4>
+			</div>
+			<div id="editNoAppPoolBody" class="modal-body">
+				<form id="edit-noapppool-form" class="form-horizontal well" role="form">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="submit-edit-noapppool-form" type="button" class="btn btn-primary">Save</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="editAppPoolModal" tabindex="-1" role="dialog" aria-labelledby="editAppPoolModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="editAppPoolModalLabel">Edit App Pool</h4>
+			</div>
+			<div id="editAppPoolBody" class="modal-body">
+				<form id="edit-apppool-form" class="form-horizontal well" role="form">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="submit-edit-apppool-form" type="button" class="btn btn-primary">Save</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="deletePoolModal" tabindex="-1" role="dialog" aria-labelledby="deletePoolModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="deletePoolModalLabel">Delete Pool</h4>
+			</div>
+			<div id="deletePoolBody" class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button id="submit-delete-pool-form" type="button" class="btn btn-primary">Yes</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script id="noAppPoolItemTemplate" type="x-tmpl-mustache">
+<tr id="{{_id}}" class="data pool {{type}}">
+	<td class="name"><a href="/pools/{{_id}}">{{name}}</a></td>
+	<td class="description">{{description}}</td>
+	<td class="type">{{type}}</td>
+	<td class="appName">{{props.appName}}</td>
+	<td class="blueprintName">{{props.blueprintName}}</td>
+	<td class="processName"></td>
+	<td class="snapshotName"></td>
+	<td class="actions">
+		<button class="btn btn-default" data-toggle="modal" data-target="#editNoAppPoolModal" data-poolid="{{_id}}">Edit</a>
+		<button class="btn btn-danger" data-toggle="modal" data-target="#deletePoolModal" data-poolid="{{_id}}">Delete</button>
+	</td>
+</tr>
+</script>
+<script id="appPoolItemTemplate" type="x-tmpl-mustache">
+<tr id="{{_id}}" class="data pool {{type}}">
+	<td class="name"><a href="/pools/{{_id}}">{{name}}</a></td>
+	<td class="description">{{description}}</td>
+	<td class="type">{{type}}</td>
+	<td class="appName">{{props.appName}}</td>
+	<td class="blueprintName"></td>
+	<td class="processName">{{props.appProcessName}}</td>
+	<td class="snapshotName">{{props.snapshotName}}</td>
+	<td class="actions">
+		<button class="btn btn-default" data-toggle="modal" data-target="#editAppPoolModal" data-poolid="{{_id}}">Edit</a>
+		<button class="btn btn-danger" data-toggle="modal" data-target="#deletePoolModal" data-poolid="{{_id}}">Delete</button>
+	</td>
+</tr>
+</script>
+<script id="noAppPoolFormTemplate" type="x-tmpl-mustache">
+<fieldset>
+	<legend>Basic</legend>
+	<input id="_id" name="_id" type="hidden" value="{{_id}}" />
+	<div class="form-group">
+		<label for="name" class="col-sm-3 control-label">Name</label>
+		<div class="col-sm-9">
+			<input id="name" name="name" type="text" class="form-control" placeholder="Name" value="{{name}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="description" class="col-sm-3 control-label">Description</label>
+		<div class="col-sm-9">
+			<input id="description" name="description" type="text" class="form-control" placeholder="Description" value="{{description}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="providerRef" class="col-sm-3 control-label">Provider</label>
+		<div id="div_provider" class="col-sm-9">
+			<select id="providerRef" name="providerRef" class="form-control" />
+		</div>
+	</div>
+</fieldset>
+<fieldset class="extended">
+	<legend>Properties</legend>
+	<div class="form-group">
+		<label for="appName" class="col-sm-3 control-label">App Name</label>
+		<div id="div_application" class="col-sm-9">
+			<select id="appName" name="appName" class="form-control" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="blueprintName" class="col-sm-3 control-label">Blueprint Name</label>
+		<div id="div_blueprint" class="col-sm-9">
+			<select id="blueprintName" name="blueprintName" class="form-control" />
+		</div>
+	</div>
+	<input id="nodeProperties" name="nodeProperties" type="hidden" value="{{nodeProperties}}" />
+</fieldset>
+<fieldset>
+	<legend>Capacity</legend>
+	<div class="form-group">
+		<label for="capacity" class="col-sm-3 control-label">Max Total</label>
+		<div class="col-sm-6">
+			<input id="poolMaxTotalRange" name="poolMaxTotalRange" type="range" min="0" max="50" step="1" value="{{poolMaxTotal}}" />
+		</div>
+		<div class="col-sm-3">
+			<input id="poolMaxTotal" name="poolMaxTotal" type="text" class="form-control" readonly="readonly" value="{{poolMaxTotal}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="poolMinAvailable" class="col-sm-3 control-label">Min Available</label>
+		<div class="col-sm-6">
+			<input id="poolMinAvailableRange" name="poolMinAvailableRange" type="range" min="0" max="10" step="1" value="{{poolMinAvailable}}" />
+		</div>
+		<div class="col-sm-3">
+			<input id="poolMinAvailable" name="poolMinAvailable" type="text" class="form-control" readonly="readonly" value="{{poolMinAvailable}}" />
+		</div>
+	</div>
+</fieldset>
+</script>
+<script id="appPoolFormTemplate" type="x-tmpl-mustache">
+<fieldset>
+	<legend>Basic</legend>
+	<input id="_id" name="_id" type="hidden" value="{{_id}}" />
+	<div class="form-group">
+		<label for="name" class="col-sm-3 control-label">Name</label>
+		<div class="col-sm-9">
+			<input id="name" name="name" type="text" class="form-control" placeholder="Name" value="{{name}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="description" class="col-sm-3 control-label">Description</label>
+		<div class="col-sm-9">
+			<input id="description" name="description" type="text" class="form-control" placeholder="Description" value="{{description}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="appName" class="col-sm-3 control-label">Parent Pool</label>
+		<div id="div_parentpool" class="col-sm-9">
+			<select id="parentPool" name="parentPool" class="form-control" />
+		</div>
+	</div>
+</fieldset>
+<fieldset class="extended">
+	<legend>Properties</legend>
+	<div class="form-group">
+		<label for="appProcessName" class="col-sm-3 control-label">Process Name</label>
+		<div class="col-sm-9">
+			<input id="appProcessName" name="appProcessName" type="text" class="form-control" placeholder="Application Process Name" value="{{props.appProcessName}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="processProperties" class="col-sm-3 control-label">Process Properties</label>
+		<div class="col-sm-9">
+			<textarea id="processProperties" name="processProperties" placeholder="Application Process Properties" class="form-control" rows="3">{{props.processProperties}}</textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="snapshotName" class="col-sm-3 control-label">Snapshot Name</label>
+		<div class="col-sm-9">
+			<input id="snapshotName" name="snapshotName" type="text" class="form-control" placeholder="Snapshot Name" value="{{props.snapshotName}}" />
+		</div>
+	</div>
+</fieldset>
+<fieldset>
+	<legend>Capacity</legend>
+	<div class="form-group">
+		<label for="capacity" class="col-sm-3 control-label">Max Total</label>
+		<div class="col-sm-6">
+			<input id="poolMaxTotalRange" name="poolMaxTotalRange" type="range" min="0" max="50" step="1" value="{{poolMaxTotal}}" />
+		</div>
+		<div class="col-sm-3">
+			<input id="poolMaxTotal" name="poolMaxTotal" type="text" class="form-control" readonly="readonly" value="{{poolMaxTotal}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="poolMinAvailable" class="col-sm-3 control-label">Min Available</label>
+		<div class="col-sm-6">
+			<input id="poolMinAvailableRange" name="poolMinAvailableRange" type="range" min="0" max="50" step="1" value="{{poolMinAvailable}}" />
+		</div>
+		<div class="col-sm-3">
+			<input id="poolMinAvailable" name="poolMinAvailable" type="text" class="form-control" readonly="readonly" value="{{poolMinAvailable}}" />
+		</div>
+	</div>
+</fieldset>
+</script>
+</body>
+</html>

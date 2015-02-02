@@ -15,30 +15,23 @@
 */
 
 var mongoose = require('mongoose');
-var nconf = require('nconf');
-
-nconf.argv()
-        .env()
-        .file({ file: './config.json'});
-
-//define documents for mongo
-var Schema = mongoose.Schema;
-var ObjectId = Schema.ObjectId;
-var Provider = new Schema({
-	_id: {type: ObjectId, auto: true},
-	name: {type: String, unique: true},
-	description: String,
-	UCD_webURL: String,
-	UCD_authtoken: String,
-	UCD_version: String,
-	IWD_host: String,
-	IWD_version: String,
-	IWD_username:String,
-	IWD_password: String
-	},{strict: 'throw'}
-);
 var validator = require('validator');
 
-var Provider = mongoose.model('Provider', Provider);
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectId;
 
-module.exports =Provider;
+var ProviderSchema = new Schema({
+	_id: {type: ObjectId, auto: true},
+	name: {type: String, required: true, unique: true},
+	description: {type: String},
+	type: {type: String, required: true},
+	server: {type: String, required: true},
+	username: {type: String, required: true},
+	password: {type: String, required: true}
+	},{strict: 'throw'}
+);
+
+ProviderSchema.path('server').validate(validator.isURL, 'validation of `{PATH}` failed with value `{VALUE}` failed and needs to be an URL');
+
+module.exports = mongoose.model('Provider', ProviderSchema);
+

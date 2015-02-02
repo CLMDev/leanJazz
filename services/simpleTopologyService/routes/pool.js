@@ -14,306 +14,104 @@
 *   limitations under the License.
 */
 
-var topologyPoolModel = require('../models/poolmodel');
-var Topology = require('../models/topologymodel');
-var minstance= require('../models/instancemodel');
-var mstream= require('../models/buildstreammodel');
+var Pools = require('../models/poolmodel');
+var Instances = require('../models/instancemodel');
 
-exports.findAllView = function(req, res) {
-  topologyPoolModel.find({},function(err, docs) {
-    if (!docs) {
-      console.log('no pools found');
-      docs = [];
-    }
-    res.render('topology/pools/poolindex', {
-      title: 'Available Pools',
-      docs: docs
-    });
-  }).populate('topologyRef');
+function listPoolsView(req, res) {
+	res.sendfile('public/html/pools/list.html');
 };
+exports.findAllView = listPoolsView;
 
-exports.addViewSetup = function(req, res) {
-  Topology.find({},function(err, topdocs) {
-    if (!topdocs) {
-      console.log('no topology found');
-      topdocs = [];
-    }
-    res.render('topology/pools/newpool.jade', {
-                title: 'Create new pool', 
-                topdocs: topdocs
-    });
-  });
+function detailsView(req, res) {
+	res.sendfile('public/html/pools/details.html');
 };
+exports.detailsView = detailsView;
 
-var validator = require('validator');
-var validatePool = function(doc, next) {
-	console.log("validating Pool document");
-	console.log(doc);
-    if (validator.isNull(doc.name)) {
-		next(new Error('Name of the pool can not be null'));
-    } else {
-		console.log('validated json');
-		next(null);
-	}
-};
-
-
-exports.addViewExecute = function(req, res) {
-	validatePool(req.body.pool, function(err) {
-		if (! err) {
-			var pool = new topologyPoolModel(req.body.pool);
-                        if(pool.type=='noapp'){
-                          pool.parentPool='N/A';
-                          pool.attachedStream='N/A';
-			  pool.save(function(err) {
-				if (! err) {
-					res.redirect('/topology/pools');
-				}else {
-					console.log('error saving pool');
-					console.log(err);
-					res.redirect('/topology/pools/new');
-				}
-		  	  });
-                        } else {
-                        topologyPoolModel.findById(pool.parentPool, function( err, parent)
-                          {
-                            pool.topologyRef= parent.topologyRef;
-                            pool.parentPoolName=parent.name;
-			    pool.save(function(err) {
-				if (! err) {
-					res.redirect('/topology/pools');
-				}else {
-					console.log('error saving pool');
-					console.log(err);
-					res.redirect('/topology/pools/new');
-				}
-			    });
-                          });//topogloygPoolModel.findById
-                        }//else
-
-		}else {
-			console.log('error in addViewExecute validating pool');
-			console.log(err);
-			res.redirect('/topology/pools');
+function listAllPools(req, res) {
+	Pools.find({}, function(err, docs) {
+		if (err) {
+			console.log('Error when listing pools: ' + err);
+			return res.send(err, 500);
 		}
+		return res.send(!docs ? '[]' : docs);
 	});
-};
+}
+exports.findAll = listAllPools;
 
-exports.findAll = function(req, res) {
-	topologyPoolModel.find({},function(err, docs) {
-		if (!docs) {
-			console.log('findAll could not find any documents');
-			console.log('printing our err');
-			console.log(err);
-			res.send(404);
-		}else {
-			res.send(docs);
+function getPoolById(req, res) {
+	Pools.findById(req.params.id, function(err, doc) {
+		if (err) {
+			console.log('Error when reading pool: ' + err);
+			return res.send(err, 500);
 		}
+		if (doc) {
+			return res.json(doc);
+		}
+		return res.send(404);
 	});
-};
+}
+exports.find = getPoolById;
 
-exports.editViewSetup = function(req, res) {
-  topologyPoolModel.findById(req.params.id, function(err, doc) {
-    res.render('topology/pools/editpool', {
-      title: 'Edit Pool',
-      pool: doc
-    });
-  }).populate('topologyRef', 'name');;
-};
-exports.editViewExecute = function(req, res) {
-   topologyPoolModel.findById(req.params.id, function(err, doc) {
-    
-    doc.name = req.body.pool.name;
-    doc.description = req.body.pool.description;
-    doc.poolMethod = req.body.pool.poolMethod;
-    doc.poolMinAvailable = req.body.pool.poolMinAvailable;
-    doc.poolMaxTotal = req.body.pool.poolMaxTotal;
-    console.log('attempting to update document');
-    console.log(doc);
-    validatePool(doc, function(err) {
-		if (!err) {
-			doc.save(function(err) {
-				if (!err) {
-					res.redirect('/topology/pools');
-				}
-				else {
-					console.log('error saving to database');
-					res.redirect('/topology/pools');
-				}
-			});
-		}else {
-			console.log('invalid data:' + err);
-			res.redirect('/topology/pools');
+function createPool(req, res) {
+	var pool = req.body;
+	Pools.create(pool, function(err, pool) {
+		if (err) {
+			console.log('Error when creating pool: ' + err);
+			return res.send(err, 400);
 		}
-    });
-  });
-};
-
-
-
-exports.create = function(req, res) {
-	try {
-		console.log('::::creating new topology pool');
-		console.log(req.body);
-		//var inputOBJ=JSON.parse(req.body);
-		console.log('::::input reference id:'+req.body.topologyRef);
-                if(req.body.type=='noapp'){
-		  Topology.count({_id:req.body.topologyRef}, function(err, count) {
-		  console.log('::::count of topology document:'+count);
-		  if (count==1) {
-
-		    topologyPoolModel.create(req.body, function(err, pool){ 
-			if (! err){
-				//return the created topology pool information
-				console.log('created new topology pool');
-				console.log(pool);
-				res.json(pool);
-			}else{
-				//return an error 
-				console.log('failed to create pool using:' + res.json);
-				console.log(pool);
-				console.log(err);
-				res.send(err, 400);
-			}
-		    }); //topologyPoolModel
-		  }//if(count==1)
-		  else{
-				//return an error 
-				console.log('failed to create pool using:' + res.json);
-				console.log('topologyRef can not be found!');
-				
-				res.send(err, 400);
-		  }
-		  });//Topology.find
-                } else { // type='app'
-                    topologyPoolModel.create(req.body, function(err, pool){
-                        if (! err){
-                                //return the created topology pool information
-                                console.log('created new topology pool');
-                                console.log(pool);
-                                res.json(pool);
-                        }else{
-                                //return an error
-                                console.log('failed to create pool using:' + res.json);
-                                console.log(pool);
-                                console.log(err);
-                                res.send(err, 400);
-                        }
-                    }); //topologyPoolModel
-                 }
-
-	}catch (err) {
-		console.log('could not create new topology pool, most likely due to invalid data');
-		console.log(err);
-		res.send(err, 400);
-	}
-};
-
-checkoutEnvInstancefromPool= function(res, pool, instance, user, comment){
-    console.log('In chekcoutEnvInstancefromPool');
-    console.log('user:'+user);
-    console.log('comment:'+comment);
-    console.log('pool:'+JSON.stringify(pool));
-    console.log('instance:'+JSON.stringify(instance));
-    instance.checkedout=true;
-    instance.checkoutUser=user;
-    instance.checkoutComment=comment;
-    instance.checkoutDate=new Date();
-    instance.save();
-    pool.available--;
-    pool.checkedout++;
-    pool.save();
-    res.send(instance);
-}     
-
-checkoutEnvfromPool= function(res, pool, user, comment){
-    minstance.find({type:'noapp', poolRef: pool._id, checkedout: false}, function(err, instances) {
-       if(instances.length==0){
-         res.send(404);
-         return;
-       }
-       checkoutEnvInstancefromPool(res, pool, instances[0], user, comment);
-    });
-}   
-
-checkoutAppInstancefromPool= function(res, pool, instance, user, comment){
-    console.log('In chekcoutAppInstancefromPool');
-    console.log('user:'+user);
-    console.log('comment:'+comment);
-    console.log('pool:'+JSON.stringify(pool));
-    console.log('instance:'+JSON.stringify(instance));
-    instance.appcheckedout=true;
-    instance.appcheckoutUser=user;
-    instance.appcheckoutComment=comment;
-    instance.appcheckoutDate=new Date();
-    instance.save();
-    pool.available--;
-    pool.checkedout++;
-    pool.save();
-    res.send(instance);
-}     
-
-checkoutAppfromPool= function(res, pool, user, comment){
-    minstance.find({type:'app', apppoolRef: pool._id, appcheckedout: false}, function(err, instances) {
-       if(instances.length==0){
-         res.send(404);
-         return;
-       }
-       checkoutAppInstancefromPool(res, pool, instances[0], user, comment);
-    });
-}      
-
-exports.checkoutInstance = function(req, res) {
-	console.log('Trying to checkout from pool id: ' + req.params.id);
-	var user=req.user.mail;
-	var comment=req.body.checkoutComment;
-        console.log('In checkoutInstance');
-        console.log('user:'+user);
-        console.log('comment:'+comment);
-	topologyPoolModel.findById(req.params.id, function(err, doc) {
-		if (! doc) {
-			res.send(404);
-		}else {
-			if(doc.type=='noapp')
-			   checkoutEnvfromPool(res, doc, user, comment);
-			else
-			   checkoutAppfromPool(res, doc, user, comment);
-		}
+		res.json(pool);
 	});
-};
-exports.deleteView = function(req, res) {
-	topologyPoolModel.findById(req.params.id, function(err, doc) {
+}
+exports.create = createPool;
+
+function updatePool(req, res) {
+	var pool = req.body;
+	Pools.findByIdAndUpdate(req.params.id, pool, function(err, doc) {
+		if (err) {
+			console.log('Error when updating pool: ' + err);
+			return res.send(err, 400);
+		}
 		if (!doc) {
-			console.log('could not remove document using ID ' + req.params.id);
-			res.redirect('/topology/pools');
-		}else {
-			doc.remove(function() {
-				res.redirect('/topology/pools/');
-			});
+			return res.send(404);
 		}
+		res.json(doc);
 	});
-};
+}
+exports.update = updatePool;
 
-exports.find = function(req, res) {
-	console.log('finding ' + req.params.id);
-	topologyPoolModel.findById(req.params.id, function(err, doc) {
-		if (! doc) {
-			res.send(404);
-		}else {
-			res.send(doc);
+function deletePool(req, res) {
+	Pools.findByIdAndRemove(req.params.id, function(err, doc) {
+		if (err) {
+			console.log('Error when deleting pool: ' + err);
+			return res.send(500, err);
 		}
-	});
-};
-exports.delete = function(req, res) {
-	topologyPoolModel.findById(req.params.id, function(err, doc) {
-		if (!doc) {
-			res.send(404);
-		}else {
-			console.log('delete removing');
-			doc.remove(function() {
-			res.send(200);
-		});
-		console.log('removed');
+		return res.send(doc ? 200 : 404);
+	})
+}
+exports.remove = deletePool;
+
+function listAllInstances(req, res) {
+	var poolId = req.params.id;
+	Instances.find({ poolRef: poolId }, function(err, docs) {
+		if (err) {
+			console.log('Error when listing instances: ' + err);
+			return res.send(err, 500);
 		}
+		return res.json(!docs ? '[]' : docs);
 	});
-};
+}
+exports.listAllInstances = listAllInstances;
+
+function getInstanceById(req, res) {
+    Instances.findById(req.params.id, function(err, doc) {
+		if (err) {
+			console.log('Error when reading instance: ' + err);
+			return res.send(err, 500);
+		}
+		if (doc) {
+			return res.json(doc);
+		}
+		return res.send(404);
+    });
+}
+exports.getInstanceById = getInstanceById;

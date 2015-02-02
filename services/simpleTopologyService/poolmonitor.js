@@ -13,66 +13,58 @@
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 */
-var monitor = require('child_process').fork('noappinstancecreator.js');//monitor pools and fork instance creators for pools
-var pname='pool_monitor';
-var num_instance_creator_per_pool=2
+var PoolModel = require('./models/poolmodel');
+var InstanceModel = require('./models/instancemodel');
+var monitorLib = require('./poolmonitor_lib');
 
 var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
-var redis_host=nconf.get('REDIS_HOST');
-var redis = require("redis"),
-client = redis.createClient(6379,redis_host);
 
-    // if you'd like to select database 3, instead of 0 (default), call
-    // client.select(3, function() { /* ... */ });
+var pname='pool_monitor';
 
-    client.on("error", function (err) {
-        console.log(pname+": Redis Error " + err);
-    });
+var mongoose = require('mongoose');
+mongoose.connect(nconf.get('MONGO_URI'),
+	function(err) {
+		if (!err) {
+			console.log('[' + pname + '] ' + 'Mogoose DB connected! ');
+		} else {
+			throw err;
+		}
+	}
+);
 
-var mtopology = require('./models/topologymodel');
-var mpool = require('./models/poolmodel');
-var minstance = require('./models/instancemodel');
+console.log('[' + pname + '] ' + 'Monitoring process is running! ');
 
-//setup properties file
-var fs = require('fs');
+var timer1 = setInterval(function() {
+	PoolModel.find({}, function(err, pools) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when finding pool: ' + err);
+			return clearInterval(timer1);
+		}
+		pools.forEach(function(pool) {
+			monitorLib.createNewInstancesIfNeeded(pool, function(err, request) {
+				if (err) {
+					console.log('[' + pname + '] ' + 'Error when creating instance(s) when needed: ' + err);
+					return clearInterval(timer1);
+				}
+			});
+		});
+	});//PoolModel.find
+}, 30000); //every 30 seconds
 
-console.log(pname+': monitoring process is running! ');
-var timer;
-var request_no=0;
-var timeoutcb= function(){
-
-mpool.find({type:'noapp'},function(err, pools){
-
-  if (err) return console.error(err);
-  pools.forEach(function( pool){
-    console.log(pname+': pool to be checked:')
-    console.log('pool name:'+pool.name);
-    console.log('pool id:'+pool._id);
-    console.log('topology name:'+pool.topologyRef.name);
-    
-    client.scard('workers_for_pool_'+pool._id, function (err, card){
-      if (err) return console.error(err);
-      
-      console.log(pname+': number of instance creators for pool:'+ card);
-      if(card<num_instance_creator_per_pool){//slow start, gradually increase the number of instance creator process
-      var instance_creator = require('child_process').fork('noappinstancecreator.js');//fork process to create instances
-      
-      console.log(pname+'sending message to noapp_C');
-      instance_creator.send({pool_id: pool._id});
-      client.sadd('workers_for_pool_'+pool._id, instance_creator.pid);
-      console.log(pname+': add instance creator process: '+instance_creator.pid);
-            
-      }
-      
-    });//client.scard
-  });//pools.foreach
-  timer=setTimeout(timeoutcb, 60000); //every 60 seconds
-
-}).populate('topologyRef');//mpool.find
-
-
-};
-
-timer=setTimeout(timeoutcb, 2000); //every 60 seconds
-
+var timer2 = setInterval(function() {
+	PoolModel.find({}, function(err, pools) {
+		if (err) {
+			console.log('[' + pname + '] ' + 'Error when finding pool: ' + err);
+			return clearInterval(timer2);
+		}
+		pools.forEach(function(pool) {
+			monitorLib.processRequestIfNeeded(pool, function(err) {
+				if (err) {
+					console.log('[' + pname + '] ' + 'Error when processing request(s) when needed: ' + err);
+					return clearInterval(timer2);
+				}
+			});
+		});
+	});//PoolModel.find
+}, 30000); //every 30 seconds

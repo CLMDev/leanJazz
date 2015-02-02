@@ -15,52 +15,31 @@
 */
 
 var mongoose = require('mongoose');
-var nconf = require('nconf');
-nconf.argv().env().file({ file: './config.json'});
 
-mongoose.connect(nconf.get('MONGO_URI'),
-  function(err) {
-    if (!err) {
-      console.log('mongoose connected');
-    }else {
-      console.log('mongoose already connected');
-    }
-});
+var TopologyPool = require('../models/poolmodel');
 
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectId;
-var TopologyInstanceSchema = new Schema({
+
+var InstanceSchema = new Schema({
 	_id: {type: ObjectId, auto: true},
-	name: {type: String, unique: true},
-	description: String,
-	type: {type: String, default: 'noapp'},
-	topologyRef: {type: String, ref: 'Topology'},
-	poolRef: {type: String, ref: 'mTopologyPool'},
-	apppoolRef: {type: String, ref: 'mTopologyPool'},
-	buildid: String,
-        iwdStatus: String,
-        iwdURI: String,
-        ucdStatus: String,
-        ucdURI: String,
-        ucdEnvDesc: String,
-        ucdEnvName: String,
-        ucdEnvID: String,
-        ucdApplication: String,
-        creationDate: String,
-        checkoutDate: String,
-        checkoutUser: String,
-        checkoutComment: String,
-	    checkedout: {type: Boolean, default: false },
-	    appcheckoutDate: String,
-        appcheckoutUser: String,
-        appcheckoutComment: String,
-	    appcheckedout: {type: Boolean, default: false },
-	    apprequestId: {type: String, default: 'N/A' },
-	    appdeploymentStatus:{type: String, default: 'N/A' }
+	name: {type: String, required: true, unique: true},
+	type: {type: String, required: true, default: 'noapp'},
+	poolRef: {type: String, required: true, ref: 'TopologyPool'},
+    parentInstance: {type: String, required: true},
+    properties: {type: String, required: true, default: '{}'},
+	status: {type: String, required: true},
+    creationDate: {type: String, required: true},
+    
+	trackingId: {type: String},
+	trackingUrl: {type: String},
+	
+    checkoutDate: {type: String},
+    checkoutUser: {type: String},
+    checkoutComment: {type: String}
+	
 	},{strict: 'throw'}
 );
 
-var mTopologyInstance = mongoose.model('mTopologyInstance', TopologyInstanceSchema);
-module.exports = mTopologyInstance;
-
-
+var Instances = mongoose.model('TopologyInstance', InstanceSchema);
+module.exports = Instances;
