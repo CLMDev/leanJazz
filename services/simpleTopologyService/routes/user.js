@@ -33,19 +33,6 @@ var uuid = require('node-uuid');
 var transporter = nodemailer.createTransport(); 
 
 // setup e-mail data with unicode symbols
-var mailOptions = {
-    from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
-    to: 'liuzc@cn.ibm.com', // list of receivers
-    subject: 'Activate your account for STS', // Subject line
-    text: 'DO *NOT* ACTIVATE THIS ACCOUNT, UNLESS YOU CREATE AND INTEND TO USE IT. To activate, click on this link, ' 
-};
-
-var resetmailOptions = {
-    from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
-    to: 'liuzc@cn.ibm.com', // list of receivers
-    subject: 'Reset Your Password for STS', // Subject line
-    text: 'DO *NOT* CLICK THE LINK, UNLESS YOU WOULD LIKE TO RESET YOUR PASSWORD. To reset your password, click on this link, ' 
-};
 
 var apiuser;
 var random=uuid.v4();
@@ -146,8 +133,12 @@ exports.resetMail = function(req, res) {
       
       res.render('users/password_reset', { message: 'Mail sent, please follow the link to reset your password'});
       // send mail with defined transport object
-      resetmailOptions.to=docs[0].mail;
-      resetmailOptions.text=resetmailOptions.text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt;
+      var resetmailOptions = {
+    		    from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
+    		    to: docs[0].mail, // list of receivers
+    		    subject: 'Reset Your Password for STS', // Subject line
+    		    text: 'DO *NOT* CLICK THE LINK, UNLESS YOU WOULD LIKE TO RESET YOUR PASSWORD. To reset your password, click on this link, ' + 'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/reset/'+docs[0]._salt
+    		};
       transporter.sendMail(resetmailOptions, function(error, info){
       if(error){
         console.log('error: sending mail!');
@@ -209,8 +200,12 @@ exports.createAccount = function(req, res) {
       
       res.render('users/signup', { message: 'Account created! Please check your mail and activate it.'});
       // send mail with defined transport object
-      mailOptions.to=newUser.mail;
-      mailOptions.text=mailOptions.text+'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/activate/'+newUser._salt;
+      var mailOptions = {
+    		    from: 'STS<sts@sts.rtp.raleigh.ibm.com>', // sender address
+    		    to: newUser.mail, // list of receivers
+    		    subject: 'Activate your account for STS', // Subject line
+    		    text: 'DO *NOT* ACTIVATE THIS ACCOUNT, UNLESS YOU CREATE AND INTEND TO USE IT. To activate, click on this link, ' + 'https://'+nconf.get('STS_HOSTNAME')+':'+nconf.get('PORT')+'/activate/'+newUser._salt
+    		};
       transporter.sendMail(mailOptions, function(error, info){
       if(error){
         console.log('error: sending mail!');
