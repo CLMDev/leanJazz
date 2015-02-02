@@ -45,8 +45,7 @@ var timer1 = setInterval(function() {
 			monitorLib.createNewInstancesIfNeeded(pool, function(err, request) {
 				if (err) {
 					console.log('[' + pname + '] ' + 'Error when creating instance(s) when needed: ' + err);
-					clearInterval(timer1);
-					return;
+					return clearInterval(timer1);
 				}
 			});
 		});
@@ -63,8 +62,7 @@ var timer2 = setInterval(function() {
 			monitorLib.processRequestIfNeeded(pool, function(err) {
 				if (err) {
 					console.log('[' + pname + '] ' + 'Error when processing request(s) when needed: ' + err);
-					clearInterval(timer2);
-					return;
+					return clearInterval(timer2);
 				}
 			});
 		});
