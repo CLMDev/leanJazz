@@ -36,24 +36,7 @@ APIs
    * **Create a pool**
     * Endpoint: /api/v1/topology/pools
     * Method: POST
-    * Request Payload:
-        ```json
-        {
-            name: "pool-01",
-            description: "This is a sample pool",
-            type: "noapp or app",
-            parentPool: "The ID of parent pool, use NA for noapp pool",
-            provider: [{
-                type: "UCD",
-                server: "https://<your UCD server>:<port>",
-                username: "username of UCD",
-                password: "password of UCD"
-            }],
-            properties: "A JSON string(not JSON object) contains any necessary properties for UCD to create an environment when creating noapp pool or run a application process when creating app pool",
-            poolMaxTotal: 5,
-            poolMinAvailable: 1
-        }
-        ```
+    * Request Payload: See Appendix for detail
     * Response: A JSON object of pool
    * **Read base information of a specified pool**
     * Endpoint: /api/v1/topology/pools/:id
@@ -73,13 +56,7 @@ APIs
    * **Perform actions like checkout instance against a specified pool**
     * Endpoint: /api/v1/topology/pools/:id/actions
     * Method: POST
-    * Request Payload:
-        ```json
-        {
-            type: "checkout",
-            comment: "Sample comments"
-		}
-        ```
+    * Request Payload: See Appendix for detail
     * Response: Full JSON object of an instance ready to use
    * **List all existing instances belong to a specified pool**
     * Endpoint: /api/v1/topology/pools/:id/instances
@@ -100,3 +77,56 @@ APIs
 Authentication for APIs
 =======================
 The REST API end points are protected using HTTP basic authentication method. Each API call should provide authentication headers with username and password.
+
+Appendix
+========
+Example payload for no-app pool creation
+----------------------------------------
+If you are using UCD as the pooler type, take the following JSON as an example 
+```json
+{
+    "name": "noapp-01",
+    "description": "This is a sample no-app pool",
+    "type": "noapp",
+    "parentPool": "NA",
+    "provider": [{
+        "type": "UCD",
+        "server": "https://www.example.com:8080",
+        "username": "username of UCD",
+        "password": "password of UCD"
+    }],
+    "properties": "{\"appName\": \"Application name in UCD\", \"blueprintName\": \"Blueprint name in UCD\", \"nodeProperties\": {\"key1\":\"value1\", \"key2\":\"value2\"}",
+    "poolMaxTotal": 5,
+    "poolMinAvailable": 1
+}
+```
+
+Example payload for app pool creation
+-------------------------------------
+If you are using UCD as the pooler type, take the following JSON as an example 
+```json
+{
+    "name": "app-01",
+    "description": "This is a sample app pool",
+    "type": "app",
+    "parentPool": "54cee801e7f30df219fcc42f",
+    "provider": [{
+        "type": "UCD",
+        "server": "https://www.example.com:8080",
+        "username": "username of UCD",
+        "password": "password of UCD"
+    }],
+    "properties": "{\"appName\": \"Application name in UCD\", \"appProcessName\": \"Application process name in UCD\", \"processProperties\": {\"key1\":\"value1\", \"key2\":\"value2\"}, \"snapshotName\": \"Snapshot name in UCD\"}",
+    "poolMaxTotal": 5,
+    "poolMinAvailable": 1
+}
+```
+
+Example payload for checkout
+----------------------------
+```json
+{
+    "type": "checkout",
+    "comment": "Sample comments"
+}
+```
