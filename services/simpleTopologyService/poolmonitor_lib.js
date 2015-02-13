@@ -188,6 +188,20 @@ function processRequestIfNeeded(pool, callback) {
 			pooler.checkPoolInstanceStatus(provider, pool.type, instance.trackingId, properties, function(err, online) {
 				if (err) {
 					console.log('[' + pname + '] ' + 'Error when checking instance status: ' + err);
+					if (err.result == 'FAULTED') {
+						InstanceModel.findByIdAndUpdate(instance._id, { status: err.result }, function(err, updatedInst) {
+							if (err) {
+								if (callback) {
+									callback(err, null);
+								}
+								return;
+							}
+							console.log('[' + pname + '] ' + 'Failed to create new instance pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ')');
+							if (callback) {
+								callback(null, updatedInst);
+							}
+						});
+					}
 					return;
 				}
 				if (!online) {
