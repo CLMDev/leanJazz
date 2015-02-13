@@ -4,7 +4,7 @@ function createSingleInstanceRow(instance) {
 	var props = JSON.parse(instance.properties);
 	delete instance.properties;
 	instance.props = props;
-	if (instance.status == 'INITIALIZING' || instance.status == 'AVAILABLE') {
+	if ((instance.status == 'INITIALIZING' && instance.trackingId) || instance.status == 'AVAILABLE') {
 		instance.deletable = '';
 	} else if (instance.status == 'CHECKED_OUT') {
 		instance.deletable = '';
@@ -25,7 +25,7 @@ function updateSingleInstanceRow(instance) {
 	var props = JSON.parse(instance.properties);
 	delete instance.properties;
 	instance.props = props;
-	if (instance.status == 'INITIALIZING' || instance.status == 'AVAILABLE') {
+	if ((instance.status == 'INITIALIZING' && instance.trackingId) || instance.status == 'AVAILABLE') {
 		instance.deletable = '';
 	} else if (instance.status == 'CHECKED_OUT') {
 		instance.deletable = '';
