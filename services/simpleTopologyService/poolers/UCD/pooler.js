@@ -307,6 +307,9 @@ function getRequestStatus(provider, appname, requestId, callback) {
 			return callback(JSON.stringify(resp), null);
 		}
 		var reqStat = JSON.parse(body);
+		if (reqStat.result = 'FAULTED') {
+			return callback(reqStat, null);
+		}
 		callback(null, reqStat.result == 'SUCCEEDED');
 	});
 }

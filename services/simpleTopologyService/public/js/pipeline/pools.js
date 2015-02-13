@@ -33,14 +33,10 @@ var cached_providers = {};
 
 function listUCDApplications(provider, onSuccess, onError) {
 	$.ajax({
-		url: '/rest/ucd/applications',
+		url: provider.server + '/cli/application',
 		type: "GET",
-		crossDomain: true,
-		beforeSend: function(xhr) {
-			xhr.setRequestHeader('UCD_SERVER', provider.server);
-			xhr.setRequestHeader('UCD_USERNAME', provider.username);
-			xhr.setRequestHeader('UCD_PASSWORD', provider.password);
-		},
+		username: provider.username,
+		password: provider.password,
 		success: function(applications) {
 			if (onSuccess) {
 				return onSuccess($.isEmptyObject(applications) ? [] : applications)
@@ -56,13 +52,13 @@ function listUCDApplications(provider, onSuccess, onError) {
 
 function listUCDBlueprintsByApplication(provider, appName, onSuccess, onError) {
 	$.ajax({
-		url: '/rest/ucd/applications/' + appName + '/blueprints',
+		url: provider.server + '/cli/application/blueprintsInApplication?application=' + encodeURIComponent(appName),
 		type: "GET",
+		username: provider.username,
+		password: provider.password,
 		crossDomain: true,
-		beforeSend: function(xhr) {
-			xhr.setRequestHeader('UCD_SERVER', provider.server);
-			xhr.setRequestHeader('UCD_USERNAME', provider.username);
-			xhr.setRequestHeader('UCD_PASSWORD', provider.password);
+		xhrFields: {
+			withCredentials: true
 		},
 		success: function(blueprints) {
 			if (onSuccess) {
@@ -79,7 +75,7 @@ function listUCDBlueprintsByApplication(provider, appName, onSuccess, onError) {
 
 function getUCDNodePropertiesByApplicationAndBlueprint(provider, appName, blueprintName, onSuccess, onError) {
 	$.ajax({
-		url: '/rest/ucd/applications/' + appName + '/blueprints/' + blueprintName,
+		url: provider.server + '/cli/blueprint/getBlueprintNodePropertiesTemplate?application=' + encodeURIComponent(appName) + '&blueprint=' + encodeURIComponent(blueprintName),
 		type: "GET",
 		crossDomain: true,
 		beforeSend: function(xhr) {
