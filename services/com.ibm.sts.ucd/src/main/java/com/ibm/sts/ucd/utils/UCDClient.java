@@ -166,11 +166,29 @@ public class UCDClient extends UDRestClient {
 		}
 	}
 
-	public void deleteEnvironment(String appName, String envName) throws IOException {
+	public void deleteEnvironment(String appName, String envName) throws IOException, EnvironmentNotExistException {
 		boolean deleteAttachedResources = true;
 		boolean deleteCloudInstances = true;
-		HttpDelete method = new HttpDelete(String.format("%s/cli/environment/deleteEnvironment?application=%s&environment=%s&deleteAttachedResources=%s&deleteCloudInstances=%s", this.url, URLEncoder.encode(appName, "UTF-8"), URLEncoder.encode(envName, "UTF-8"), deleteAttachedResources, deleteCloudInstances));
-		invokeMethod(method);
+		HttpGet method = new HttpGet(String.format("%s/cli/application/environmentsInApplication?application=%s", this.url, URLEncoder.encode(appName, "UTF-8")));
+		HttpResponse response = invokeMethod(method);
+		String body = getBody(response);
+		logger.debug(body);
+		try{
+		JSONArray envArray = new JSONArray(body);
+		boolean envExist=false;
+		for (int i = 0; i < envArray.length(); i++) {
+			if(envArray.getJSONObject(i).getString("name")==envName) 
+				envExist=true;
+		}
+		if (!envExist) throw new EnvironmentNotExistException();
+		}
+		catch (JSONException e) {
+			logger.error("Error when checking environment status", e);
+		}
+		
+		
+		HttpDelete method2 = new HttpDelete(String.format("%s/cli/environment/deleteEnvironment?application=%s&environment=%s&deleteAttachedResources=%s&deleteCloudInstances=%s", this.url, URLEncoder.encode(appName, "UTF-8"), URLEncoder.encode(envName, "UTF-8"), deleteAttachedResources, deleteCloudInstances));
+		invokeMethod(method2);
 	}
 	
 	public String listApplicationProcesses(String appName) throws IOException {
