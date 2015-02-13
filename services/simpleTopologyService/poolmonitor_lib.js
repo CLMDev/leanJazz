@@ -326,7 +326,7 @@ function deletePoolInstanceAndRemoveFromParentPool(instance, callback) {
 	var provider = pool.provider[0];
 	var pooler = require('./poolers/' + provider.type + '/pooler.js');
 	console.log('[' + pname + '] ' + 'Deleting instance ' + instance.name + '(id: ' + instance._id + ') from pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ').');
-	if (instance.status == 'INITIALIZING') {
+	if (instance.status == 'INITIALIZING' && !instance.trackingId) {
 		removeInstanceAndRemoveFromParentPool(instance, callback);
 	} else {
 		pooler.deletePoolInstance(provider, pool.type, instance, function(err, deleted) {
