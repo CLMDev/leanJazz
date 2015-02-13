@@ -172,15 +172,23 @@ public class UCDClient extends UDRestClient {
 		HttpGet method = new HttpGet(String.format("%s/cli/application/environmentsInApplication?application=%s", this.url, URLEncoder.encode(appName, "UTF-8")));
 		HttpResponse response = invokeMethod(method);
 		String body = getBody(response);
-		logger.debug(body);
+		
+		//logger.debug(body);
 		try{
-		JSONArray envArray = new JSONArray(body);
-		boolean envExist=false;
-		for (int i = 0; i < envArray.length(); i++) {
-			if(envArray.getJSONObject(i).getString("name")==envName) 
-				envExist=true;
-		}
-		if (!envExist) throw new EnvironmentNotExistException();
+		  JSONArray envArray = new JSONArray(body);
+		  boolean envExist=false;
+		  for (int i = 0; i < envArray.length(); i++) {
+			  //logger.debug("Environment Name:"+envArray.getJSONObject(i).getString("name"));
+			if(envArray.getJSONObject(i).getString("name").equals(envName)) {
+			envExist=true;
+			logger.debug("Environment found in application:");
+			}
+		  }
+		  if (!envExist) {
+			logger.debug("throwing EnvironmentNotExistException");
+			throw new EnvironmentNotExistException();
+			
+		  }
 		}
 		catch (JSONException e) {
 			logger.error("Error when checking environment status", e);
