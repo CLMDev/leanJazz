@@ -1,8 +1,7 @@
-FROM base/wlp
+FROM websphere-liberty
 MAINTAINER Super Wang <xuepow@cn.ibm.com>
 
-COPY files/defaultServer /opt/ibm/wlp/usr/servers/defaultServer
+RUN rm -rf /opt/ibm/wlp/usr/servers/defaultServer
+ADD files/defaultServer /opt/ibm/wlp/usr/servers/defaultServer
 
-EXPOSE 9080 9443
-
-CMD /opt/ibm/wlp/bin/server start && tail -f /opt/ibm/wlp/usr/servers/defaultServer/logs/console.log
+ENV LICENSE accept
