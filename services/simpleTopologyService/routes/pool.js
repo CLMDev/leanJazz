@@ -28,9 +28,18 @@ function detailsView(req, res) {
 exports.detailsView = detailsView;
 
 function fixPoolProperties(pool) {
-	var props = JSON.parse(pool.properties);
-	delete pool.properties;
-	pool.props = props;
+	return {
+		_id: pool._id,
+		name: pool.name,
+		description: pool.description,
+		props: JSON.parse(pool.properties),
+		poolMaxTotal: pool.poolMaxTotal,
+		poolMinAvailable: pool.poolMinAvailable,
+		parentPoolName: pool.parentPoolName,
+		parentPool: pool.parentPool,
+		provider: pool.provider,
+		type: pool.type
+	};
 }
 
 function listAllPools(req, res) {
@@ -39,8 +48,16 @@ function listAllPools(req, res) {
 			console.log('Error when listing pools: ' + err);
 			return res.send(err, 500);
 		}
-		docs.forEach(fixPoolProperties);
-		return res.send(!docs ? '[]' : docs);
+		if (!docs) {
+			return res.send('[]');
+		}
+		var fixedPools = [];
+		docs.forEach(function(pool) {
+			var fixedPool = fixPoolProperties(pool);
+			console.log(fixedPool);
+			fixedPools.push(fixedPool);
+		});
+		return res.send(fixedPools);
 	});
 }
 exports.findAll = listAllPools;
