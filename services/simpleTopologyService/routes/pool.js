@@ -54,7 +54,6 @@ function listAllPools(req, res) {
 		var fixedPools = [];
 		docs.forEach(function(pool) {
 			var fixedPool = fixPoolProperties(pool);
-			console.log(fixedPool);
 			fixedPools.push(fixedPool);
 		});
 		return res.send(fixedPools);
