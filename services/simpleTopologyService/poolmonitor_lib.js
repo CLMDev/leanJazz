@@ -281,7 +281,7 @@ function checkoutInstance(poolId, user, comment, callback) {
 }
 exports.checkoutInstance = checkoutInstance;
 
-function removeInstanceAndRemoveFromParentPool(instance, callback) {
+function onInstanceDeletedInPooler(instance, callback) {
 	InstanceModel.findByIdAndRemove(instance._id, function(err, deletedInstance) {
 		if (err) {
 			if (callback) {
@@ -294,6 +294,7 @@ function removeInstanceAndRemoveFromParentPool(instance, callback) {
 			if (callback) {
 				callback(null, true);
 			}
+			return;
 		}
 		var parentInstanceId = deletedInstance.parentInstance;
 		if (!parentInstanceId || parentInstanceId == 'NA') {
@@ -301,50 +302,10 @@ function removeInstanceAndRemoveFromParentPool(instance, callback) {
 			if (callback) {
 				callback(null, true);
 			}
+			return;
 		}
-		InstanceModel.findById(parentInstanceId, function(err, parentInstance) {
-			if (err) {
-				if (callback) {
-					callback(err, null);
-				}
-				return;
-			}
-			if (!parentInstance) {
-				console.log('[' + pname + '] ' + 'Cannot find the parent instance of instance ' + instance.name + '(id: ' + instance._id + '), it should be gone already.');
-				if (callback) {
-					callback(null, true);
-				}
-				return;
-			}
-			deletePoolInstanceAndRemoveFromParentPool(parentInstance, callback);
-		}).populate('poolRef');
+		deleteInstance(parentInstanceId, null);
 	});
-}
-
-function deletePoolInstanceAndRemoveFromParentPool(instance, callback) {
-	var pool = instance.poolRef;
-	var provider = pool.provider[0];
-	var pooler = require('./poolers/' + provider.type + '/pooler.js');
-	console.log('[' + pname + '] ' + 'Deleting instance ' + instance.name + '(id: ' + instance._id + ') from pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ').');
-	if (instance.status == 'INITIALIZING' && !instance.trackingId) {
-		removeInstanceAndRemoveFromParentPool(instance, callback);
-	} else {
-		pooler.deletePoolInstance(provider, pool.type, instance, function(err, deleted) {
-			if (err) {
-				if (callback) {
-					callback(err, null);
-				}
-				return;
-			}
-			if (!deleted) {
-				if (callback) {
-					callback('Failed to delete instance.', null);
-				}
-				return;
-			}
-			removeInstanceAndRemoveFromParentPool(instance, callback);
-		});
-	}
 }
 
 function deleteInstance(instanceId, callback) {
@@ -374,9 +335,48 @@ function deleteInstance(instanceId, callback) {
 				}
 				return;
 			}
-			deletePoolInstanceAndRemoveFromParentPool(instance);
-			if (callback) {
-				callback(null, instance);
+			var pool = instance.poolRef;
+			var provider = pool.provider[0];
+			var pooler = require('./poolers/' + provider.type + '/pooler.js');
+			console.log('[' + pname + '] ' + 'Deleting instance ' + instance.name + '(id: ' + instance._id + ') from pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ').');
+			if (instance.status == 'INITIALIZING' && !instance.trackingId) {
+				onInstanceDeletedInPooler(instance, function(err, deleted) {
+					if (err) {
+						if (callback) {
+							callback(err, null);
+						}
+						return;
+					}
+					if (callback) {
+						callback(null, deleted ? instance : null);
+					}
+				});
+			} else {
+				pooler.deletePoolInstance(provider, pool.type, instance, function(err, deleted) {
+					if (err) {
+						if (callback) {
+							callback(err, null);
+						}
+						return;
+					}
+					if (!deleted) {
+						if (callback) {
+							callback('Failed to delete instance.', null);
+						}
+						return;
+					}
+					onInstanceDeletedInPooler(instance, function(err, deleted) {
+						if (err) {
+							if (callback) {
+								callback(err, null);
+							}
+							return;
+						}
+						if (callback) {
+							callback(null, deleted ? instance : null);
+						}
+					});
+				});
 			}
 		});
     }).populate('poolRef');
