@@ -94,11 +94,11 @@ function deletePool(req, res) {
 			return res.send(500, err);
 		}
 		Instances.find({ poolRef: poolId }, function(err, docs) {
-			docs.forEach(instance) {
+			docs.forEach(function(instance) {
 				Instances.findByIdAndRemove(instance._id, function(err, doc) {
 					
 				});
-			}
+			});
 			return res.send(doc ? 200 : 404);
 		});
 	})
