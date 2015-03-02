@@ -49,14 +49,14 @@ function listAllPools(req, res) {
 			return res.send(err, 500);
 		}
 		if (!docs) {
-			return res.send('[]');
+			return res.json('[]');
 		}
 		var fixedPools = [];
 		docs.forEach(function(pool) {
 			var fixedPool = fixPoolProperties(pool);
 			fixedPools.push(fixedPool);
 		});
-		return res.send(fixedPools);
+		return res.json(fixedPools);
 	});
 }
 exports.findAll = listAllPools;
@@ -122,9 +122,22 @@ function deletePool(req, res) {
 exports.remove = deletePool;
 
 function fixInstanceProperties(instance) {
-	var props = JSON.parse(instance.properties);
-	delete instance.properties;
-	instance.props = props;
+	return {
+		_id: instance._id,
+		checkoutDate: instance.checkoutDate,
+		checkoutUser: instance.checkoutUser,
+		checkoutComment: instance.checkoutComment,
+		creationDate: instance.creationDate,
+		description: instance.description,
+		name: instance.name,
+		poolRef: instance.poolRef,
+		props: JSON.parse(instance.properties),
+		parentInstance: instance.parentInstance,
+		status: instance.status,
+		trackingId: instance.trackingId,
+		trackingUrl: instance.trackingUrl,
+		type: instance.type
+	};
 }
 
 function listAllInstances(req, res) {
@@ -134,8 +147,15 @@ function listAllInstances(req, res) {
 			console.log('Error when listing instances: ' + err);
 			return res.send(err, 500);
 		}
-		docs.forEach(fixInstanceProperties);
-		return res.json(!docs ? '[]' : docs);
+		if (!docs) {
+			return res.json('[]');
+		}
+		var fixedInstances = [];
+		docs.forEach(function(instance) {
+			var fixedInstance = fixInstanceProperties(instance);
+			fixedInstances.push(fixedInstance);
+		});
+		return res.json(fixedInstances);
 	});
 }
 exports.listAllInstances = listAllInstances;
