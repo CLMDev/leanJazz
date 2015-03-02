@@ -27,12 +27,19 @@ function detailsView(req, res) {
 };
 exports.detailsView = detailsView;
 
+function fixPoolProperties(pool) {
+	var props = JSON.parse(pool.properties);
+	delete pool.properties;
+	pool.props = props;
+}
+
 function listAllPools(req, res) {
 	Pools.find({}, function(err, docs) {
 		if (err) {
 			console.log('Error when listing pools: ' + err);
 			return res.send(err, 500);
 		}
+		docs.forEach(fixPoolProperties);
 		return res.send(!docs ? '[]' : docs);
 	});
 }
@@ -45,7 +52,7 @@ function getPoolById(req, res) {
 			return res.send(err, 500);
 		}
 		if (doc) {
-			return res.json(doc);
+			return res.json(fixPoolProperties(doc));
 		}
 		return res.send(404);
 	});
@@ -80,15 +87,29 @@ function updatePool(req, res) {
 exports.update = updatePool;
 
 function deletePool(req, res) {
-	Pools.findByIdAndRemove(req.params.id, function(err, doc) {
+	var poolId = req.params.id;
+	Pools.findByIdAndRemove(poolId, function(err, doc) {
 		if (err) {
 			console.log('Error when deleting pool: ' + err);
 			return res.send(500, err);
 		}
-		return res.send(doc ? 200 : 404);
+		Instances.find({ poolRef: poolId }, function(err, docs) {
+			docs.forEach(instance) {
+				Instances.findByIdAndRemove(instance._id, function(err, doc) {
+					
+				});
+			}
+			return res.send(doc ? 200 : 404);
+		});
 	})
 }
 exports.remove = deletePool;
+
+function fixInstanceProperties(instance) {
+	var props = JSON.parse(instance.properties);
+	delete instance.properties;
+	instance.props = props;
+}
 
 function listAllInstances(req, res) {
 	var poolId = req.params.id;
@@ -97,6 +118,7 @@ function listAllInstances(req, res) {
 			console.log('Error when listing instances: ' + err);
 			return res.send(err, 500);
 		}
+		docs.forEach(fixInstanceProperties);
 		return res.json(!docs ? '[]' : docs);
 	});
 }
@@ -109,7 +131,7 @@ function getInstanceById(req, res) {
 			return res.send(err, 500);
 		}
 		if (doc) {
-			return res.json(doc);
+			return res.json(fixInstanceProperties(doc));
 		}
 		return res.send(404);
     });

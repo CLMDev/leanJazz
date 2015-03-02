@@ -1,12 +1,10 @@
 var cached_instances = {};
 
 function createSingleInstanceRow(instance) {
-	var props = JSON.parse(instance.properties);
-	delete instance.properties;
-	instance.props = props;
-	if ((instance.status == 'INITIALIZING' && instance.trackingId) || instance.status == 'AVAILABLE') {
-		instance.deletable = '';
-	} else if (instance.status == 'CHECKED_OUT') {
+//	var props = JSON.parse(instance.properties);
+//	delete instance.properties;
+//	instance.props = props;
+	if ((instance.status == 'INITIALIZING' && instance.trackingId) || instance.status == 'AVAILABLE' || instance.status == 'CHECKED_OUT' || instance.status == 'FAULTED') {
 		instance.deletable = '';
 	} else {
 		instance.deletable = 'disabled="disabled"';
@@ -22,12 +20,10 @@ function createSingleInstanceRow(instance) {
 	}
 }
 function updateSingleInstanceRow(instance) {
-	var props = JSON.parse(instance.properties);
-	delete instance.properties;
-	instance.props = props;
-	if ((instance.status == 'INITIALIZING' && instance.trackingId) || instance.status == 'AVAILABLE') {
-		instance.deletable = '';
-	} else if (instance.status == 'CHECKED_OUT') {
+//	var props = JSON.parse(instance.properties);
+//	delete instance.properties;
+//	instance.props = props;
+	if ((instance.status == 'INITIALIZING' && instance.trackingId) || instance.status == 'AVAILABLE' || instance.status == 'CHECKED_OUT' || instance.status == 'FAULTED') {
 		instance.deletable = '';
 	} else {
 		instance.deletable = 'disabled="disabled"';

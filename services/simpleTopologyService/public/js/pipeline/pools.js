@@ -1,9 +1,9 @@
 var cached_pools = {};
 
 function createSinglePoolRow(pool) {
-	var props = JSON.parse(pool.properties);
-	delete pool.properties;
-	pool.props = props;
+//	var props = JSON.parse(pool.properties);
+//	delete pool.properties;
+//	pool.props = props;
 	cached_pools[pool._id] = pool;
 	
 	var $item = Mustache.render(pool.type == 'noapp' ? $('#noAppPoolItemTemplate').html(): $('#appPoolItemTemplate').html(), pool);
@@ -11,9 +11,9 @@ function createSinglePoolRow(pool) {
 	$('#pool-list > tbody').append($item);
 }
 function updateSinglePoolRow(pool) {
-	var props = JSON.parse(pool.properties);
-	delete pool.properties;
-	pool.props = props;
+//	var props = JSON.parse(pool.properties);
+//	delete pool.properties;
+//	pool.props = props;
 	cached_pools[pool._id] = pool;
 	
 	var $item = Mustache.render(pool.type == 'noapp' ? $('#noAppPoolItemTemplate').html(): $('#appPoolItemTemplate').html(), pool);
