@@ -121,41 +121,50 @@ function createNewInstancesIfNeeded(pool, callback) {
 			}
 			return;
 		}
-		InstanceModel.count({ poolRef: pool._id, status: 'AVAILABLE' }, function(err, poolAvailable) {
+		InstanceModel.count({ poolRef: pool._id, status: 'FAULTED' }, function(err, faultedCnt) {
 			if (err) {
-				console.log('[' + pname + '] ' + 'Error when counting instances for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '):' + err);
+				console.log('[' + pname + '] ' + 'Error when counting faulted instances for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '):' + err);
 				if (callback) {
 					callback(err, null);
 				}
 				return;
 			}
-			InstanceModel.count({ poolRef: pool._id, status: 'CHECKED_OUT' }, function(err, checkedOutCnt) {
+			InstanceModel.count({ poolRef: pool._id, status: 'AVAILABLE' }, function(err, poolAvailable) {
 				if (err) {
-					console.log('[' + pname + '] ' + 'Error when counting checked out instances for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '):' + err);
+					console.log('[' + pname + '] ' + 'Error when counting available instances for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '):' + err);
 					if (callback) {
 						callback(err, null);
 					}
 					return;
 				}
-				
-				console.log('[' + pname + '] ' + 'Pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ') c/a/q status: ' + checkedOutCnt + ' / ' + poolAvailable + ' / ' + queueCnt);
-				
-				var needToCreate = pool.poolMinAvailable - (poolAvailable + queueCnt);
-				if (needToCreate > 0) {
-					var totalInstCnt = poolAvailable + checkedOutCnt;
-					if (totalInstCnt + queueCnt + needToCreate > pool.poolMaxTotal) {
-						needToCreate = pool.poolMaxTotal - (totalInstCnt + queueCnt);
-						if (needToCreate <= 0) {
-							return console.log('[' + pname + '] ' + 'Reaches max instance count, No need to create more instances.');
+				InstanceModel.count({ poolRef: pool._id, status: 'CHECKED_OUT' }, function(err, checkedOutCnt) {
+					if (err) {
+						console.log('[' + pname + '] ' + 'Error when counting checked out instances for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '):' + err);
+						if (callback) {
+							callback(err, null);
 						}
+						return;
 					}
-					console.log('[' + pname + '] ' + 'Need to create ' + needToCreate + ' more instance(s) for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ').');
-					for (i = 0; i < needToCreate; i++) {
-						submitRequestForNewInstance(pool, callback);
+					
+					console.log('[' + pname + '] ' + 'Pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ') c/a/q/f status: ' + checkedOutCnt + ' / ' + poolAvailable + ' / ' + queueCnt + ' / ' + faultedCnt);
+					
+					var needToCreate = pool.poolMinAvailable - (poolAvailable + queueCnt);
+					if (needToCreate > 0) {
+						var totalInstCnt = poolAvailable + checkedOutCnt + faultedCnt;
+						if (totalInstCnt + queueCnt + needToCreate > pool.poolMaxTotal) {
+							needToCreate = pool.poolMaxTotal - (totalInstCnt + queueCnt);
+							if (needToCreate <= 0) {
+								return console.log('[' + pname + '] ' + 'Reaches max instance count, No need to create more instances.');
+							}
+						}
+						console.log('[' + pname + '] ' + 'Need to create ' + needToCreate + ' more instance(s) for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ').');
+						for (i = 0; i < needToCreate; i++) {
+							submitRequestForNewInstance(pool, callback);
+						}
+					} else {
+						return console.log('[' + pname + '] ' + 'Still have available or queued instance(s) for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '), no need to create more instances.');
 					}
-				} else {
-					return console.log('[' + pname + '] ' + 'Still have available or queued instance(s) for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '), no need to create more instances.');
-				}
+				});
 			});
 		});
 	});
