@@ -65,7 +65,8 @@ var pname='Pooler - UCD';
 
 function createPoolInstance(provider, type, content, callback) {
 	if (type == 'noapp') {
-		console.log('[' + pname + '] ' + 'Creating UCD environment with topology document: ' + JSON.stringify(content));
+		//console.log('[' + pname + '] ' + 'Creating UCD environment with topology document: ' + JSON.stringify(content));
+		console.log('[' + pname + '] ' + 'Creating UCD environment: ');
 		createEnvironment(provider, content, function(err, uuid) {
 			if (err) {
 				console.log('[' + pname + '] ' + 'Error when creating UCD environment: ' + err);
@@ -261,6 +262,9 @@ function deleteEnvironment(provider, appName, envName, callback) {
 		if (err) {
 			return callback(err, null);
 		}
+		if (resp.statusCode == 404) {
+			return callback(null, true);
+		}
 		if (resp.statusCode != 202) {
 			return callback(JSON.stringify(resp), null);
 		}
@@ -307,6 +311,9 @@ function getRequestStatus(provider, appname, requestId, callback) {
 			return callback(JSON.stringify(resp), null);
 		}
 		var reqStat = JSON.parse(body);
+		if (reqStat.result = 'FAULTED') {
+			return callback(reqStat, null);
+		}
 		callback(null, reqStat.result == 'SUCCEEDED');
 	});
 }

@@ -29,6 +29,7 @@ import org.codehaus.jettison.json.JSONObject;
 import com.ibm.sts.ucd.data.EnvironmentStatus;
 import com.ibm.sts.ucd.utils.StringUtils;
 import com.ibm.sts.ucd.utils.UCDClient;
+import com.ibm.sts.ucd.utils.EnvironmentNotExistException;
 
 /**
  * @author Super Wang
@@ -269,6 +270,9 @@ public class UCDService {
 		} catch (IOException e) {
 			logger.error(e.getLocalizedMessage(), e);
 			return Response.status(Status.BAD_REQUEST).entity(String.format("Error when deleting environment '%s' in application '%s'", envName, appName)).build();
+		} catch (EnvironmentNotExistException e) {
+			// TODO Auto-generated catch block
+			return Response.status(Status.NOT_FOUND).entity(String.format("Environment %s no longer exists in application %s", envName, appName)).build();
 		}
 		return Response.status(Status.ACCEPTED).build();
 	}
