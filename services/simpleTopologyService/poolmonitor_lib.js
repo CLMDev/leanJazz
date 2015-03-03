@@ -159,7 +159,9 @@ function createNewInstancesIfNeeded(pool, callback) {
 						}
 						console.log('[' + pname + '] ' + 'Need to create ' + needToCreate + ' more instance(s) for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + ').');
 						for (i = 0; i < needToCreate; i++) {
-							submitRequestForNewInstance(pool, callback);
+							setTimeout(function() {
+								submitRequestForNewInstance(pool, callback);
+							}, i * 1000);
 						}
 					} else {
 						return console.log('[' + pname + '] ' + 'Still have available or queued instance(s) for pool ' + pool.name + '(id: ' + pool._id + ', type: ' + pool.type + '), no need to create more instances.');

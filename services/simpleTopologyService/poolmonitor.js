@@ -39,13 +39,15 @@ var timer1 = setInterval(function() {
 	PoolModel.find({}, function(err, pools) {
 		if (err) {
 			console.log('[' + pname + '] ' + 'Error when finding pool: ' + err);
-			return clearInterval(timer1);
+//			return clearInterval(timer1);
+			return;
 		}
 		pools.forEach(function(pool) {
 			monitorLib.createNewInstancesIfNeeded(pool, function(err, request) {
 				if (err) {
 					console.log('[' + pname + '] ' + 'Error when creating instance(s) when needed: ' + err);
-					return clearInterval(timer1);
+//					return clearInterval(timer1);
+					return;
 				}
 			});
 		});
@@ -56,13 +58,15 @@ var timer2 = setInterval(function() {
 	PoolModel.find({}, function(err, pools) {
 		if (err) {
 			console.log('[' + pname + '] ' + 'Error when finding pool: ' + err);
-			return clearInterval(timer2);
+//			return clearInterval(timer2);
+			return;
 		}
 		pools.forEach(function(pool) {
 			monitorLib.processRequestIfNeeded(pool, function(err) {
 				if (err) {
 					console.log('[' + pname + '] ' + 'Error when processing request(s) when needed: ' + err);
-					return clearInterval(timer2);
+//					return clearInterval(timer2);
+					return;
 				}
 			});
 		});
