@@ -346,6 +346,9 @@ function deleteInstanceInDatabase(instance, callback) {
 			return;
 		}
 		deleteInstance(parentInstanceId, null);
+		if (callback) {
+			callback(null, true);
+		}
 	});
 }
 
