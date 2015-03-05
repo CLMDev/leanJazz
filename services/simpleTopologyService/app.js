@@ -233,14 +233,14 @@ function checkoutInstance(req, res) {
 				return res.send(500, err);
 			}
 			if (!instance) {
-				res.send(404);
+				return res.send(404);
 			}
 			return res.json(instance);
 
 		});
 //	} else if (action.type == 'release') {
 	} else {
-		res.send('Unsupported action: ' + action.type, 400);
+		return res.send('Unsupported action: ' + action.type, 400);
 	}
 }
 app.post('/api/v1/topology/pools/:id/actions', passport.authenticate('basic', { session: false }), checkoutInstance);
@@ -252,11 +252,10 @@ function checkoutInstanceV1(req, res) {
 	var comment = req.body.checkoutComment;
 	monitorLib.checkoutInstance(poolId, user, comment, function(err, instance) {
 			if (err) {
-				console.log('Error when checkout instance: ' + err);
 				return res.send(500, err);
 			}
 			if (!instance) {
-				res.send(404);
+				return res.send(404);
 			}
 			return res.json(instance);
 
