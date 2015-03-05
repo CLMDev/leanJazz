@@ -269,6 +269,25 @@ function createInstance(pool, parentInstanceId, properties, callback) {
 }
 exports.createInstance = createInstance;
 
+function fixInstanceProperties(instance) {
+	return {
+		_id: instance._id,
+		checkoutDate: instance.checkoutDate,
+		checkoutUser: instance.checkoutUser,
+		checkoutComment: instance.checkoutComment,
+		creationDate: instance.creationDate,
+		description: instance.description,
+		name: instance.name,
+		poolRef: instance.poolRef,
+		props: JSON.parse(instance.properties),
+		parentInstance: instance.parentInstance,
+		status: instance.status,
+		trackingId: instance.trackingId,
+		trackingUrl: instance.trackingUrl,
+		type: instance.type
+	};
+}
+
 function checkoutInstance(poolId, user, comment, callback) {
 	log.info('User ' + user + ' is checking out instance from pool (id: ' + poolId + ') with comment: ' + comment);
 	InstanceModel.findOne({ poolRef: poolId, status: 'AVAILABLE' }, function(err, inst) {
@@ -295,7 +314,7 @@ function checkoutInstance(poolId, user, comment, callback) {
 				return;
 			}
 			if (callback) {
-				callback(null, updatedDoc);
+				callback(null, fixInstanceProperties(updatedDoc));
 			}
 		});
 	});
@@ -376,7 +395,7 @@ function deleteInstance(instanceId, callback) {
 						return;
 					}
 					if (callback) {
-						callback(null, deleted ? instance : null);
+						callback(null, deleted ? fixInstanceProperties(instance) : null);
 					}
 				});
 			} else {
@@ -404,7 +423,7 @@ function deleteInstance(instanceId, callback) {
 							return;
 						}
 						if (callback) {
-							callback(null, deleted ? instance : null);
+							callback(null, deleted ? fixInstanceProperties(instance) : null);
 						}
 					});
 				});
