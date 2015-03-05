@@ -291,6 +291,25 @@ function checkoutInstance(req, res) {
 app.post('/api/v1/topology/pools/:id/actions', passport.authenticate('basic', { session: false }), checkoutInstance);
 app.post('/api4gui/v1/topology/pools/:id/actions', ensureAPIAuthenticated, checkoutInstance);
 
+function checkoutInstanceV1(req, res) {
+	var user = req.user.mail;
+	var poolId = req.params.id;
+	var comment = req.body.checkoutComment;
+	monitorLib.checkoutInstance(poolId, user, comment, function(err, instance) {
+			if (err) {
+				console.log('Error when checkout instance: ' + err);
+				return res.send(500, err);
+			}
+			if (!instance) {
+				res.send(404);
+			}
+			return res.json(instance);
+
+	});
+}
+
+app.post('/api/v1/topology/pools/:id', passport.authenticate('basic', { session: false }), checkoutInstanceV1);
+
 function deleteInstance(req, res) {
 	var instanceId = req.params.id;
 	monitorLib.deleteInstance(instanceId, function(err, instance) {
