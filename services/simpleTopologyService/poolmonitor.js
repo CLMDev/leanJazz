@@ -20,32 +20,29 @@ var monitorLib = require('./poolmonitor_lib');
 var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
 
-var pname='pool_monitor';
+var log = require('./utils/logger').getLogger('Pool Monitor');
 
 var mongoose = require('mongoose');
 mongoose.connect(nconf.get('MONGO_URI'),
 	function(err) {
-		if (!err) {
-			console.log('[' + pname + '] ' + 'Mogoose DB connected! ');
-		} else {
+		if (err) {
+			log.error("Failed to connect to database " + nconf.get('MONGO_URI'));
 			throw err;
 		}
 	}
 );
 
-console.log('[' + pname + '] ' + 'Monitoring process is running! ');
-
 var timer1 = setInterval(function() {
 	PoolModel.find({}, function(err, pools) {
 		if (err) {
-			console.log('[' + pname + '] ' + 'Error when finding pool: ' + err);
+			log.error('Error when finding pool: ' + err);
 //			return clearInterval(timer1);
 			return;
 		}
 		pools.forEach(function(pool) {
 			monitorLib.createNewInstancesIfNeeded(pool, function(err, request) {
 				if (err) {
-					console.log('[' + pname + '] ' + 'Error when creating instance(s) when needed: ' + err);
+					log.error('Error when creating instance(s) when needed: ' + err);
 //					return clearInterval(timer1);
 					return;
 				}
@@ -57,14 +54,14 @@ var timer1 = setInterval(function() {
 var timer2 = setInterval(function() {
 	PoolModel.find({}, function(err, pools) {
 		if (err) {
-			console.log('[' + pname + '] ' + 'Error when finding pool: ' + err);
+			log.error('Error when finding pool: ' + err);
 //			return clearInterval(timer2);
 			return;
 		}
 		pools.forEach(function(pool) {
 			monitorLib.processRequestIfNeeded(pool, function(err) {
 				if (err) {
-					console.log('[' + pname + '] ' + 'Error when processing request(s) when needed: ' + err);
+					log.error('Error when processing request(s) when needed: ' + err);
 //					return clearInterval(timer2);
 					return;
 				}

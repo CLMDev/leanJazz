@@ -13,15 +13,17 @@
 		"mongoose": ">=2.3.1",
 		"mocha": "*",
 		"should": "*",
-		"nconf":	"*",
+		"nconf": "*",
 		"validator": "*",
-		"jquery":"*",
-		"request-json":"*",
-		"passport":"*",
-		"passport-http":"*",
-		"passport-local":"*",
-		"nodemailer":"*",
-		"node-uuid":"*",
-		"connect-flash":"*"
+		"jquery": "*",
+		"request-json": "*",
+		"passport": "*",
+		"passport-http": "*",
+		"passport-local": "*",
+		"nodemailer": "*",
+		"node-uuid": "*",
+		"connect-flash": "*",
+		"winston": "*",
+		"morgan": "*"
 	}
 }

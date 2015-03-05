@@ -18,150 +18,118 @@
 'use strict';
 var express = require('express');
 var mongoose = require('mongoose');
-var crypto = require('crypto');
 
 var nconf = require('nconf');
 nconf.argv().env().file({ file: './config.json'});
 
+var logger = require("./utils/logger");
+var log = logger.getLogger("app");
+
 mongoose.connect(nconf.get('MONGO_URI'),
 	function(err) {
-		if (!err) {
-			console.log('connected');
-		} else {
+		if (err) {
+			log.error("Failed to connect to database " + nconf.get('MONGO_URI'));
 			throw err;
 		}
-});
-
-var User = require ('./models/usermodel');
-var 
-	flash = require('connect-flash')
-	, passport = require('passport')
-	, util = require('util')
-	, LocalStrategy = require('passport-local').Strategy
-	, BasicStrategy = require('passport-http').BasicStrategy;
-
-function findById(id, fn) {
-	User.find({_id:id}, function(err,docs){
-		if(docs.length)
-			fn(null,docs[0]);
-		else
-			fn(null,null);
-	});
-}
-
-
-function findByMail(usermail, fn) {
-	User.find({mail:usermail}, function(err,docs){
-		if(docs.length)
-			fn(null,docs[0]);
-		else
-			fn(null,null);
-	});
-}
-
-// Passport session setup.
-// To support persistent login sessions, Passport needs to be able to
-// serialize users into and deserialize users out of the session. Typically,
-// this will be as simple as storing the user ID when serializing, and finding
-// the user by ID when deserializing.
-passport.serializeUser(function(user, done) {
-	done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-	findById(id, function (err, user) {
-		done(err, user);
-	});
-});
-
-
-// Use the LocalStrategy within Passport.
-// Strategies in passport require a `verify` function, which accept
-// credentials (in this case, a username and password), and invoke a callback
-// with a user object. In the real world, this would query a database;
-// however, in this example we are using a baked-in set of users.
-passport.use(new LocalStrategy(
-	function(username, password, done) {
-		console.log('In LocalStrategy callback:');
-		console.log('username:'+username);
-		// asynchronous verification, for effect...
-		process.nextTick(function () {
-			// Find the user by username. If there is no user with the given
-			// username, or the password is not correct, set the user to `false` to
-			// indicate failure and set a flash message. Otherwise, return the
-			// authenticated `user`.
-			findByMail(username, function(err, user) {
-				if (err) { return done(err); }
-				if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
-				console.log('User found!');
-				if (!user.isRegistered) {console.log('not activiated.'); return done(null, false, { message: 'Not activiated: ' + username }); }
-				if (!user.isActive) { console.log('disabled');return done(null, false, { message: 'Disabled: ' + username }); }
-				var sha = crypto.createHash('sha1');
-				sha.update(password+user._salt);
-				if (user.passwordHash!= sha.digest('hex')) {console.log('invalid password'); return done(null, false, { message: 'Invalid password' }); }
-				console.log('valid password!');
-				return done(null, user);
-			})
-		});
 	}
-));
-
-passport.use(new BasicStrategy(
-	function(username, password, done) {
-		User.findOne({ mail: username }, function (err, user) {
-			console.log('user found: '+ user.mail);
-			if (err) { return done(err); }
-			if (!user) { return done(null, false); }
-			if (!user.isRegistered) {console.log('not activiated.'); return done(null, false, { message: 'Not activiated: ' + username }); }
-			if (!user.isActive) { console.log('disabled');return done(null, false); }
-			var sha = crypto.createHash('sha1');
-			sha.update(password+user._salt);
-			if (user.passwordHash!= sha.digest('hex')) {console.log('invalid password'); return done(null, false); }
-			console.log('valid password!');
-			return done(null, user); 
-		});
-	}
-));
+);
 
 var routes = require('./routes');
 var providerService = require('./routes/provider');
 var poolService = require('./routes/pool');
 var user = require('./routes/user');
-var https = require('https');
-https.globalAgent.maxSockets = 100;
 var path = require('path');
 var app = express();
-
-//var pool = require('./models/poolmodel');
-//setup properties file
+app.use(require('morgan')("combined", { "stream": logger.stream }));
 
 var httpProxy = require('http-proxy');
 var proxy = httpProxy.createProxyServer(options);
+app.use(nconf.get('UCD_ADAPTER_PATH'), function(req, res) {
+	proxy.web(req, res, { target: nconf.get('UCD_ADAPTER_TARGET') });
+});
 
-console.log('STS_SERVER: '+ nconf.get('STS_HOSTNAME') + ':' + nconf.get('PORT'));
-console.log('MONGO_URI: '+ nconf.get('MONGO_URI'));
-// all environments
 app.set('port', nconf.get('PORT'));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(nconf.get('UCD_ADAPTER_PATH'),function(req, res){
-	proxy.web(req, res, { target: nconf.get('UCD_ADAPTER_TARGET') });
-});
-app.use(express.json());
 app.use(express.urlencoded());
-app.use(express.cookieParser());
-//app.use(express.bodyParser());
 app.use(express.json());
-app.use(express.urlencoded());
 app.use(express.methodOverride());
+app.use(express.static(path.join(__dirname, 'public')));
+
+var User = require ('./models/usermodel');
+var 
+	flash = require('connect-flash'),
+	passport = require('passport'),
+	crypto = require('crypto'),
+	util = require('util'),
+	LocalStrategy = require('passport-local').Strategy,
+	BasicStrategy = require('passport-http').BasicStrategy;
+
+passport.serializeUser(function(user, done) {
+	done(null, user.id);
+});
+passport.deserializeUser(function(id, done) {
+	User.findOne({ _id: id }, function (err, user) {
+		done(err, user);
+	});
+});
+
+function login(username, password, callback) {
+	User.findOne({ mail: username }, function(err, user) {
+		if (err) {
+			return callback(err);
+		}
+		if (!user) {
+			var message = 'Unknown user: ' + username;
+			log.warn(message);
+			return callback(null, false, {
+				message : message
+			});
+		}
+		if (!user.isRegistered) {
+			var message = 'User not activiated: ' + username;
+			log.warn(message);
+			return callback(null, false, {
+				message : message
+			});
+		}
+		if (!user.isActive) {
+			var message = 'User disabled: ' + username;
+			log.warn(message);
+			return callback(null, false, {
+				message : message
+			});
+		}
+		var sha = crypto.createHash('sha1');
+		sha.update(password + user._salt);
+		if (user.passwordHash != sha.digest('hex')) {
+			var message = 'User ' + username + "";
+			log.warn(message);
+			return callback(null, false, {
+				message : message
+			});
+		}
+		return callback(null, user);
+	})
+}
+
+passport.use(new LocalStrategy(
+	function(username, password, done) {
+		// asynchronous verification, for effect...
+		process.nextTick(function () {
+			login(username, password, done);
+		});
+	}
+));
+passport.use(new BasicStrategy(login));
+
+app.use(express.cookieParser());
 app.use(express.session({ secret: 'keyboard cat' }));
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
 if ('development' == app.get('env')) {
@@ -183,7 +151,7 @@ app.post('/login',
 	passport.authenticate('local', { failureRedirect: '/login' }),
 	function(req, res) {
 		req.session.userid = req.body.username;
-		console.log('login user:'+req.session.userid);
+		log.info('login user:'+req.session.userid);
 		if(!req.session.returnTo)
 			res.redirect('/pools');
 		else
@@ -195,16 +163,6 @@ app.get('/logout', function(req, res){
 	res.redirect('/');
 });
 
-app.get('/api/v1/login', function(req, res){
-	res.send(200);
-});
-app.post('/api/v1/login', 
-	passport.authenticate('local', { failureRedirect: '/api/v1/login' }),
-	function(req, res) {
-		req.session.userid = req.body.username;
-		console.log('login user:'+req.session.userid);
-		res.send(200);
-});
 app.get('/signup', user.signup);
 app.post('/signup', user.createAccount);
 app.get('/activate/:id', user.activate);
@@ -227,8 +185,6 @@ function ensureAPIAuthenticated(req, res, next) {
 	res.send(401);
 } 
 
-//var api_password=user.createAPIUser();
-//apppooler.send({password:api_password});
 // setup routes for topologies web interface
 app.get('/users', ensureAuthenticated, user.findAllView);
 app.put('/users/:id', ensureAuthenticated, user.update);
@@ -274,7 +230,6 @@ function checkoutInstance(req, res) {
 		var comment = action.comment;
 		monitorLib.checkoutInstance(poolId, user, comment, function(err, instance) {
 			if (err) {
-				console.log('Error when checkout instance: ' + err);
 				return res.send(500, err);
 			}
 			if (!instance) {
@@ -295,7 +250,6 @@ function deleteInstance(req, res) {
 	var instanceId = req.params.id;
 	monitorLib.deleteInstance(instanceId, function(err, instance) {
 		if (err) {
-			console.log('Error when deleting instance: ' + err);
 			return res.send(500, err);
 		}
 		if (!instance) {
@@ -317,8 +271,10 @@ if (passphrase) {
 	options.passphrase = passphrase;
 }
 
+var https = require('https');
+https.globalAgent.maxSockets = 100;
 https.createServer(options, app).listen(app.get('port'), function() {
-	console.log('Express server listening on port ' + app.get('port'));
+	log.info('STS_SERVER: '+ nconf.get('STS_HOSTNAME') + ':' + nconf.get('PORT'));
 	require('child_process').fork('./poolmonitor.js');
 });
 
