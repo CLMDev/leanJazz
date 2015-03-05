@@ -45,7 +45,6 @@ function checkoutInstanceFromParentPool(pool, callback) {
 				}
 				return;
 			}
-			log.debug("Checking out instance from parent pool ...")
 			if (callback) {
 				callback(null, instance);
 			}
@@ -62,14 +61,12 @@ function checkoutInstanceFromParentPool(pool, callback) {
 function submitRequestForNewInstance(pool, callback) {
 	checkoutInstanceFromParentPool(pool, function(err, parentInstance) {
 		if (err) {
-			log.error("Failed to check out instance from parent pool " + pool.name + "(id: " + pool._id + ", type: " + pool.type + "): " + err);
 			if (callback) {
 				callback(err, null);
 			}
 			return;
 		}
 		if (!parentInstance) {
-			log.warn("No available instance in parent pool " + pool.name + "(id: " + pool._id + ", type: " + pool.type + ").");
 			return;
 		}
 		
@@ -289,7 +286,6 @@ function fixInstanceProperties(instance) {
 }
 
 function checkoutInstance(poolId, user, comment, callback) {
-	log.info('User ' + user + ' is checking out instance from pool (id: ' + poolId + ') with comment: ' + comment);
 	InstanceModel.findOne({ poolRef: poolId, status: 'AVAILABLE' }, function(err, inst) {
 		if (err) {
 			log.error("Error when finding available instance in pool " + poolId + ": " + err);
@@ -299,12 +295,13 @@ function checkoutInstance(poolId, user, comment, callback) {
 			return;
 		}
 		if (!inst) {
-			log.warn("No available instance in pool " + poolId);
+			log.warn('User ' + user + ' is trying to check out instance from pool (id: ' + poolId + ') with comment: ' + comment + ", but there's no available instance.");
 			if (callback) {
 				callback(null, null);
 			}
 			return;
 		}
+		log.info('User ' + user + ' is checking out instance from pool (id: ' + poolId + ') with comment: ' + comment);
 		InstanceModel.findByIdAndUpdate(inst._id, { status: 'CHECKED_OUT', checkoutUser: user, checkoutDate: (new Date()).toISOString(), checkoutComment: comment }, function(err, updatedDoc) {
 			if (err) {
 				log.error("Error when updating instance data during checkout:" + err);
