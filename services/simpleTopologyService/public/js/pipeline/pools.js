@@ -33,7 +33,7 @@ var cached_providers = {};
 
 function listUCDApplications(provider, onSuccess, onError) {
 	$.ajax({
-		url: provider.server + '/cli/application',
+		url: provider.server + '/rest/ucd/applications',
 		type: "GET",
 		username: provider.username,
 		password: provider.password,
@@ -52,7 +52,7 @@ function listUCDApplications(provider, onSuccess, onError) {
 
 function listUCDBlueprintsByApplication(provider, appName, onSuccess, onError) {
 	$.ajax({
-		url: provider.server + '/cli/application/blueprintsInApplication?application=' + encodeURIComponent(appName),
+		url: provider.server + '/rest/ucd/applications/' + encodeURIComponent(appName) + '/blueprints',
 		type: "GET",
 		username: provider.username,
 		password: provider.password,
@@ -75,7 +75,7 @@ function listUCDBlueprintsByApplication(provider, appName, onSuccess, onError) {
 
 function getUCDNodePropertiesByApplicationAndBlueprint(provider, appName, blueprintName, onSuccess, onError) {
 	$.ajax({
-		url: provider.server + '/cli/blueprint/getBlueprintNodePropertiesTemplate?application=' + encodeURIComponent(appName) + '&blueprint=' + encodeURIComponent(blueprintName),
+		url: provider.server + '/rest/ucd/applications/' + encodeURIComponent(appName) + '/blueprints/' + encodeURIComponent(blueprintName),
 		type: "GET",
 		crossDomain: true,
 		beforeSend: function(xhr) {
