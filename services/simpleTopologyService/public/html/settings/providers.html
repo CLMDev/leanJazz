@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title>Providers</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+	<script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/css/style.css" />
+	<script type="text/javascript" src="/js/mustache.js"></script>
+	<script type="text/javascript" src="/js/pipeline/api.js"></script>
+	<script type="text/javascript" src="/js/pipeline/providers.js"></script>
+</head>
+<body>
+<nav id="top-navbar" class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Home</a>
+		</div>
+		<div class="collapse navbar-collapse" id="navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li id="nav-links-pools"><a href="/pools">Pools</a></li>
+				<li id="nav-links-settings" class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+						Settings <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu" role="menu">
+						<li id="nav-links-providers"><a href="/settings/providers">Providers</a></li>
+						<li class="divider"></li>
+						<li id="nav-links-users"><a href="/users">Users</a></li>
+					</ul>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li id="header-links-jazzhub"><a href="https://hub.jazz.net/project/rjminsha/leanJazz/overview">Jazzhub Project</a></li>
+				<li id="header-links-gitgub"><a href="https://github.com/CLMDev/leanJazz">Github Project</a></li>
+				<li id="nav-links-logout"><a href="/logout">Logout</a></li>
+			</ul>
+		</div><!-- /.navbar-collapse -->
+	</div><!-- /.container-fluid -->
+</nav>
+<div id="content" class="container-fluid">
+	<div class="row">
+		<ol class="breadcrumb">
+			<li><a href="/">Home</a></li>
+			<li class="active">Settings - Providers</li>
+		</ol>
+	</div>
+	<h1>Available Providers</h1>
+	<div class="row">
+		<table id="provider-list" class="table table-hover">
+			<thead>
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Type</th>
+				<th>Server URL</th>
+				<th>Username</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr class="no-available">
+				<td colspan="6">No available providers</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="row">
+		<div class="col-sm-offset-1 col-sm-11">
+			<button id="create-provider-button" class="btn btn-primary" data-toggle="modal" data-target="#createProviderModal">Create Provider</button>
+		</div>
+	</div>
+</div><!-- End of content -->
+<!-- Modal -->
+<div class="modal fade" id="createProviderModal" tabindex="-1" role="dialog" aria-labelledby="createProviderLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="createProviderLabel">Create Provider</h4>
+			</div>
+			<div id="createProviderBody" class="modal-body">
+				<form id="create-provider-form" class="form-horizontal well" role="form">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="submit-create-provider-form" type="button" class="btn btn-primary">Save</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="editProviderModal" tabindex="-1" role="dialog" aria-labelledby="editProviderLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="editProviderLabel">Edit Provider</h4>
+			</div>
+			<div id="editProviderBody" class="modal-body">
+				<form id="edit-provider-form" class="form-horizontal well" role="form">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="submit-edit-provider-form" type="button" class="btn btn-primary">Save</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="deleteProviderModal" tabindex="-1" role="dialog" aria-labelledby="deleteProviderLabel" aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+				</button>
+				<h4 class="modal-title" id="deleteProviderLabel">Delete Provider</h4>
+			</div>
+			<div id="deleteProviderBody" class="modal-body">
+			</div>
+			<div class="modal-footer">
+				<button id="submit-delete-provider-form" type="button" class="btn btn-primary">Yes</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script id="providerItemTemplate" type="x-tmpl-mustache">
+<tr id="{{_id}}" class="data">
+	<td class="name">{{name}}</td>
+	<td class="description">{{description}}</td>
+	<td class="type">{{type}}</td>
+	<td class="server"><a href="{{server}}">{{server}}</a></td>
+	<td class="username">{{username}}</td>
+	<td class="actions">
+		<button class="btn btn-default" data-toggle="modal" data-target="#editProviderModal" data-providerid="{{_id}}">Edit</a>
+		<button class="btn btn-danger" data-toggle="modal" data-target="#deleteProviderModal" data-providerid="{{_id}}">Delete</button>
+	</td>
+</tr>
+</script>
+<script id="providerFormTemplate" type="x-tmpl-mustache">
+<fieldset>
+	<input id="_id" name="_id" type="hidden" value="{{_id}}" />
+	<div class="form-group">
+		<label for="name" class="col-sm-3 control-label">Name</label>
+		<div class="col-sm-9">
+			<input id="name" name="name" type="text" class="form-control" placeholder="Name" value="{{name}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="description" class="col-sm-3 control-label">Description</label>
+		<div class="col-sm-9">
+			<input id="description" name="description" type="text" class="form-control" placeholder="Description" value="{{description}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="type" class="col-sm-3 control-label">Type</label>
+		<div class="col-sm-9">
+			<select id="type" name="type" class="form-control">
+				<option value="UCD">UCD</option>
+			</select>
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="server" class="col-sm-3 control-label">Server URL</label>
+		<div class="col-sm-9">
+			<input id="server" name="server" type="text" class="form-control" placeholder="http(s)://www.example.com:9443" value="{{server}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="username" class="col-sm-3 control-label">Username</label>
+		<div class="col-sm-9">
+			<input id="username" name="username" type="text" class="form-control" placeholder="Username" value="{{username}}" />
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="password" class="col-sm-3 control-label">Password</label>
+		<div class="col-sm-9">
+			<input id="password" name="password" type="password" class="form-control" placeholder="" value="{{password}}" />
+		</div>
+	</div>
+</fieldset>
+</script>
+</body>
+</html>

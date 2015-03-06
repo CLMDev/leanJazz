@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: ucdrestclient-1.0.jar
+Build-Jdk: 1.7.0_67
+Built-By: SuperWang
+Created-By: Maven Integration for Eclipse
+

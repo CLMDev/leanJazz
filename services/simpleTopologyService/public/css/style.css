@@ -1,0 +1,23 @@
+body {
+	padding: 50px;
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.btn {
+	margin-left: 5px;
+	paddin-right: 5px;
+}
+
+.breadcrumb {
+	margin-top: 20px;
+}
+
+table {
+	table-layout: fixed;
+}
+
+table td {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

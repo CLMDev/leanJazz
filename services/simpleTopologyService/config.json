@@ -1,14 +1,16 @@
 {
 	"PORT" : 3001,
-	"STS_HOSTNAME" : "sts.rtp.raleigh.ibm.com",
-	"REDIS_HOST": "localhost",
+	"STS_HOSTNAME" : "liuzc-rh.rtp.raleigh.ibm.com",
+	"SSL_KEY_FILE" : ".\/https\/key.pem",
+	"SSL_CERT_FILE" : ".\/https\/cert.pem",
+	"SSL_PASSPHRASE" : "",
 	"STS_INSTANCE_PREFIX": "p-",
-	"REMOVE-TEST-DATA" : "true", 
-	"DEFAULT_PROVIDER_URL": "yourudeploy.rtp.raleigh.ibm.com", 
-	"DEFAULT_PROVIDER_USERNAME" : "yourusername", 
-	"DEFAULT_PROVIDER_PASSWORD" : "yourpassword",
-	"MONGO_URI":"mongodb://localhost/leanJazz",
+	"REMOVE-TEST-DATA" : "true",
+	"MONGO_URI":"mongodb://localhost:27017/leanJazz",
 	"MAIL_PROVIDER":".ibm.com",
-	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please"
-	
+	"MAIL_MESSAGE_PROVIDER":"Please use your intranet ID, please",
+	"UCD_ADAPTER_PATH":"/rest/ucd",
+	"UCD_ADAPTER_TARGET":"http://9.37.139.249:64869/rest/ucd",
+	"TEAMS": "CLM/SSE Automation Team:SVT",
+	"PRODUCT_COMPONENTS": "CLM:Rational_SSE:clm"
 }
