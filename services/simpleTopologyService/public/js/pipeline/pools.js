@@ -33,10 +33,14 @@ var cached_providers = {};
 
 function listUCDApplications(provider, onSuccess, onError) {
 	$.ajax({
-		url: provider.server + '/rest/ucd/applications',
+		url: '/rest/ucd/applications',
 		type: "GET",
-		username: provider.username,
-		password: provider.password,
+		crossDomain: true,
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('UCD_SERVER', provider.server);
+			xhr.setRequestHeader('UCD_USERNAME', provider.username);
+			xhr.setRequestHeader('UCD_PASSWORD', provider.password);
+		},
 		success: function(applications) {
 			if (onSuccess) {
 				return onSuccess($.isEmptyObject(applications) ? [] : applications)
@@ -52,13 +56,13 @@ function listUCDApplications(provider, onSuccess, onError) {
 
 function listUCDBlueprintsByApplication(provider, appName, onSuccess, onError) {
 	$.ajax({
-		url: provider.server + '/rest/ucd/applications/' + encodeURIComponent(appName) + '/blueprints',
+		url: '/rest/ucd/applications/' + encodeURIComponent(appName) + '/blueprints',
 		type: "GET",
-		username: provider.username,
-		password: provider.password,
 		crossDomain: true,
-		xhrFields: {
-			withCredentials: true
+		beforeSend: function(xhr) {
+			xhr.setRequestHeader('UCD_SERVER', provider.server);
+			xhr.setRequestHeader('UCD_USERNAME', provider.username);
+			xhr.setRequestHeader('UCD_PASSWORD', provider.password);
 		},
 		success: function(blueprints) {
 			if (onSuccess) {
@@ -75,7 +79,7 @@ function listUCDBlueprintsByApplication(provider, appName, onSuccess, onError) {
 
 function getUCDNodePropertiesByApplicationAndBlueprint(provider, appName, blueprintName, onSuccess, onError) {
 	$.ajax({
-		url: provider.server + '/rest/ucd/applications/' + encodeURIComponent(appName) + '/blueprints/' + encodeURIComponent(blueprintName),
+		url: '/rest/ucd/applications/' + encodeURIComponent(appName) + '/blueprints/' + encodeURIComponent(blueprintName),
 		type: "GET",
 		crossDomain: true,
 		beforeSend: function(xhr) {
@@ -586,3 +590,4 @@ $(document).ready(function() {
 	initDeletePoolModal();
 	
 });
+
