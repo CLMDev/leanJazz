@@ -159,9 +159,9 @@ function queryNodeProperties(providerId, appName, blueprintName, defaultNodeProp
 			blueprintName,
 			function(nodeProperties) {
 				if (defaultNodeProperties) {
-					$('input#nodeProperties').val(JSON.stringify(defaultNodeProperties, null, 4));
+					$('textarea#nodeProperties').val(JSON.stringify(defaultNodeProperties, null, 4));
 				} else {
-					$('input#nodeProperties').val(JSON.stringify(nodeProperties, null, 4));
+					$('textarea#nodeProperties').val(JSON.stringify(nodeProperties, null, 4));
 				}
 			},
 			function(jqXHR, textStatus, errorThrown) {
@@ -176,16 +176,16 @@ function bindNoAppSelectors(defaultProviderId, defaultApplication, defaultBluepr
 	$('select#providerRef').bind('change', function(event) {
 		$('select#appName').empty();
 		$('select#blueprintName').empty();
-		$('input#nodeProperties').val('');
+		$('textarea#nodeProperties').val('');
 		queryApplications($('select#providerRef').val(), defaultApplication);
 	});
 	$('select#appName').bind('change', function(event) {
 		$('select#blueprintName').empty();
-		$('input#nodeProperties').val('');
+		$('textarea#nodeProperties').val('');
 		queryBlueprints($('select#providerRef').val(), $('select#appName').val(), defaultBlueprint);
 	});
 	$('select#blueprintName').bind('change', function(event) {
-		$('input#nodeProperties').val('');
+		$('textarea#nodeProperties').val('');
 		queryNodeProperties($('select#providerRef').val(), $('select#appName').val(), $('select#blueprintName').val(), defaultNodeProperties);
 	});
 	
@@ -254,7 +254,7 @@ function initCreateNoAppPoolModal() {
 				properties: JSON.stringify({
 					appName: $('select#appName').val(),
 					blueprintName: $('select#blueprintName').val(),
-					nodeProperties: JSON.parse($('input#nodeProperties').val())
+					nodeProperties: JSON.parse($('textarea#nodeProperties').val())
 				}),
 				poolMaxTotal: $('input#poolMaxTotal').val(),
 				poolMinAvailable: $('input#poolMinAvailable').val()
@@ -378,7 +378,7 @@ function initEditNoAppPoolModal() {
 				properties: JSON.stringify({
 					appName: $('select#appName').val(),
 					blueprintName: $('select#blueprintName').val(),
-					nodeProperties: JSON.parse($('input#nodeProperties').val())
+					nodeProperties: JSON.parse($('textarea#nodeProperties').val())
 				}),
 				poolMaxTotal: $('input#poolMaxTotal').val(),
 				poolMinAvailable: $('input#poolMinAvailable').val()
@@ -417,8 +417,8 @@ function initEditNoAppPoolModal() {
 			$('select#appName').attr('readonly', true);
 			$('select#blueprintName').append('<option value="' + blueprintName + '">' + blueprintName + '</option>');
 			$('select#blueprintName').attr('readonly', true);
-			$('input#nodeProperties').val(JSON.stringify(nodeProperties, null, 4));
-			$('input#nodeProperties').attr('readonly', true);
+			$('textarea#nodeProperties').val(JSON.stringify(nodeProperties, null, 4));
+			$('textarea#nodeProperties').attr('readonly', true);
 			
 			$('#poolMaxTotalRange').bind('change', function(event) {
 				var value = $(this).val();

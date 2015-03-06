@@ -248,7 +248,12 @@
 			<select id="blueprintName" name="blueprintName" class="form-control" />
 		</div>
 	</div>
-	<input id="nodeProperties" name="nodeProperties" type="hidden" value="{{nodeProperties}}" />
+	<div class="form-group">
+		<label for="nodeProperties" class="col-sm-3 control-label">Node Properties</label>
+		<div class="col-sm-9">
+			<textarea id="nodeProperties" name="nodeProperties" class="form-control" rows="3">{{nodeProperties}}</textarea>
+		</div>
+	</div>
 </fieldset>
 <fieldset>
 	<legend>Capacity</legend>
